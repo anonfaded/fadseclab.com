@@ -1,0 +1,259 @@
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
+@import "tailwindcss";
+
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  color-scheme: dark;
+
+  /* ── Brand vars ── */
+  --bg: #06060a;
+  --bg-raised: #0d0d14;
+  --surface: rgba(15, 15, 21, 0.92);
+  --surface-strong: #101018;
+  --surface-soft: rgba(255, 255, 255, 0.036);
+  --surface-hover: rgba(255, 255, 255, 0.068);
+  --surface-muted: rgba(255, 255, 255, 0.042);
+  --text: #f0f0f5;
+  --text-soft: #b2b2c4;
+  --faint: #48485c;
+  --border-strong: rgba(255, 255, 255, 0.155);
+  --accent-brand: #e8334a;
+  --accent-mid: #f04458;
+  --accent-strong: #ff5f70;
+  --accent-soft: rgba(232, 51, 74, 0.13);
+  --accent-glow: rgba(232, 51, 74, 0.32);
+  --hero-bg: #06060a;
+  --hero-surface: rgba(10, 10, 16, 0.74);
+  --hero-glow: rgba(232, 51, 74, 0.18);
+  --cyan: #7dd3fc;
+  --success: #86efac;
+  --shadow: 0 28px 90px rgba(0, 0, 0, 0.52);
+  --shadow-sm: 0 6px 20px rgba(0, 0, 0, 0.32);
+  --font-display: 'Syne', system-ui, sans-serif;
+  --font-body: 'Outfit', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
+
+  /* ── shadcn / Tailwind CSS vars (dark defaults) ── */
+  --background: #06060a;
+  --foreground: #f0f0f5;
+  --card: #0d0d14;
+  --card-foreground: #f0f0f5;
+  --popover: #0d0d14;
+  --popover-foreground: #f0f0f5;
+  --primary: #e8334a;
+  --primary-foreground: #ffffff;
+  --secondary: #101018;
+  --secondary-foreground: #f0f0f5;
+  --muted: #1a1a28;
+  --muted-foreground: #b2b2c4;
+  --accent: #1a1a28;
+  --accent-foreground: #f0f0f5;
+  --destructive: #e8334a;
+  --border: rgba(255, 255, 255, 0.1);
+  --input: rgba(255, 255, 255, 0.08);
+  --ring: rgba(232, 51, 74, 0.5);
+  --radius: 0.625rem;
+  --radius-lg: 16px;
+}
+
+:root[data-theme='light'] {
+  color-scheme: light;
+
+  /* ── Brand vars (light) ── */
+  --bg: #f8f8fb;
+  --bg-raised: #f2f2f6;
+  --surface: rgba(255, 255, 255, 0.92);
+  --surface-strong: #ffffff;
+  --surface-soft: rgba(10, 10, 18, 0.036);
+  --surface-hover: rgba(10, 10, 18, 0.068);
+  --surface-muted: rgba(10, 10, 18, 0.042);
+  --text: #08080e;
+  --text-soft: #5a5a6e;
+  --faint: #8a8a9c;
+  --border-strong: rgba(10, 10, 18, 0.15);
+  --accent-brand: #d42b40;
+  --accent-mid: #e0364c;
+  --accent-strong: #b81e32;
+  --accent-soft: rgba(212, 43, 64, 0.1);
+  --accent-glow: rgba(212, 43, 64, 0.22);
+  --hero-bg: #f4f4f8;
+  --hero-surface: rgba(255, 255, 255, 0.76);
+  --hero-glow: rgba(212, 43, 64, 0.12);
+  --cyan: #0369a1;
+  --success: #047857;
+  --shadow: 0 20px 70px rgba(10, 10, 18, 0.1);
+  --shadow-sm: 0 6px 20px rgba(10, 10, 18, 0.07);
+
+  /* ── shadcn / Tailwind CSS vars (light) ── */
+  --background: #f8f8fb;
+  --foreground: #08080e;
+  --card: #ffffff;
+  --card-foreground: #08080e;
+  --popover: #ffffff;
+  --popover-foreground: #08080e;
+  --primary: #d42b40;
+  --primary-foreground: #ffffff;
+  --secondary: #f2f2f6;
+  --secondary-foreground: #08080e;
+  --muted: #f0f0f5;
+  --muted-foreground: #5a5a6e;
+  --accent: #f0f0f5;
+  --accent-foreground: #08080e;
+  --destructive: #d42b40;
+  --border: rgba(10, 10, 18, 0.086);
+  --input: rgba(10, 10, 18, 0.06);
+  --ring: rgba(212, 43, 64, 0.4);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  color: var(--text);
+  background: var(--bg);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  overflow-x: hidden;
+}
+
+/* Grain noise texture */
+body::before,
+body::after {
+  content: none;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 5px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--faint);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-brand);
+}
+
+::selection {
+  background: var(--accent-soft);
+  color: var(--text);
+}
+
+a {
+  color: inherit;
+}
+
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button {
+  font: inherit;
+}
+
+h1,
+h2,
+h3,
+p,
+pre {
+  margin: 0;
+}
+
+h1,
+h2,
+h3 {
+  line-height: 1;
+  letter-spacing: -0.022em;
+}
+
+p {
+  color: var(--text-soft);
+  line-height: 1.7;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+button,
+a {
+  transition:
+    transform 180ms ease,
+    border-color 180ms ease,
+    background-color 180ms ease,
+    color 180ms ease,
+    box-shadow 180ms ease,
+    opacity 180ms ease;
+}
+
+button:focus-visible,
+a:focus-visible {
+  outline: 2px solid var(--accent-brand);
+  outline-offset: 3px;
+}
+
+@theme inline {
+  --font-display: var(--font-display);
+  --font-body: var(--font-body);
+  --font-mono: var(--font-mono);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+}
+
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  html {
+    @apply font-sans;
+  }
+}
