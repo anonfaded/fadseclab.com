@@ -115,7 +115,7 @@
 .hero-guardian-arm--flag {
   stroke: url(#hero-guardian-body);
   transform-box: fill-box;
-  transform-origin: 790px 143px;
+  transform-origin: 780px 143px;
 }
 
 .hero-guardian-leg {

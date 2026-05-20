@@ -12,7 +12,7 @@ const threats = [
 const shieldPath = 'M90 4 C118 12 146 18 168 30 L160 128 C154 178 126 214 90 238 C54 214 26 178 20 128 L12 30 C34 18 62 12 90 4Z';
 const shieldInsetPath = 'M90 12 C114 19 137 25 155 34 L149 124 C144 166 119 198 90 220 C61 198 36 166 31 124 L25 34 C43 25 66 19 90 12Z';
 const shieldCorePath = 'M90 0 C118 10 146 17 170 29 L162 130 C156 182 127 220 90 244 C53 220 24 182 18 130 L10 29 C34 17 62 10 90 0Z';
-const guardianBodyBase = 'M781 147 L768 190'; // Top moved down to eliminate neck bump
+const guardianBodyBase = 'M781 147 Q777 155 768 190'; // Curved top for smooth shoulder joint
 const guardianBodyHit = guardianBodyBase;
 const guardianShieldShoulder = { x: 780, y: 143 }; // Keep at original position
 const guardianShieldElbowBase = { x: 744, y: 166 };
@@ -493,7 +493,7 @@ export default function HeroShield() {
                     <path className="hero-guardian-hand hero-guardian-hand--shield" d="M694 171 C696 168 700 167 703 170 C702 175 698 176 695 174 Z" />
                     <HeldShield impactRef={shieldImpactRef} />
                   </g>
-                  <path className="hero-guardian-arm hero-guardian-arm--flag" d="M790 143 L832 136 L872 108" />
+                  <path className="hero-guardian-arm hero-guardian-arm--flag" d="M780 143 L825 130 L872 108" />
                     {/* place flag so its bottom-right aligns with palm center (872,108) */}
                     <image className="hero-held-flag" href={flagImg} x="736" y="7" width="180" height="135" preserveAspectRatio="xMidYMid meet" />
                     <ellipse className="hero-guardian-hand hero-guardian-hand--flag" cx="872" cy="108" rx="10" ry="8" />
