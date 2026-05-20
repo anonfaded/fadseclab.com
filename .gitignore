@@ -23,3 +23,7 @@ extras/
 *.njsproj
 *.sln
 *.sw?
+
+# playwright MCP
+output/
+.playwright-cli/

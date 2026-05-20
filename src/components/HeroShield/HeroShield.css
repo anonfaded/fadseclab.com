@@ -1,6 +1,6 @@
 .hero-defense {
   width: min(920px, calc(100vw - 28px));
-  height: clamp(210px, 23vw, 265px);
+  height: clamp(250px, 26vw, 320px);
   margin: 0 auto 14px;
   display: grid;
   place-items: center;
@@ -14,9 +14,150 @@
   overflow: visible;
 }
 
+.hero-shell-label {
+  fill: color-mix(in srgb, var(--text-soft) 74%, white 26%);
+  font-family: var(--font-mono);
+  font-size: 8.5px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
 .hero-defense-floor {
   fill: url(#hero-floor);
-  opacity: 0.8;
+  opacity: 0.56;
+}
+
+.hero-guardian {
+  transform-box: fill-box;
+}
+
+.hero-guardian-upper,
+.hero-guardian-headgroup {
+  transform-box: fill-box;
+}
+
+.hero-guardian-upper {
+  transform-origin: 772px 188px;
+  animation: guardian-breath 5.8s cubic-bezier(0.37, 0, 0.2, 1) infinite;
+}
+
+.hero-guardian-headgroup {
+  transform-origin: 782px 88px;
+}
+
+.hero-guardian-shadow {
+  fill: rgba(0, 0, 0, 0.28);
+}
+
+.hero-guardian-body {
+  fill: none;
+  stroke: url(#hero-guardian-body);
+  stroke-width: 23;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.hero-guardian-head {
+  fill: url(#hero-guardian-head);
+  stroke: #07080d;
+  stroke-width: 1.2;
+}
+
+.hero-guardian-head-ring {
+  fill: none;
+  stroke: rgba(0, 0, 0, 0.22);
+  stroke-width: 1;
+}
+
+.hero-guardian-eyes {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: guardian-blink 5.4s ease-in-out infinite;
+}
+
+.hero-eye-socket {
+  fill: #020307;
+}
+
+.hero-eyeball {
+  fill: var(--accent-brand);
+}
+
+.hero-guardian-brow,
+.hero-guardian-leg {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.hero-guardian-brow {
+  stroke: #030409;
+  stroke-width: 3.4;
+  opacity: 0.92;
+}
+
+.hero-guardian-arm {
+  fill: none;
+  stroke: #151720;
+  stroke-width: 12;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 1;
+}
+
+.hero-guardian-arm--flag {
+  stroke: #151720;
+}
+
+.hero-guardian-leg {
+  stroke: #151720;
+  stroke-width: 13;
+}
+
+.hero-guardian-leg--front {
+  stroke: #151720;
+}
+
+.hero-guardian-foot {
+  fill: none;
+  stroke: #151720;
+  stroke-width: 5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.hero-guardian-hand {
+  fill: #151720;
+  stroke: #07080d;
+  stroke-width: 1;
+}
+
+.hero-held-flag {
+  opacity: 1;
+  transform-box: fill-box;
+  transform-origin: 86% 86%;
+  animation: flag-brace 5.8s cubic-bezier(0.37, 0, 0.2, 1) infinite;
+  filter: drop-shadow(0 0 10px color-mix(in srgb, var(--accent-brand) 42%, transparent));
+}
+
+.hero-stage-wall,
+.hero-stage-floorlines {
+  fill: none;
+  stroke: color-mix(in srgb, var(--accent-brand) 24%, var(--border) 76%);
+  stroke-linecap: round;
+  pointer-events: none;
+}
+
+.hero-stage-wall {
+  opacity: 0.26;
+  stroke-width: 1;
+  stroke-dasharray: 10 12;
+}
+
+.hero-stage-floorlines {
+  opacity: 0.34;
+  stroke-width: 1.2;
 }
 
 .hero-launcher {
@@ -26,25 +167,23 @@
 }
 
 .hero-launcher-top {
-  fill: color-mix(in srgb, var(--surface-strong) 74%, var(--accent-brand) 8%);
-  stroke: color-mix(in srgb, var(--border) 80%, var(--accent-brand) 20%);
+  fill: color-mix(in srgb, var(--surface-strong) 68%, var(--accent-brand) 18%);
+  stroke: color-mix(in srgb, var(--border) 60%, var(--accent-brand) 40%);
 }
 
 .hero-launcher-front {
-  fill: color-mix(in srgb, var(--surface-strong) 78%, black 18%);
-  stroke: var(--border);
+  fill: color-mix(in srgb, var(--surface-strong) 74%, var(--accent-brand) 10%);
+  stroke: color-mix(in srgb, var(--border) 72%, var(--accent-brand) 28%);
 }
 
 .hero-launcher-side,
 .hero-launcher-leg {
-  fill: color-mix(in srgb, var(--surface-strong) 86%, black 18%);
-  stroke: var(--border);
+  fill: color-mix(in srgb, var(--surface-strong) 78%, black 12%);
+  stroke: color-mix(in srgb, var(--border) 76%, var(--accent-brand) 24%);
 }
 
 .hero-launcher-title,
-.hero-arrow-label,
-.hero-queued-arrow text,
-.hero-shield-caption {
+.hero-arrow-label {
   font-family: var(--font-mono);
   font-weight: 800;
   letter-spacing: 0.08em;
@@ -52,7 +191,7 @@
 }
 
 .hero-launcher-title {
-  fill: var(--text-soft);
+  fill: color-mix(in srgb, var(--text-soft) 82%, white 18%);
   font-size: 9px;
 }
 
@@ -68,12 +207,10 @@
   opacity: 0;
   animation: arrow-visibility 4.05s linear infinite;
   animation-delay: var(--delay);
-  filter: drop-shadow(0 0 8px color-mix(in srgb, var(--threat) 46%, transparent));
 }
 
 .hero-arrow-shaft,
-.hero-arrow-trail,
-.hero-queued-arrow line {
+.hero-arrow-trail {
   stroke: var(--threat);
   stroke-linecap: round;
 }
@@ -88,28 +225,12 @@
 }
 
 .hero-arrow-head,
-.hero-arrow-fin,
-.hero-queued-arrow path {
+.hero-arrow-fin {
   fill: var(--threat);
 }
 
 .hero-arrow-label {
   fill: var(--threat);
-  font-size: 9px;
-}
-
-.hero-queued-arrow {
-  opacity: 0.55;
-  animation: queued-pulse 4.05s ease-in-out infinite;
-  animation-delay: var(--delay);
-}
-
-.hero-queued-arrow line {
-  stroke-width: 2;
-}
-
-.hero-queued-arrow text {
-  fill: var(--text-soft);
   font-size: 9px;
 }
 
@@ -119,7 +240,7 @@
 }
 
 .hero-shield-hit {
-  transform-origin: 758px 150px;
+  transform-origin: 660px 150px;
 }
 
 .hero-shield-hit {
@@ -140,10 +261,26 @@
 
 .hero-shield-rig {
   transform-origin: 90px 120px;
-  animation: shield-idle 7s ease-in-out infinite;
-  filter:
-    drop-shadow(20px 22px 24px rgba(0, 0, 0, 0.35))
-    drop-shadow(0 0 36px color-mix(in srgb, var(--accent-brand) 30%, transparent));
+  animation: shield-idle 5.2s cubic-bezier(0.37, 0, 0.2, 1) infinite;
+}
+
+.hero-shield-halo {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0.9;
+}
+
+.hero-shield-halo--outer {
+  stroke: color-mix(in srgb, var(--accent-brand) 40%, transparent);
+  stroke-width: 1.2;
+  stroke-dasharray: 4 11;
+}
+
+.hero-shield-halo--inner {
+  stroke: color-mix(in srgb, white 34%, var(--accent-brand) 66%);
+  stroke-width: 2.1;
+  opacity: 0.5;
 }
 
 .hero-shield-body {
@@ -157,40 +294,85 @@
 }
 
 .hero-shield-depth {
-  fill: color-mix(in srgb, var(--accent-brand) 18%, black 78%);
-  transform: translate(10px, 10px);
-  opacity: 0.7;
+  fill: url(#hero-shield-side-grad);
+  opacity: 0.95;
+}
+
+.hero-shield-side {
+  fill: color-mix(in srgb, black 62%, var(--accent-brand) 38%);
+  filter: brightness(0.92);
 }
 
 .hero-shield-face {
-  fill: url(#hero-shield-face);
-  filter: url(#hero-shield-glow);
+  fill: url(#hero-shield-face-grad);
+}
+
+.hero-shield-highlight {
+  fill: url(#hero-shield-highlight-grad);
+  opacity: 0.38;
+  mix-blend-mode: screen;
+}
+
+.hero-shield-ridge {
+  fill: none;
+  stroke: color-mix(in srgb, white 24%, var(--accent-brand) 76%);
+  stroke-width: 1.35;
+  stroke-linecap: round;
+  opacity: 0.32;
+}
+
+.hero-shield-wire {
+  fill: none;
+  stroke: color-mix(in srgb, #ff9aa7 24%, var(--accent-brand) 76%);
+  stroke-width: 1.25;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0.24;
+}
+
+.hero-shield-wire path {
+  vector-effect: non-scaling-stroke;
+}
+
+.hero-shield-nodes circle {
+  fill: color-mix(in srgb, white 72%, var(--accent-brand) 28%);
+  opacity: 0.62;
+  animation: shield-node-hit 4.05s ease-out infinite;
+}
+
+.hero-shield-bolt {
+  fill: none;
+  stroke: color-mix(in srgb, white 58%, var(--accent-brand) 42%);
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 18 124;
+  opacity: 0;
+  animation: shield-wire-surge 4.05s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+}
+
+.hero-shield-bolt--one {
+  animation-delay: 0s;
+}
+
+.hero-shield-bolt--two {
+  animation-delay: 1.35s;
+}
+
+.hero-shield-bolt--three {
+  animation-delay: 2.7s;
 }
 
 .hero-shield-core {
   fill: url(#hero-shield-core);
+  opacity: 0.72;
 }
 
 .hero-shield-rim {
   fill: none;
-  stroke: color-mix(in srgb, var(--accent-brand) 76%, white 20%);
-  stroke-width: 4;
+  stroke: color-mix(in srgb, var(--accent-brand) 88%, #4a0814 12%);
+  stroke-width: 4.2;
   stroke-linejoin: round;
-}
-
-.hero-shield-mark {
-  fill: color-mix(in srgb, white 92%, var(--accent-brand) 8%);
-  font-family: var(--font-display);
-  font-size: 34px;
-  font-weight: 900;
-  letter-spacing: 0;
-  text-anchor: middle;
-}
-
-.hero-shield-caption {
-  fill: color-mix(in srgb, white 72%, var(--accent-brand) 28%);
-  font-size: 7.5px;
-  text-anchor: middle;
 }
 
 .hero-impact {
@@ -201,7 +383,6 @@
   stroke-linecap: round;
   transform-box: fill-box;
   transform-origin: center;
-  filter: drop-shadow(0 0 9px rgba(232, 51, 74, 0.55));
 }
 
 .hero-impact circle {
@@ -223,6 +404,52 @@
   animation-delay: 2.7s;
 }
 
+.hero-shockfield {
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: shock-burst 4.05s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+}
+
+.hero-shockfield--one {
+  animation-delay: 0s;
+}
+
+.hero-shockfield--two {
+  animation-delay: 1.35s;
+}
+
+.hero-shockfield--three {
+  animation-delay: 2.7s;
+}
+
+.hero-shockfield-web {
+  fill: none;
+  stroke: color-mix(in srgb, #ffd3d9 26%, var(--accent-brand) 74%);
+  stroke-width: 1.9;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+  stroke-dasharray: none;
+}
+
+.hero-shockfield-web--secondary {
+  opacity: 0.78;
+  stroke: color-mix(in srgb, #ffc0c8 20%, var(--accent-brand) 80%);
+}
+
+.hero-shockfield-bolt {
+  fill: none;
+  stroke: color-mix(in srgb, #ffe5e9 34%, var(--accent-brand) 66%);
+  stroke-width: 2.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 20 116;
+}
+
+.hero-shockfield-node {
+  fill: color-mix(in srgb, #ffe5e9 50%, var(--accent-brand) 50%);
+}
+
 @keyframes arrow-visibility {
   0%,
   10%,
@@ -232,53 +459,38 @@
   }
 
   18%,
-  74% {
+  77% {
     opacity: 1;
-  }
-}
-
-@keyframes queued-pulse {
-  0%,
-  16%,
-  100% {
-    opacity: 0.45;
-    transform: translateX(0);
-  }
-
-  26%,
-  38% {
-    opacity: 0.1;
-    transform: translateX(18px);
   }
 }
 
 @keyframes shield-idle {
   0%,
   100% {
-    transform: perspective(720px) rotateX(9deg) rotateY(-13deg) translateY(0);
+    transform: perspective(720px) rotateX(8deg) rotateY(-15deg) rotateZ(-0.5deg) translateY(0);
   }
 
   50% {
-    transform: perspective(720px) rotateX(4deg) rotateY(-6deg) translateY(-8px);
+    transform: perspective(720px) rotateX(7deg) rotateY(-13deg) rotateZ(0.7deg) translateY(-1px);
   }
 }
 
 @keyframes shield-hit {
   0%,
-  58%,
+  68%,
   100% {
     translate: 0 0;
   }
 
-  63% {
-    translate: 11px 0;
+  72% {
+    translate: 9px 0;
   }
 
-  66% {
-    translate: -5px 0;
+  75% {
+    translate: -4px 0;
   }
 
-  70% {
+  80% {
     translate: 2px 0;
   }
 }
@@ -286,72 +498,186 @@
 @keyframes shield-breathe {
   0%,
   100% {
-    scale: 0.99;
+    scale: 0.995;
   }
 
   50% {
-    scale: 1.02;
+    scale: 1.008;
   }
 }
 
 @keyframes impact-flash {
   0%,
-  57%,
+  68%,
   100% {
     opacity: 0;
     scale: 0.72;
   }
 
-  63% {
+  72% {
     opacity: 1;
     scale: 1.22;
   }
 
-  72% {
+  82% {
     opacity: 0;
     scale: 1.72;
   }
 }
 
+@keyframes shield-wire-surge {
+  0%,
+  68%,
+  100% {
+    opacity: 0;
+    stroke-dashoffset: 34;
+  }
+
+  72% {
+    opacity: 1;
+    stroke-dashoffset: 0;
+  }
+
+  78% {
+    opacity: 0.72;
+    stroke-dashoffset: -28;
+  }
+
+  84% {
+    opacity: 0;
+    stroke-dashoffset: -62;
+  }
+}
+
+@keyframes shield-node-hit {
+  0%,
+  3%,
+  9%,
+  36%,
+  42%,
+  68%,
+  78%,
+  100% {
+    opacity: 0.58;
+    scale: 1;
+  }
+
+  6%,
+  39%,
+  72% {
+    opacity: 1;
+    scale: 1.8;
+  }
+}
+
+@keyframes shock-burst {
+  0%,
+  68%,
+  100% {
+    opacity: 0;
+    translate: 0 0;
+    scale: 0.9;
+  }
+
+  72% {
+    opacity: 1;
+    scale: 1;
+  }
+
+  78% {
+    opacity: 0.72;
+    translate: 6px -2px;
+    scale: 1.06;
+  }
+
+  84% {
+    opacity: 0;
+    translate: 12px -4px;
+    scale: 1.12;
+  }
+}
+
+@keyframes guardian-breath {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-0.1deg) scale(1, 1);
+  }
+
+  50% {
+    transform: translateY(-0.12px) rotate(0.15deg) scale(1.001, 0.999);
+  }
+}
+
+@keyframes flag-brace {
+  0%,
+  100% {
+    transform: rotate(-0.45deg) translateY(0);
+  }
+
+  50% {
+    transform: rotate(0.6deg) translateY(-0.5px);
+  }
+}
+
+@keyframes guardian-blink {
+  0%,
+  46%,
+  52%,
+  100% {
+    scale: 1 1;
+  }
+
+  49% {
+    scale: 1 0.18;
+  }
+}
+
 [data-theme='light'] .hero-defense-floor {
-  opacity: 0.42;
+  opacity: 0.32;
+}
+
+[data-theme='light'] .hero-stage-wall {
+  opacity: 0.18;
+}
+
+[data-theme='light'] .hero-stage-floorlines {
+  opacity: 0.22;
 }
 
 [data-theme='light'] .hero-shield-shadow {
   fill: rgba(10, 10, 18, 0.12);
 }
 
-[data-theme='light'] .hero-launcher-top {
-  fill: color-mix(in srgb, white 86%, var(--accent-brand) 8%);
-}
-
-[data-theme='light'] .hero-launcher-front,
-[data-theme='light'] .hero-launcher-side,
-[data-theme='light'] .hero-launcher-leg {
-  fill: color-mix(in srgb, white 82%, var(--accent-brand) 4%);
-}
-
 @media (max-width: 780px) {
   .hero-defense {
     width: min(560px, calc(100vw - 12px));
-    height: 176px;
+    height: 226px;
     margin-bottom: 10px;
   }
 
   .hero-launcher-title,
-  .hero-queued-arrow text,
   .hero-arrow-label,
-  .hero-shield-caption {
+  .hero-shell-label {
     font-size: 11px;
+  }
+
+  .hero-held-flag {
+    opacity: 1;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .hero-shield-rig,
+  .hero-shield-hit,
   .hero-shield-body,
+  .hero-shield-bolt,
+  .hero-shield-nodes circle,
   .hero-arrow,
-  .hero-queued-arrow,
-  .hero-impact {
+  .hero-impact,
+  .hero-shockfield,
+  .hero-guardian-upper,
+  .hero-held-flag,
+  .hero-guardian-eyes {
     animation: none;
   }
 }
