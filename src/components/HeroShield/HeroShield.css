@@ -14,6 +14,16 @@
   overflow: visible;
 }
 
+.hero-cursor-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  width: 100vw;
+  height: 100vh;
+  overflow: visible;
+  pointer-events: none;
+}
+
 .hero-shell-label {
   fill: color-mix(in srgb, var(--text-soft) 74%, white 26%);
   font-family: var(--font-mono);
@@ -719,5 +729,67 @@
   .hero-held-flag,
   .hero-guardian-eyes {
     animation: none;
+  }
+}
+
+/* Custom Crosshair Cursor */
+.hero-custom-cursor {
+  user-select: none;
+}
+
+.hero-cursor-smoke,
+.hero-cursor-smoke-cloud,
+.hero-cursor-reticle,
+.hero-cursor-charge-ring,
+.hero-cursor-shot-ring,
+.hero-cursor-h,
+.hero-cursor-v,
+.hero-cursor-center {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.hero-cursor-smoke {
+  opacity: 0;
+  will-change: transform, opacity, filter;
+}
+
+.hero-cursor-smoke-cloud {
+  paint-order: fill stroke markers;
+  filter: saturate(1.2);
+}
+
+.hero-cursor-reticle {
+  will-change: transform;
+}
+
+.hero-cursor-charge-ring {
+  filter: drop-shadow(0 0 7px rgba(255, 63, 87, 0.62));
+  will-change: r, opacity;
+}
+
+.hero-cursor-shot-ring {
+  filter: drop-shadow(0 0 10px rgba(255, 63, 87, 0.72));
+  mix-blend-mode: screen;
+  will-change: r, opacity;
+}
+
+.hero-cursor-h,
+.hero-cursor-v {
+  opacity: 0.96;
+  filter: drop-shadow(0 0 4px rgba(255, 63, 87, 0.68));
+  stroke-linecap: round;
+}
+
+.hero-cursor-center {
+  filter: drop-shadow(0 0 6px rgba(255, 63, 87, 0.84));
+  will-change: r, opacity;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-cursor-smoke,
+  .hero-cursor-charge-ring,
+  .hero-cursor-shot-ring {
+    display: none;
   }
 }

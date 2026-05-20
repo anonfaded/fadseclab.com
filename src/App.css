@@ -134,6 +134,17 @@ main {
   cursor: var(--hero-crosshair-cursor), crosshair;
 }
 
+@media (pointer: fine) {
+  .hero-section {
+    cursor: none;
+  }
+
+  .hero-actions a,
+  .hero-actions button {
+    cursor: pointer;
+  }
+}
+
 .hero-section::before {
   content: '';
   position: absolute;

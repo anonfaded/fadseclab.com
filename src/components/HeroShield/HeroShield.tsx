@@ -1,6 +1,7 @@
 import flagImg from '../../assets/images/fadseclab_flag.png';
 import './HeroShield.css';
 import { useCallback, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import type { CSSProperties, RefObject } from 'react';
 
 const threats = [
@@ -51,25 +52,6 @@ function pathBetween(start: { x: number; y: number }, end: { x: number; y: numbe
   return `M${start.x.toFixed(2)} ${start.y.toFixed(2)} L${end.x.toFixed(2)} ${end.y.toFixed(2)}`;
 }
 
-function rotateAround(point: { x: number; y: number }, pivot: { x: number; y: number }, degrees: number) {
-  const radians = (degrees * Math.PI) / 180;
-  const cos = Math.cos(radians);
-  const sin = Math.sin(radians);
-  const dx = point.x - pivot.x;
-  const dy = point.y - pivot.y;
-
-  return {
-    x: pivot.x + dx * cos - dy * sin,
-    y: pivot.y + dx * sin + dy * cos,
-  };
-}
-
-function angleBetween(start: { x: number; y: number }, end: { x: number; y: number }) {
-  const dx = end.x - start.x;
-  const dy = end.y - start.y;
-  return (Math.atan2(dy, dx) * 180) / Math.PI;
-}
-
 function ThreatArrow({ label, delay, color, path, id }: (typeof threats)[number]) {
   return (
     <g className="hero-threat" style={{ '--delay': delay, '--threat': color } as CSSProperties}>
@@ -103,6 +85,14 @@ function ShockBurst({ className, delay }: { className: string; delay: string }) 
 function emitHeroHit(hitId: number) {
   window.dispatchEvent(new CustomEvent('fadsec:hero-hit', { detail: { hitId } }));
 }
+
+const cursorSmokeConfigs = [
+  { radiusX: 10.2, radiusY: 6.2, blur: 3.8, driftX: 0.15, driftY: 0.35 },
+  { radiusX: 13.6, radiusY: 8.6, blur: 5.1, driftX: 0.35, driftY: 0.7 },
+  { radiusX: 17.8, radiusY: 11.6, blur: 6.6, driftX: 0.55, driftY: 1.1 },
+  { radiusX: 22.2, radiusY: 14.6, blur: 8.2, driftX: 0.8, driftY: 1.55 },
+  { radiusX: 27, radiusY: 18, blur: 9.8, driftX: 1, driftY: 2 },
+] as const;
 
 function HeldShield({ impactRef }: { impactRef: RefObject<SVGGElement | null> }) {
   return (
@@ -177,6 +167,12 @@ function GuardianFace({ leftEyeRef, rightEyeRef }: { leftEyeRef: RefObject<SVGCi
 
 export default function HeroShield() {
   const svgRef = useRef<SVGSVGElement>(null);
+  const cursorGroupRef = useRef<SVGGElement>(null);
+  const cursorReticleRef = useRef<SVGGElement>(null);
+  const cursorCentreRef = useRef<SVGCircleElement>(null);
+  const cursorChargeRingRef = useRef<SVGCircleElement>(null);
+  const cursorShotRingRef = useRef<SVGCircleElement>(null);
+  const cursorSmokeRefs = useRef<(SVGGElement | null)[]>([]);
   const leftEyeRef = useRef<SVGCircleElement>(null);
   const rightEyeRef = useRef<SVGCircleElement>(null);
   const shieldImpactRef = useRef<SVGGElement>(null);
@@ -192,6 +188,16 @@ export default function HeroShield() {
   const impactFrameRef = useRef<number | null>(null);
   const eyeFrameRef = useRef<number | null>(null);
   const eyeLastTimeRef = useRef<number | null>(null);
+  const cursorFrameRef = useRef<number | null>(null);
+  const cursorStateRef = useRef({
+    press: 0,
+    scale: 1,
+    scaleVelocity: 0,
+    targetScale: 1,
+    isHolding: false,
+    shotPulse: 0,
+    isVisible: false,
+  });
   const eyeMotionRef = useRef([
     { ref: leftEyeRef, origin: { x: 762, y: 48 }, current: { x: 762, y: 48 }, velocity: { x: 0, y: 0 }, target: { x: 762, y: 48 } },
     { ref: rightEyeRef, origin: { x: 786, y: 48 }, current: { x: 786, y: 48 }, velocity: { x: 0, y: 0 }, target: { x: 786, y: 48 } },
@@ -233,8 +239,8 @@ export default function HeroShield() {
     const step = (startTime: number) => {
       const tick = (time: number) => {
         const progress = Math.min(1, (time - startTime) / duration);
-        let absorb = 0;
-        let shieldX = 0;
+        let absorb: number;
+        let shieldX: number;
 
         if (progress < 0.42) {
           const phase = easeOut(progress / 0.42);
@@ -373,41 +379,189 @@ export default function HeroShield() {
   }, [playImpact]);
 
   useEffect(() => {
-    let pointerFrame = 0;
-    let nextX = window.innerWidth / 2;
-    let nextY = window.innerHeight / 2;
-
-    const handleMouseMove = (event: MouseEvent) => {
-      nextX = event.clientX;
-      nextY = event.clientY;
-
-      if (pointerFrame) return;
-      pointerFrame = window.requestAnimationFrame(() => {
-        updateEyeState(nextX, nextY);
-        pointerFrame = 0;
-      });
-    };
-
-    updateEyeState(window.innerWidth / 2, window.innerHeight / 2);
-    if (!window.matchMedia('(pointer: fine)').matches) {
+    const heroSection = svgRef.current?.closest<HTMLElement>('.hero-section');
+    const motionReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (!heroSection || !window.matchMedia('(pointer: fine)').matches) {
       return undefined;
     }
 
-    window.addEventListener('mousemove', handleMouseMove);
+    const setCursorPosition = (clientX: number, clientY: number) => {
+      if (cursorGroupRef.current) {
+        cursorGroupRef.current.setAttribute('transform', `translate(${clientX} ${clientY})`);
+      }
+    };
+
+    const showCursor = (event: PointerEvent) => {
+      cursorStateRef.current.isVisible = true;
+      cursorGroupRef.current?.setAttribute('opacity', '1');
+      setCursorPosition(event.clientX, event.clientY);
+      updateEyeState(event.clientX, event.clientY);
+    };
+
+    const hideCursor = () => {
+      cursorStateRef.current.isVisible = false;
+      cursorStateRef.current.isHolding = false;
+      cursorStateRef.current.targetScale = 1;
+      cursorGroupRef.current?.setAttribute('opacity', '0');
+    };
+
+    const handlePointerMove = (event: PointerEvent) => {
+      if (!cursorStateRef.current.isVisible) {
+        cursorStateRef.current.isVisible = true;
+        cursorGroupRef.current?.setAttribute('opacity', '1');
+      }
+      setCursorPosition(event.clientX, event.clientY);
+      updateEyeState(event.clientX, event.clientY);
+    };
+
+    const handlePointerDown = () => {
+      if (!cursorStateRef.current.isVisible) return;
+      cursorStateRef.current.isHolding = true;
+      cursorStateRef.current.targetScale = 0.68;
+      cursorStateRef.current.scaleVelocity = Math.min(cursorStateRef.current.scaleVelocity, -4);
+      cursorStateRef.current.press = 1;
+      cursorStateRef.current.shotPulse = 0;
+    };
+
+    const handlePointerUp = () => {
+      if (!cursorStateRef.current.isHolding) return;
+      cursorStateRef.current.isHolding = false;
+      cursorStateRef.current.targetScale = 1;
+      cursorStateRef.current.scaleVelocity = Math.max(cursorStateRef.current.scaleVelocity, 5.8);
+      cursorStateRef.current.press = 0.75;
+      cursorStateRef.current.shotPulse = 1;
+    };
+
+    const renderCursor = () => {
+      const state = cursorStateRef.current;
+      const dt = 1 / 60;
+      state.press = state.isHolding ? Math.min(1, state.press + dt * 8.5) : Math.max(0, state.press - dt * 4.4);
+      state.targetScale = state.isHolding ? 0.68 : 1;
+
+      const scaleStiffness = 34;
+      const scaleDamping = state.isHolding ? 11 : 8;
+      const scaleAccel = (state.targetScale - state.scale) * scaleStiffness;
+      state.scaleVelocity = (state.scaleVelocity + scaleAccel * dt) * Math.exp(-scaleDamping * dt);
+      state.scale += state.scaleVelocity * dt;
+      state.scale = Math.max(0.64, Math.min(1.16, state.scale));
+      state.shotPulse = Math.max(0, state.shotPulse - dt * 4.2);
+
+      const reticleScale = state.scale + state.shotPulse * 0.08;
+      const centerRadius = 2.4 + state.press * 0.45;
+      const chargeRadius = 8 + state.press * 5;
+      const chargeOpacity = state.isHolding ? 0.18 + state.press * 0.42 : Math.max(0, state.press - 0.35) * 0.18;
+      const shotProgress = 1 - state.shotPulse;
+      const shotRadius = 10 + shotProgress * 16;
+      const shotOpacity = state.shotPulse * 0.55;
+      const smokeOpacity = state.isVisible && !motionReduced ? 0.1 + state.press * 0.18 + shotOpacity * 0.22 : 0;
+
+      cursorReticleRef.current?.setAttribute('transform', `scale(${reticleScale.toFixed(3)})`);
+      cursorCentreRef.current?.setAttribute('r', centerRadius.toFixed(2));
+      cursorCentreRef.current?.setAttribute('opacity', (0.9 + state.press * 0.08).toFixed(2));
+      cursorChargeRingRef.current?.setAttribute('r', chargeRadius.toFixed(2));
+      cursorChargeRingRef.current?.setAttribute('opacity', chargeOpacity.toFixed(2));
+      cursorShotRingRef.current?.setAttribute('r', shotRadius.toFixed(2));
+      cursorShotRingRef.current?.setAttribute('opacity', shotOpacity.toFixed(2));
+
+      cursorSmokeConfigs.forEach((config, index) => {
+        const smoke = cursorSmokeRefs.current[index];
+        if (!smoke) return;
+
+        const opacity = smokeOpacity * Math.max(0.15, 1 - index * 0.18);
+        const scale = 0.7 + state.press * 0.25 + shotOpacity * 0.35 + index * 0.04;
+
+        smoke.setAttribute('transform', `translate(${(-index * config.driftX).toFixed(2)} ${(-config.driftY - index * 1.3).toFixed(2)}) scale(${scale.toFixed(3)})`);
+        smoke.setAttribute('opacity', opacity.toFixed(2));
+        smoke.style.filter = `blur(${config.blur.toFixed(2)}px)`;
+      });
+
+      if (motionReduced) {
+        cursorSmokeConfigs.forEach((_, index) => {
+          const smoke = cursorSmokeRefs.current[index];
+          if (smoke) {
+            smoke.setAttribute('opacity', '0');
+          }
+        });
+        cursorChargeRingRef.current?.setAttribute('opacity', '0');
+        cursorShotRingRef.current?.setAttribute('opacity', '0');
+      }
+
+      cursorFrameRef.current = window.requestAnimationFrame(renderCursor);
+    };
+
+    heroSection.addEventListener('pointerenter', showCursor);
+    heroSection.addEventListener('pointerleave', hideCursor);
+    heroSection.addEventListener('pointermove', handlePointerMove);
+    heroSection.addEventListener('pointerdown', handlePointerDown);
+    window.addEventListener('pointerup', handlePointerUp);
+    cursorFrameRef.current = window.requestAnimationFrame(renderCursor);
+
     return () => {
-      if (pointerFrame) {
-        window.cancelAnimationFrame(pointerFrame);
+      if (cursorFrameRef.current) {
+        window.cancelAnimationFrame(cursorFrameRef.current);
+        cursorFrameRef.current = null;
       }
       if (eyeFrameRef.current) {
         window.cancelAnimationFrame(eyeFrameRef.current);
         eyeFrameRef.current = null;
       }
-      window.removeEventListener('mousemove', handleMouseMove);
+      heroSection.removeEventListener('pointerenter', showCursor);
+      heroSection.removeEventListener('pointerleave', hideCursor);
+      heroSection.removeEventListener('pointermove', handlePointerMove);
+      heroSection.removeEventListener('pointerdown', handlePointerDown);
+      window.removeEventListener('pointerup', handlePointerUp);
     };
   }, [updateEyeState]);
 
+  const cursorOverlay = (
+    <svg className="hero-cursor-overlay" aria-hidden="true">
+      <g ref={cursorGroupRef} className="hero-custom-cursor" opacity="0" pointerEvents="none">
+        {cursorSmokeConfigs.map((config, index) => (
+          <g
+            key={`cursor-smoke-${index}`}
+            ref={(node) => {
+              cursorSmokeRefs.current[index] = node;
+            }}
+            className="hero-cursor-smoke"
+            opacity={0}
+          >
+            <ellipse
+              data-smoke-shape
+              className="hero-cursor-smoke-cloud"
+              cx="0"
+              cy="0"
+              rx={config.radiusX}
+              ry={config.radiusY}
+              fill="rgba(255, 63, 87, 0.34)"
+              stroke="rgba(255, 178, 188, 0.18)"
+              strokeWidth="0.6"
+              vectorEffect="non-scaling-stroke"
+            />
+            <ellipse
+              data-smoke-shape
+              className="hero-cursor-smoke-cloud hero-cursor-smoke-cloud--inner"
+              cx="0"
+              cy="0"
+              rx={config.radiusX * 0.55}
+              ry={config.radiusY * 0.55}
+              fill="rgba(255, 202, 208, 0.22)"
+            />
+          </g>
+        ))}
+        <circle ref={cursorShotRingRef} className="hero-cursor-shot-ring" cx="0" cy="0" r="11" fill="none" stroke="rgba(255, 63, 87, 0.72)" strokeWidth="1.4" opacity="0" vectorEffect="non-scaling-stroke" />
+        <g ref={cursorReticleRef} className="hero-cursor-reticle">
+          <circle ref={cursorChargeRingRef} className="hero-cursor-charge-ring" cx="0" cy="0" r="9.5" fill="rgba(255, 63, 87, 0.08)" stroke="rgba(255, 63, 87, 0.72)" strokeWidth="1.2" opacity="0" vectorEffect="non-scaling-stroke" />
+          <line className="hero-cursor-h" x1="-12" y1="0" x2="12" y2="0" stroke="rgba(255, 63, 87, 0.94)" strokeWidth="1.3" vectorEffect="non-scaling-stroke" />
+          <line className="hero-cursor-v" x1="0" y1="-12" x2="0" y2="12" stroke="rgba(255, 63, 87, 0.94)" strokeWidth="1.3" vectorEffect="non-scaling-stroke" />
+          <circle ref={cursorCentreRef} className="hero-cursor-center" cx="0" cy="0" r="2.4" fill="rgba(255, 63, 87, 0.98)" />
+        </g>
+      </g>
+    </svg>
+  );
+
   return (
-    <div className="hero-defense" aria-label="FadSec Lab blocks trackers, spyware, and data brokers before they reach users">
+    <>
+      <div className="hero-defense" aria-label="FadSec Lab blocks trackers, spyware, and data brokers before they reach users">
       <svg ref={svgRef} className="hero-defense-svg" viewBox="0 0 900 300" role="img" focusable="false">
         <defs>
           <radialGradient id="hero-guardian-head" cx="34%" cy="26%" r="70%">
@@ -509,6 +663,8 @@ export default function HeroShield() {
         <ShockBurst className="hero-shield-hit hero-shield-hit--two hero-shockfield hero-shockfield--two" delay="1.35s" />
         <ShockBurst className="hero-shield-hit hero-shield-hit--three hero-shockfield hero-shockfield--three" delay="2.7s" />
       </svg>
-    </div>
+      </div>
+      {createPortal(cursorOverlay, document.body)}
+    </>
   );
 }
