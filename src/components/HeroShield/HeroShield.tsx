@@ -20,13 +20,13 @@ const guardianShieldElbowHit = { x: 752, y: 168 }; // Elbow nudges right + sligh
 const guardianShieldHandBase = { x: 706, y: 176 };
 const guardianShieldHandHit = { x: 722, y: 176 }; // Hand recoils RIGHT only — pure horizontal, same Y = no up/down
 const guardianBackHip = { x: 768, y: 188 };
-const guardianBackKneeBase = { x: 729, y: 224 };
+const guardianBackKneeBase = { x: 726, y: 216 }; // Centered midpoint + forward offset → equal upper/lower segments ≈50 each
 const guardianBackKneeHit = guardianBackKneeBase;
-const guardianBackFootBase = { x: 700, y: 254 };
+const guardianBackFootBase = { x: 710, y: 258 };
 const guardianFrontHip = { x: 768, y: 188 };
-const guardianFrontKneeBase = { x: 814, y: 220 };
+const guardianFrontKneeBase = { x: 790, y: 224 }; // Test: bend more toward left/shield side
 const guardianFrontKneeHit = guardianFrontKneeBase;
-const guardianFrontFootBase = { x: 844, y: 254 };
+const guardianFrontFootBase = { x: 830, y: 254 }; // Lower leg points left/inward like the back leg
 
 function interpolatePath(base: string, target: string, amount: number) {
   const targetNumbers = target.match(/-?\d+(?:\.\d+)?/g)?.map(Number) ?? [];
@@ -493,7 +493,7 @@ export default function HeroShield() {
                     <path className="hero-guardian-hand hero-guardian-hand--shield" d="M694 171 C696 168 700 167 703 170 C702 175 698 176 695 174 Z" />
                     <HeldShield impactRef={shieldImpactRef} />
                   </g>
-                  <path className="hero-guardian-arm hero-guardian-arm--flag" d="M790 143 L836 126 L872 108" />
+                  <path className="hero-guardian-arm hero-guardian-arm--flag" d="M790 143 L832 136 L872 108" />
                     {/* place flag so its bottom-right aligns with palm center (872,108) */}
                     <image className="hero-held-flag" href={flagImg} x="736" y="7" width="180" height="135" preserveAspectRatio="xMidYMid meet" />
                     <ellipse className="hero-guardian-hand hero-guardian-hand--flag" cx="872" cy="108" rx="10" ry="8" />
