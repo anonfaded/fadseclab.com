@@ -94,41 +94,113 @@ function GuardianFace({ leftEyeRef, rightEyeRef }: { leftEyeRef: RefObject<SVGCi
     <g className="hero-guardian-headgroup" transform="translate(0 32)">
       <circle className="hero-guardian-head" cx="782" cy="50" r="42" />
       <path className="hero-guardian-head-ring" d="M742 50 C742 24 762 8 782 8 C804 8 822 24 822 50 C822 76 804 92 782 92 C762 92 742 76 742 50Z" />
-      <path className="hero-guardian-brow" d="M754 35 L771 41 M779 40 L799 34" />
       <g className="hero-guardian-eyes">
         <path className="hero-eye-socket hero-eye-socket--near" d="M754 43 H772 C772 57 754 57 754 43Z" />
-        <path className="hero-eye-socket hero-eye-socket--far" d="M780 42 H798 C798 55 780 55 780 42Z" />
-        <circle ref={leftEyeRef} className="hero-eyeball" cx="762" cy="48" r="4.2" />
-        <circle ref={rightEyeRef} className="hero-eyeball" cx="786" cy="47" r="3.6" />
+        <path className="hero-eye-socket hero-eye-socket--far" d="M780 43 H798 C798 57 780 57 780 43Z" />
+        <g clipPath="url(#hero-eye-clip)">
+          <circle ref={leftEyeRef} className="hero-eyeball" cx="762" cy="48" r="4.1" />
+          <circle ref={rightEyeRef} className="hero-eyeball" cx="786" cy="48" r="4.1" />
+        </g>
       </g>
     </g>
   );
 }
 
 export default function HeroShield() {
+  const svgRef = useRef<SVGSVGElement>(null);
   const leftEyeRef = useRef<SVGCircleElement>(null);
   const rightEyeRef = useRef<SVGCircleElement>(null);
+  const eyeFrameRef = useRef<number | null>(null);
+  const eyeLastTimeRef = useRef<number | null>(null);
+  const eyeMotionRef = useRef([
+    { ref: leftEyeRef, origin: { x: 762, y: 48 }, current: { x: 762, y: 48 }, velocity: { x: 0, y: 0 }, target: { x: 762, y: 48 } },
+    { ref: rightEyeRef, origin: { x: 786, y: 48 }, current: { x: 786, y: 48 }, velocity: { x: 0, y: 0 }, target: { x: 786, y: 48 } },
+  ]);
 
-  const updateEyeState = useCallback((targetX: number, targetY: number) => {
-    [
-      { ref: leftEyeRef, origin: { x: 762, y: 48 } },
-      { ref: rightEyeRef, origin: { x: 786, y: 47 } },
-    ].forEach(({ ref, origin }) => {
-      if (!ref.current) return;
+  const updateEyeState = useCallback((clientX: number, clientY: number) => {
+    const svg = svgRef.current;
+    const screenCTM = svg?.getScreenCTM();
+    const localTarget = (() => {
+      if (!svg || !screenCTM) return null;
 
-      const rect = ref.current.getBoundingClientRect();
-      const centerX = rect.left + rect.width / 2;
-      const centerY = rect.top + rect.height / 2;
-      const angle = Math.atan2(targetY - centerY, targetX - centerX);
-      const distance = Math.min(3.4, Math.hypot(targetX - centerX, targetY - centerY) / 32);
+      const point = svg.createSVGPoint();
+      point.x = clientX;
+      point.y = clientY;
 
-      ref.current.setAttribute('cx', String(origin.x + Math.cos(angle) * distance));
-      ref.current.setAttribute('cy', String(origin.y + Math.sin(angle) * distance));
+      return point.matrixTransform(screenCTM.inverse());
+    })();
+
+    if (!localTarget) return;
+
+    eyeMotionRef.current.forEach((eye) => {
+      const dx = localTarget.x - eye.origin.x;
+      const dy = localTarget.y - eye.origin.y;
+      const angle = Math.atan2(dy, dx);
+      const distance = Math.min(3.0, Math.hypot(dx, dy) / 30);
+
+      eye.target.x = eye.origin.x + Math.cos(angle) * distance;
+      eye.target.y = eye.origin.y + Math.sin(angle) * distance;
     });
+
+    if (eyeFrameRef.current) return;
+
+    const step = (time: number) => {
+      const lastTime = eyeLastTimeRef.current ?? time;
+      eyeLastTimeRef.current = time;
+      const dt = Math.min(0.032, Math.max(0.001, (time - lastTime) / 1000));
+      const stiffness = 280;
+      const damping = 24;
+      const maxOffset = 3.0;
+      let stillMoving = false;
+
+      eyeMotionRef.current.forEach((eye) => {
+        const accelX = (eye.target.x - eye.current.x) * stiffness;
+        const accelY = (eye.target.y - eye.current.y) * stiffness;
+
+        eye.velocity.x = (eye.velocity.x + accelX * dt) * Math.exp(-damping * dt);
+        eye.velocity.y = (eye.velocity.y + accelY * dt) * Math.exp(-damping * dt);
+        eye.current.x += eye.velocity.x * dt;
+        eye.current.y += eye.velocity.y * dt;
+
+        const offsetX = eye.current.x - eye.origin.x;
+        const offsetY = eye.current.y - eye.origin.y;
+        const offsetDistance = Math.hypot(offsetX, offsetY);
+        if (offsetDistance > maxOffset) {
+          const scale = maxOffset / offsetDistance;
+          eye.current.x = eye.origin.x + offsetX * scale;
+          eye.current.y = eye.origin.y + offsetY * scale;
+
+          const remainingX = eye.current.x - eye.origin.x;
+          const remainingY = eye.current.y - eye.origin.y;
+          if (remainingX * eye.velocity.x + remainingY * eye.velocity.y > 0) {
+            eye.velocity.x *= 0.25;
+            eye.velocity.y *= 0.25;
+          }
+        }
+
+        if (eye.ref.current) {
+          eye.ref.current.setAttribute('cx', String(eye.current.x));
+          eye.ref.current.setAttribute('cy', String(eye.current.y));
+        }
+
+        if (Math.abs(eye.target.x - eye.current.x) > 0.02 || Math.abs(eye.target.y - eye.current.y) > 0.02) {
+          stillMoving = true;
+        }
+      });
+
+      if (stillMoving) {
+        eyeFrameRef.current = window.requestAnimationFrame(step);
+      } else {
+        eyeFrameRef.current = null;
+        eyeLastTimeRef.current = null;
+      }
+    };
+
+    eyeFrameRef.current = window.requestAnimationFrame(step);
   }, []);
 
   useEffect(() => {
-    let animationFrame = 0;
+    let pointerFrame = 0;
     let nextX = window.innerWidth / 2;
     let nextY = window.innerHeight / 2;
 
@@ -136,10 +208,10 @@ export default function HeroShield() {
       nextX = event.clientX;
       nextY = event.clientY;
 
-      if (animationFrame) return;
-      animationFrame = window.requestAnimationFrame(() => {
+      if (pointerFrame) return;
+      pointerFrame = window.requestAnimationFrame(() => {
         updateEyeState(nextX, nextY);
-        animationFrame = 0;
+        pointerFrame = 0;
       });
     };
 
@@ -150,8 +222,12 @@ export default function HeroShield() {
 
     window.addEventListener('mousemove', handleMouseMove);
     return () => {
-      if (animationFrame) {
-        window.cancelAnimationFrame(animationFrame);
+      if (pointerFrame) {
+        window.cancelAnimationFrame(pointerFrame);
+      }
+      if (eyeFrameRef.current) {
+        window.cancelAnimationFrame(eyeFrameRef.current);
+        eyeFrameRef.current = null;
       }
       window.removeEventListener('mousemove', handleMouseMove);
     };
@@ -159,17 +235,17 @@ export default function HeroShield() {
 
   return (
     <div className="hero-defense" aria-label="FadSec Lab blocks trackers, spyware, and data brokers before they reach users">
-      <svg className="hero-defense-svg" viewBox="0 0 900 300" role="img" focusable="false">
+      <svg ref={svgRef} className="hero-defense-svg" viewBox="0 0 900 300" role="img" focusable="false">
         <defs>
           <radialGradient id="hero-guardian-head" cx="34%" cy="26%" r="70%">
-            <stop offset="0%" stopColor="rgba(33,35,45,1)" />
-            <stop offset="46%" stopColor="rgba(22,24,32,1)" />
-            <stop offset="100%" stopColor="rgba(7,7,10,1)" />
+            <stop offset="0%" stopColor="rgba(58,64,77,1)" />
+            <stop offset="44%" stopColor="rgba(36,41,52,1)" />
+            <stop offset="100%" stopColor="rgba(15,18,25,1)" />
           </radialGradient>
-          <linearGradient id="hero-guardian-body" x1="0" x2="1" y1="0" y2="1">
-            <stop offset="0%" stopColor="rgba(25,27,36,1)" />
-            <stop offset="48%" stopColor="rgba(18,20,28,1)" />
-            <stop offset="100%" stopColor="rgba(7,7,10,1)" />
+          <linearGradient id="hero-guardian-body" x1="744" y1="136" x2="812" y2="238" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stopColor="rgba(46,51,62,1)" />
+            <stop offset="44%" stopColor="rgba(26,31,40,1)" />
+            <stop offset="100%" stopColor="rgba(11,13,18,1)" />
           </linearGradient>
           <linearGradient id="hero-shield-face-grad" x1="0" x2="1" y1="0" y2="1">
             <stop offset="0%" stopColor="rgba(219,68,86,0.98)" />
@@ -214,6 +290,10 @@ export default function HeroShield() {
           <clipPath id="hero-shield-clip">
             <path d={shieldCorePath} />
           </clipPath>
+          <clipPath id="hero-eye-clip">
+            <path d="M754 43 H772 C772 57 754 57 754 43Z" />
+            <path d="M780 43 H798 C798 57 780 57 780 43Z" />
+          </clipPath>
         </defs>
 
         <ellipse className="hero-defense-floor" cx="520" cy="254" rx="350" ry="24" />
@@ -224,17 +304,18 @@ export default function HeroShield() {
 
         <g className="hero-guardian">
           <ellipse className="hero-guardian-shadow" cx="760" cy="260" rx="118" ry="20" />
+          <GuardianLegs />
           <g className="hero-guardian-upper" transform="translate(-10 2)">
-            <path className="hero-guardian-body" d="M781 142 C776 158 772 174 768 190" />
-                <path className="hero-guardian-arm hero-guardian-arm--shield" d="M768 146 C742 150 718 158 690 168" />
+            <path className="hero-guardian-arm hero-guardian-arm--shield" d="M768 146 C742 150 718 158 690 168" />
             <path className="hero-guardian-hand hero-guardian-hand--shield" d="M696 172 C697 171 698 171 699 172 C698 173 698 174 697 174 C696 174 695 173 696 172Z" />
             <HeldShield />
             <path className="hero-guardian-arm hero-guardian-arm--flag" d="M790 146 C818 150 848 134 872 108" />
-            <image className="hero-held-flag" href={flagImg} x="748" y="8" width="176" height="132" preserveAspectRatio="xMidYMid meet" />
+              {/* place flag so its bottom-right aligns with palm center (872,108) */}
+              <image className="hero-held-flag" href={flagImg} x="736" y="7" width="180" height="135" preserveAspectRatio="xMidYMid meet" />
+              <ellipse className="hero-guardian-hand hero-guardian-hand--flag" cx="872" cy="108" rx="10" ry="8" />
+            <path className="hero-guardian-body" d="M781 142 C776 158 772 174 768 190" />
             <GuardianFace leftEyeRef={leftEyeRef} rightEyeRef={rightEyeRef} />
-            <path className="hero-guardian-hand hero-guardian-hand--flag" d="M868 98 C878 88 892 90 900 102 C898 114 886 122 874 122 C866 114 864 106 868 98Z" />
           </g>
-          <GuardianLegs />
         </g>
 
         <ShockBurst className="hero-shield-hit hero-shield-hit--one hero-shockfield hero-shockfield--one" delay="0s" />

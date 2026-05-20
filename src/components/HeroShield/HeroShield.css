@@ -47,7 +47,7 @@
 }
 
 .hero-guardian-shadow {
-  fill: rgba(0, 0, 0, 0.28);
+  fill: rgba(0, 0, 0, 0.22);
 }
 
 .hero-guardian-body {
@@ -60,13 +60,13 @@
 
 .hero-guardian-head {
   fill: url(#hero-guardian-head);
-  stroke: #07080d;
+  stroke: #202739;
   stroke-width: 1.2;
 }
 
 .hero-guardian-head-ring {
   fill: none;
-  stroke: rgba(0, 0, 0, 0.22);
+  stroke: rgba(18, 22, 30, 0.28);
   stroke-width: 1;
 }
 
@@ -77,29 +77,26 @@
 }
 
 .hero-eye-socket {
-  fill: #020307;
+  fill: #0d1118;
 }
 
 .hero-eyeball {
-  fill: var(--accent-brand);
+  fill: #ff3f57;
+  filter:
+    drop-shadow(0 0 1.5px rgba(255, 63, 87, 0.98))
+    drop-shadow(0 0 5px rgba(255, 63, 87, 0.62))
+    drop-shadow(0 0 9px rgba(255, 63, 87, 0.28));
 }
 
-.hero-guardian-brow,
 .hero-guardian-leg {
   fill: none;
   stroke-linecap: round;
   stroke-linejoin: round;
 }
 
-.hero-guardian-brow {
-  stroke: #030409;
-  stroke-width: 3.4;
-  opacity: 0.92;
-}
-
 .hero-guardian-arm {
   fill: none;
-  stroke: #151720;
+  stroke: url(#hero-guardian-body);
   stroke-width: 13;
   stroke-linecap: round;
   stroke-linejoin: round;
@@ -107,29 +104,29 @@
 }
 
 .hero-guardian-arm--flag {
-  stroke: #151720;
+  stroke: url(#hero-guardian-body);
 }
 
 .hero-guardian-leg {
-  stroke: #151720;
+  stroke: url(#hero-guardian-body);
   stroke-width: 13;
 }
 
 .hero-guardian-leg--front {
-  stroke: #151720;
+  stroke: url(#hero-guardian-body);
 }
 
 .hero-guardian-foot {
   fill: none;
-  stroke: #151720;
+  stroke: url(#hero-guardian-body);
   stroke-width: 5;
   stroke-linecap: round;
   stroke-linejoin: round;
 }
 
 .hero-guardian-hand {
-  fill: #151720;
-  stroke: #07080d;
+  fill: url(#hero-guardian-body);
+  stroke: #1a2030;
   stroke-width: 1;
 }
 
