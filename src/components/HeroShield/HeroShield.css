@@ -53,7 +53,7 @@
 .hero-guardian-body {
   fill: none;
   stroke: url(#hero-guardian-body);
-  stroke-width: 23;
+  stroke-width: 20;
   stroke-linecap: round;
   stroke-linejoin: round;
 }
@@ -100,7 +100,7 @@
 .hero-guardian-arm {
   fill: none;
   stroke: #151720;
-  stroke-width: 12;
+  stroke-width: 13;
   stroke-linecap: round;
   stroke-linejoin: round;
   opacity: 1;
@@ -299,8 +299,7 @@
 }
 
 .hero-shield-side {
-  fill: color-mix(in srgb, black 62%, var(--accent-brand) 38%);
-  filter: brightness(0.92);
+  fill: url(#hero-shield-side-grad);
 }
 
 .hero-shield-face {
@@ -309,29 +308,53 @@
 
 .hero-shield-highlight {
   fill: url(#hero-shield-highlight-grad);
-  opacity: 0.38;
+  opacity: 0.16;
   mix-blend-mode: screen;
 }
 
-.hero-shield-ridge {
-  fill: none;
-  stroke: color-mix(in srgb, white 24%, var(--accent-brand) 76%);
-  stroke-width: 1.35;
-  stroke-linecap: round;
-  opacity: 0.32;
+.hero-shield-plate-base {
+  fill: url(#hero-shield-plate-grad);
+  opacity: 1;
+  mix-blend-mode: normal;
 }
 
-.hero-shield-wire {
+.hero-shield-plate-border {
   fill: none;
-  stroke: color-mix(in srgb, #ff9aa7 24%, var(--accent-brand) 76%);
-  stroke-width: 1.25;
+  stroke: rgba(24, 6, 12, 0.3);
+  stroke-width: 0.85;
   stroke-linecap: round;
   stroke-linejoin: round;
-  opacity: 0.24;
+  opacity: 0.48;
 }
 
+.hero-shield-emblem {
+  fill: url(#hero-shield-boss-grad);
+  stroke: rgba(34, 8, 15, 0.5);
+  stroke-width: 0.85;
+  stroke-linejoin: round;
+}
+
+.hero-shield-emblem--inner {
+  fill: url(#hero-shield-highlight-grad);
+  opacity: 0.68;
+}
+
+.hero-shield-rivet {
+  fill: url(#hero-shield-rivet-grad);
+  stroke: rgba(24, 9, 13, 0.42);
+  stroke-width: 0.68;
+}
+
+.hero-shield-rivet--top,
+.hero-shield-rivet--mid {
+  fill: url(#hero-shield-rivet-grad);
+  stroke-width: 0.74;
+}
+
+.hero-shield-engrave,
+.hero-shield-wire,
 .hero-shield-wire path {
-  vector-effect: non-scaling-stroke;
+  display: none;
 }
 
 .hero-shield-nodes circle {
@@ -365,13 +388,13 @@
 
 .hero-shield-core {
   fill: url(#hero-shield-core);
-  opacity: 0.72;
+  opacity: 0.48;
 }
 
 .hero-shield-rim {
   fill: none;
-  stroke: color-mix(in srgb, var(--accent-brand) 88%, #4a0814 12%);
-  stroke-width: 4.2;
+  stroke: color-mix(in srgb, var(--accent-brand) 68%, #22040b 32%);
+  stroke-width: 3.8;
   stroke-linejoin: round;
 }
 

@@ -1,18 +1,17 @@
 import flagImg from '../../assets/images/fadseclab_flag.png';
 import './HeroShield.css';
 import { useCallback, useEffect, useRef } from 'react';
-import type { CSSProperties } from 'react';
+import type { CSSProperties, RefObject } from 'react';
 
 const threats = [
-  { id: 'trackers', label: 'Trackers', lane: 82, delay: '0s', color: '#ff3355', path: 'M154 86 C330 26 510 52 650 106' },
-  { id: 'brokers', label: 'Data brokers', lane: 132, delay: '1.35s', color: '#ff7a30', path: 'M154 132 C334 104 506 114 652 132' },
-  { id: 'spyware', label: 'Spyware', lane: 182, delay: '2.7s', color: '#ff3355', path: 'M154 178 C330 232 510 208 646 154' },
+  { id: 'trackers', label: 'Trackers', lane: 82, delay: '0s', color: '#48d3ff', path: 'M154 86 C330 26 510 52 650 106' },
+  { id: 'brokers', label: 'Data brokers', lane: 132, delay: '1.35s', color: '#84ff56', path: 'M154 132 C334 104 506 114 652 132' },
+  { id: 'spyware', label: 'Spyware', lane: 182, delay: '2.7s', color: '#ffd166', path: 'M154 178 C330 232 510 208 646 154' },
 ];
 
 const shieldPath = 'M90 4 C118 12 146 18 168 30 L160 128 C154 178 126 214 90 238 C54 214 26 178 20 128 L12 30 C34 18 62 12 90 4Z';
 const shieldInsetPath = 'M90 12 C114 19 137 25 155 34 L149 124 C144 166 119 198 90 220 C61 198 36 166 31 124 L25 34 C43 25 66 19 90 12Z';
 const shieldCorePath = 'M90 0 C118 10 146 17 170 29 L162 130 C156 182 127 220 90 244 C53 220 24 182 18 130 L10 29 C34 17 62 10 90 0Z';
-const shieldRidgePath = 'M90 12 C97 36 100 83 100 132 C100 178 96 212 90 236';
 
 function ThreatArrow({ label, delay, color, path, id }: (typeof threats)[number]) {
   return (
@@ -49,7 +48,7 @@ function HeldShield() {
     <g className="hero-shield-hit hero-shield-hit--one">
       <g className="hero-shield-hit hero-shield-hit--two">
         <g className="hero-shield-hit hero-shield-hit--three">
-          <g transform="translate(568 78) rotate(10 92 120) scale(0.72)">
+          <g transform="translate(606 78) rotate(10 92 120) scale(0.66)">
             <g className="hero-shield-rig">
               <circle className="hero-shield-halo hero-shield-halo--outer" cx="92" cy="118" r="102" />
               <circle className="hero-shield-halo hero-shield-halo--inner" cx="92" cy="118" r="76" />
@@ -58,14 +57,17 @@ function HeldShield() {
                 <path className="hero-shield-side" d={shieldPath} transform="translate(8 8)" />
                 <path className="hero-shield-depth" d={shieldInsetPath} />
                 <path className="hero-shield-face" d={shieldCorePath} />
-                <path className="hero-shield-highlight" d="M52 30 C64 18 78 12 92 12 C82 42 78 80 78 124 C78 166 82 198 90 222 C70 210 56 192 46 166 C38 142 34 110 34 86 C34 62 40 42 52 30Z" />
-                <path className="hero-shield-ridge" d={shieldRidgePath} />
-                <g className="hero-shield-wire" clipPath="url(#hero-shield-clip)">
-                  <path d="M30 58 C58 70 102 72 142 60" />
-                  <path d="M24 112 C60 126 104 126 152 110" />
-                  <path d="M44 166 C70 176 108 176 134 166" />
-                  <path d="M58 30 C62 78 66 142 92 236" />
-                  <path d="M130 30 C124 78 118 142 92 236" />
+                <g className="hero-shield-plate" clipPath="url(#hero-shield-clip)">
+                  <path className="hero-shield-plate-base" d={shieldCorePath} />
+                  <path className="hero-shield-highlight" d="M54 30 C64 18 78 12 92 12 C81 42 78 82 78 124 C78 162 82 194 88 220 C68 210 56 192 46 166 C38 142 34 110 34 84 C34 60 40 40 54 30Z" />
+                  <path className="hero-shield-emblem" d="M86 92 L100 116 L86 140 L72 116 Z" transform="rotate(4 86 116)" />
+                  <path className="hero-shield-emblem hero-shield-emblem--inner" d="M86 102 L92 116 L86 130 L80 116 Z" transform="rotate(4 86 116)" />
+                  <circle className="hero-shield-rivet" cx="50" cy="42" r="3.5" />
+                  <circle className="hero-shield-rivet" cx="130" cy="42" r="3.5" />
+                  <circle className="hero-shield-rivet" cx="40" cy="198" r="3.5" />
+                  <circle className="hero-shield-rivet" cx="140" cy="198" r="3.5" />
+                  <circle className="hero-shield-rivet hero-shield-rivet--top" cx="90" cy="26" r="4.1" />
+                  <circle className="hero-shield-rivet hero-shield-rivet--mid" cx="90" cy="216" r="4.1" />
                 </g>
                 <path className="hero-shield-core" d={shieldCorePath} />
                 <path className="hero-shield-rim" d={shieldCorePath} />
@@ -73,6 +75,31 @@ function HeldShield() {
             </g>
           </g>
         </g>
+      </g>
+    </g>
+  );
+}
+
+function GuardianLegs() {
+  return (
+    <>
+      <path className="hero-guardian-leg hero-guardian-leg--back" d="M768 188 L730 218 L700 254" />
+      <path className="hero-guardian-leg hero-guardian-leg--front" d="M768 188 L812 218 L844 254" />
+    </>
+  );
+}
+
+function GuardianFace({ leftEyeRef, rightEyeRef }: { leftEyeRef: RefObject<SVGCircleElement | null>; rightEyeRef: RefObject<SVGCircleElement | null> }) {
+  return (
+    <g className="hero-guardian-headgroup" transform="translate(0 32)">
+      <circle className="hero-guardian-head" cx="782" cy="50" r="42" />
+      <path className="hero-guardian-head-ring" d="M742 50 C742 24 762 8 782 8 C804 8 822 24 822 50 C822 76 804 92 782 92 C762 92 742 76 742 50Z" />
+      <path className="hero-guardian-brow" d="M754 35 L771 41 M779 40 L799 34" />
+      <g className="hero-guardian-eyes">
+        <path className="hero-eye-socket hero-eye-socket--near" d="M754 43 H772 C772 57 754 57 754 43Z" />
+        <path className="hero-eye-socket hero-eye-socket--far" d="M780 42 H798 C798 55 780 55 780 42Z" />
+        <circle ref={leftEyeRef} className="hero-eyeball" cx="762" cy="48" r="4.2" />
+        <circle ref={rightEyeRef} className="hero-eyeball" cx="786" cy="47" r="3.6" />
       </g>
     </g>
   );
@@ -145,23 +172,39 @@ export default function HeroShield() {
             <stop offset="100%" stopColor="rgba(7,7,10,1)" />
           </linearGradient>
           <linearGradient id="hero-shield-face-grad" x1="0" x2="1" y1="0" y2="1">
-            <stop offset="0%" stopColor="rgba(255,132,146,0.96)" />
-            <stop offset="34%" stopColor="rgba(225,45,68,0.96)" />
-            <stop offset="76%" stopColor="rgba(118,13,31,0.98)" />
-            <stop offset="100%" stopColor="rgba(42,5,14,0.98)" />
+            <stop offset="0%" stopColor="rgba(219,68,86,0.98)" />
+            <stop offset="35%" stopColor="rgba(168,31,48,0.98)" />
+            <stop offset="72%" stopColor="rgba(109,15,31,0.98)" />
+            <stop offset="100%" stopColor="rgba(53,8,16,1)" />
           </linearGradient>
           <linearGradient id="hero-shield-side-grad" x1="0" x2="1" y1="0" y2="1">
-            <stop offset="0%" stopColor="rgba(77,10,22,0.95)" />
-            <stop offset="100%" stopColor="rgba(30,4,10,1)" />
+            <stop offset="0%" stopColor="rgba(136,22,40,0.98)" />
+            <stop offset="100%" stopColor="rgba(54,8,16,1)" />
+          </linearGradient>
+          <linearGradient id="hero-shield-plate-grad" x1="0" x2="0.95" y1="0" y2="1">
+            <stop offset="0%" stopColor="rgba(228,81,99,0.96)" />
+            <stop offset="38%" stopColor="rgba(174,40,59,0.98)" />
+            <stop offset="72%" stopColor="rgba(109,15,31,0.98)" />
+            <stop offset="100%" stopColor="rgba(52,8,16,1)" />
+          </linearGradient>
+          <linearGradient id="hero-shield-boss-grad" x1="0" x2="0" y1="0" y2="1">
+            <stop offset="0%" stopColor="rgba(238, 115, 129, 0.98)" />
+            <stop offset="45%" stopColor="rgba(192, 52, 71, 0.98)" />
+            <stop offset="100%" stopColor="rgba(93, 18, 31, 1)" />
+          </linearGradient>
+          <linearGradient id="hero-shield-rivet-grad" x1="0" x2="0" y1="0" y2="1">
+            <stop offset="0%" stopColor="rgba(232, 170, 177, 0.98)" />
+            <stop offset="55%" stopColor="rgba(164, 74, 89, 1)" />
+            <stop offset="100%" stopColor="rgba(83, 29, 41, 1)" />
           </linearGradient>
           <linearGradient id="hero-shield-highlight-grad" x1="0" x2="0" y1="0" y2="1">
-            <stop offset="0%" stopColor="rgba(255,255,255,0.56)" />
+            <stop offset="0%" stopColor="rgba(255,242,243,0.3)" />
             <stop offset="100%" stopColor="rgba(255,255,255,0)" />
           </linearGradient>
           <radialGradient id="hero-shield-core" cx="42%" cy="35%" r="62%">
-            <stop offset="0%" stopColor="rgba(255,255,255,0.3)" />
-            <stop offset="48%" stopColor="rgba(232,51,74,0.22)" />
-            <stop offset="100%" stopColor="rgba(232,51,74,0)" />
+            <stop offset="0%" stopColor="rgba(255,255,255,0.16)" />
+            <stop offset="48%" stopColor="rgba(255,255,255,0.08)" />
+            <stop offset="100%" stopColor="rgba(255,255,255,0)" />
           </radialGradient>
           <linearGradient id="hero-floor" x1="0" x2="1" y1="0" y2="0">
             <stop offset="0%" stopColor="rgba(232,51,74,0.08)" />
@@ -181,28 +224,17 @@ export default function HeroShield() {
 
         <g className="hero-guardian">
           <ellipse className="hero-guardian-shadow" cx="760" cy="260" rx="118" ry="20" />
-          <path className="hero-guardian-leg hero-guardian-leg--back" d="M768 188 L730 216 L704 254" />
-          <path className="hero-guardian-leg hero-guardian-leg--front" d="M768 188 L816 220 L846 254" />
-          <g className="hero-guardian-upper">
-            <path className="hero-guardian-body" d="M781 130 C776 150 772 170 768 190" />
-            <path className="hero-guardian-arm hero-guardian-arm--shield" d="M768 128 C736 136 702 152 666 170" />
-            <path className="hero-guardian-hand hero-guardian-hand--shield" d="M658 170 C666 162 678 164 682 174 C678 184 666 188 658 182 C656 178 656 174 658 170Z" />
+          <g className="hero-guardian-upper" transform="translate(-10 2)">
+            <path className="hero-guardian-body" d="M781 142 C776 158 772 174 768 190" />
+                <path className="hero-guardian-arm hero-guardian-arm--shield" d="M768 146 C742 150 718 158 690 168" />
+            <path className="hero-guardian-hand hero-guardian-hand--shield" d="M696 172 C697 171 698 171 699 172 C698 173 698 174 697 174 C696 174 695 173 696 172Z" />
             <HeldShield />
-            <path className="hero-guardian-arm hero-guardian-arm--flag" d="M790 128 C820 134 848 118 872 94" />
-            <image className="hero-held-flag" href={flagImg} x="770" y="-8" width="150" height="112" preserveAspectRatio="xMidYMid meet" />
-            <g className="hero-guardian-headgroup" transform="translate(0 12)">
-              <circle className="hero-guardian-head" cx="782" cy="50" r="42" />
-              <path className="hero-guardian-head-ring" d="M742 50 C742 24 762 8 782 8 C804 8 822 24 822 50 C822 76 804 92 782 92 C762 92 742 76 742 50Z" />
-              <path className="hero-guardian-brow" d="M754 35 L771 41 M779 40 L799 34" />
-              <g className="hero-guardian-eyes">
-                <path className="hero-eye-socket hero-eye-socket--near" d="M754 43 H772 C772 57 754 57 754 43Z" />
-                <path className="hero-eye-socket hero-eye-socket--far" d="M780 42 H798 C798 55 780 55 780 42Z" />
-                <circle ref={leftEyeRef} className="hero-eyeball" cx="762" cy="48" r="4.2" />
-                <circle ref={rightEyeRef} className="hero-eyeball" cx="786" cy="47" r="3.6" />
-              </g>
-            </g>
-            <path className="hero-guardian-hand hero-guardian-hand--flag" d="M872 78 C882 68 896 72 898 84 C894 96 880 100 870 92 C868 88 868 82 872 78Z" />
+            <path className="hero-guardian-arm hero-guardian-arm--flag" d="M790 146 C818 150 848 134 872 108" />
+            <image className="hero-held-flag" href={flagImg} x="748" y="8" width="176" height="132" preserveAspectRatio="xMidYMid meet" />
+            <GuardianFace leftEyeRef={leftEyeRef} rightEyeRef={rightEyeRef} />
+            <path className="hero-guardian-hand hero-guardian-hand--flag" d="M868 98 C878 88 892 90 900 102 C898 114 886 122 874 122 C866 114 864 106 868 98Z" />
           </g>
+          <GuardianLegs />
         </g>
 
         <ShockBurst className="hero-shield-hit hero-shield-hit--one hero-shockfield hero-shockfield--one" delay="0s" />
