@@ -4,6 +4,8 @@ import gsap from 'gsap';
 import './Avatar.css';
 
 const Avatar: React.FC = () => {
+  const hitRigRef = useRef<HTMLDivElement>(null);
+  const rigRef = useRef<HTMLDivElement>(null);
   const leftEyeRef = useRef<HTMLDivElement>(null);
   const rightEyeRef = useRef<HTMLDivElement>(null);
   const leftSocketRef = useRef<HTMLDivElement>(null);
@@ -41,6 +43,86 @@ const Avatar: React.FC = () => {
         overwrite: 'auto',
       });
     });
+  }, []);
+
+  useEffect(() => {
+    if (!rigRef.current) return undefined;
+
+    const ctx = gsap.context(() => {
+      gsap
+        .timeline({ repeat: -1, repeatDelay: 3.13 })
+        .to(rigRef.current, {
+          x: -2,
+          y: 1,
+          rotate: -1.6,
+          scaleX: 0.988,
+          scaleY: 1.012,
+          duration: 0.16,
+          ease: 'power2.out',
+          overwrite: 'auto',
+        })
+        .to(rigRef.current, {
+          x: 1.1,
+          y: -0.5,
+          rotate: 0.9,
+          scaleX: 1.006,
+          scaleY: 0.995,
+          duration: 0.2,
+          ease: 'power1.inOut',
+          overwrite: 'auto',
+        })
+        .to(rigRef.current, {
+          x: 0,
+          y: 0,
+          rotate: 0,
+          scaleX: 1,
+          scaleY: 1,
+          duration: 0.56,
+          ease: 'elastic.out(1, 0.38)',
+          overwrite: 'auto',
+        });
+    }, rigRef);
+
+    return () => ctx.revert();
+  }, []);
+
+  useEffect(() => {
+    const handleHeroHit = (event: Event) => {
+      if (!hitRigRef.current) return;
+
+      const hitId = (event as CustomEvent<{ hitId: number }>).detail?.hitId ?? 0;
+      const kickFrames = [
+        { x: -5, y: 2, rotate: -7, scaleX: 0.975, scaleY: 1.03 },
+        { x: 4.5, y: -1, rotate: 6, scaleX: 1.02, scaleY: 0.98 },
+        { x: -2, y: 0.5, rotate: -2.4, scaleX: 0.993, scaleY: 1.01 },
+      ];
+      const kick = kickFrames[hitId % kickFrames.length];
+
+      gsap.killTweensOf(hitRigRef.current);
+      gsap
+        .timeline({ overwrite: 'auto' })
+        .to(hitRigRef.current, {
+          x: kick.x,
+          y: kick.y,
+          rotate: kick.rotate,
+          scaleX: kick.scaleX,
+          scaleY: kick.scaleY,
+          duration: 0.14,
+          ease: 'power4.out',
+        })
+        .to(hitRigRef.current, {
+          x: 0,
+          y: 0,
+          rotate: 0,
+          scaleX: 1,
+          scaleY: 1,
+          duration: 0.28,
+          ease: 'elastic.out(1.1, 0.35)',
+        });
+    };
+
+    window.addEventListener('fadsec:hero-hit', handleHeroHit);
+    return () => window.removeEventListener('fadsec:hero-hit', handleHeroHit);
   }, []);
 
   useEffect(() => {
@@ -85,30 +167,34 @@ const Avatar: React.FC = () => {
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
       >
-        <motion.div
-          className="avatar-head"
-          animate={{
-            y: [0, -12, 0],
-          }}
-          transition={{
-            y: { duration: 6, repeat: Infinity, ease: "easeInOut" },
-          }}
-        >
-          <div className="eyes-container">
-            <div className="eye-socket" ref={leftSocketRef}>
-              <div className="eyeball" ref={leftEyeRef} />
+        <div className="avatar-hit-rig" ref={hitRigRef}>
+          <div className="avatar-motion-rig" ref={rigRef}>
+          <motion.div
+            className="avatar-head"
+            animate={{
+              y: [0, -12, 0],
+            }}
+            transition={{
+              y: { duration: 6, repeat: Infinity, ease: 'easeInOut' },
+            }}
+          >
+            <div className="eyes-container">
+              <div className="eye-socket" ref={leftSocketRef}>
+                <div className="eyeball" ref={leftEyeRef} />
+              </div>
+              <div className="eye-socket" ref={rightSocketRef}>
+                <div className="eyeball" ref={rightEyeRef} />
+              </div>
             </div>
-            <div className="eye-socket" ref={rightSocketRef}>
-              <div className="eyeball" ref={rightEyeRef} />
-            </div>
-          </div>
-        </motion.div>
+          </motion.div>
 
-        <motion.div
-          className="avatar-body"
-          animate={{ y: [0, -6, 0] }}
-          transition={{ duration: 6, repeat: Infinity, ease: "easeInOut", delay: 0.1 }}
-        />
+          <motion.div
+            className="avatar-body"
+            animate={{ y: [0, -6, 0] }}
+            transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut', delay: 0.1 }}
+          />
+          </div>
+        </div>
       </motion.div>
     </aside>
   );

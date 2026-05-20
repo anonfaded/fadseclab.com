@@ -21,6 +21,16 @@
   transform-origin: right bottom;
 }
 
+.avatar-motion-rig {
+  transform-origin: center bottom;
+  will-change: transform;
+}
+
+.avatar-hit-rig {
+  transform-origin: center bottom;
+  will-change: transform;
+}
+
 .avatar-head {
   position: relative;
   width: 76px;

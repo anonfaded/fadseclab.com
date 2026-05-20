@@ -12,6 +12,63 @@ const threats = [
 const shieldPath = 'M90 4 C118 12 146 18 168 30 L160 128 C154 178 126 214 90 238 C54 214 26 178 20 128 L12 30 C34 18 62 12 90 4Z';
 const shieldInsetPath = 'M90 12 C114 19 137 25 155 34 L149 124 C144 166 119 198 90 220 C61 198 36 166 31 124 L25 34 C43 25 66 19 90 12Z';
 const shieldCorePath = 'M90 0 C118 10 146 17 170 29 L162 130 C156 182 127 220 90 244 C53 220 24 182 18 130 L10 29 C34 17 62 10 90 0Z';
+const guardianBodyBase = 'M781 142 L768 190';
+const guardianBodyHit = guardianBodyBase;
+const guardianShieldShoulder = { x: 780, y: 148 }; // Inside body column so arm grows from torso, not as detached bump
+const guardianShieldElbowBase = { x: 744, y: 166 };
+const guardianShieldElbowHit = { x: 752, y: 168 }; // Elbow nudges right + slightly down on impact — upper arm rotates subtly
+const guardianShieldHandBase = { x: 706, y: 176 };
+const guardianShieldHandHit = { x: 722, y: 176 }; // Hand recoils RIGHT only — pure horizontal, same Y = no up/down
+const guardianBackHip = { x: 768, y: 188 };
+const guardianBackKneeBase = { x: 729, y: 224 };
+const guardianBackKneeHit = guardianBackKneeBase;
+const guardianBackFootBase = { x: 700, y: 254 };
+const guardianFrontHip = { x: 768, y: 188 };
+const guardianFrontKneeBase = { x: 814, y: 220 };
+const guardianFrontKneeHit = guardianFrontKneeBase;
+const guardianFrontFootBase = { x: 844, y: 254 };
+
+function interpolatePath(base: string, target: string, amount: number) {
+  const targetNumbers = target.match(/-?\d+(?:\.\d+)?/g)?.map(Number) ?? [];
+  let index = 0;
+
+  return base.replace(/-?\d+(?:\.\d+)?/g, (value) => {
+    const start = Number(value);
+    const end = targetNumbers[index++] ?? start;
+    const next = start + (end - start) * amount;
+    return Number(next.toFixed(2)).toString();
+  });
+}
+
+function interpolatePoint(base: { x: number; y: number }, target: { x: number; y: number }, amount: number) {
+  return {
+    x: base.x + (target.x - base.x) * amount,
+    y: base.y + (target.y - base.y) * amount,
+  };
+}
+
+function pathBetween(start: { x: number; y: number }, end: { x: number; y: number }) {
+  return `M${start.x.toFixed(2)} ${start.y.toFixed(2)} L${end.x.toFixed(2)} ${end.y.toFixed(2)}`;
+}
+
+function rotateAround(point: { x: number; y: number }, pivot: { x: number; y: number }, degrees: number) {
+  const radians = (degrees * Math.PI) / 180;
+  const cos = Math.cos(radians);
+  const sin = Math.sin(radians);
+  const dx = point.x - pivot.x;
+  const dy = point.y - pivot.y;
+
+  return {
+    x: pivot.x + dx * cos - dy * sin,
+    y: pivot.y + dx * sin + dy * cos,
+  };
+}
+
+function angleBetween(start: { x: number; y: number }, end: { x: number; y: number }) {
+  const dx = end.x - start.x;
+  const dy = end.y - start.y;
+  return (Math.atan2(dy, dx) * 180) / Math.PI;
+}
 
 function ThreatArrow({ label, delay, color, path, id }: (typeof threats)[number]) {
   return (
@@ -43,36 +100,36 @@ function ShockBurst({ className, delay }: { className: string; delay: string }) 
   );
 }
 
-function HeldShield() {
+function emitHeroHit(hitId: number) {
+  window.dispatchEvent(new CustomEvent('fadsec:hero-hit', { detail: { hitId } }));
+}
+
+function HeldShield({ impactRef }: { impactRef: RefObject<SVGGElement | null> }) {
   return (
-    <g className="hero-shield-hit hero-shield-hit--one">
-      <g className="hero-shield-hit hero-shield-hit--two">
-        <g className="hero-shield-hit hero-shield-hit--three">
-          <g transform="translate(606 78) rotate(10 92 120) scale(0.66)">
-            <g className="hero-shield-rig">
-              <circle className="hero-shield-halo hero-shield-halo--outer" cx="92" cy="118" r="102" />
-              <circle className="hero-shield-halo hero-shield-halo--inner" cx="92" cy="118" r="76" />
-              <path className="hero-shield-shadow" d="M92 206 C128 206 160 216 160 228 C160 242 128 252 92 252 C56 252 24 242 24 228 C24 216 56 206 92 206Z" />
-              <g className="hero-shield-body">
-                <path className="hero-shield-side" d={shieldPath} transform="translate(8 8)" />
-                <path className="hero-shield-depth" d={shieldInsetPath} />
-                <path className="hero-shield-face" d={shieldCorePath} />
-                <g className="hero-shield-plate" clipPath="url(#hero-shield-clip)">
-                  <path className="hero-shield-plate-base" d={shieldCorePath} />
-                  <path className="hero-shield-highlight" d="M54 30 C64 18 78 12 92 12 C81 42 78 82 78 124 C78 162 82 194 88 220 C68 210 56 192 46 166 C38 142 34 110 34 84 C34 60 40 40 54 30Z" />
-                  <path className="hero-shield-emblem" d="M86 92 L100 116 L86 140 L72 116 Z" transform="rotate(4 86 116)" />
-                  <path className="hero-shield-emblem hero-shield-emblem--inner" d="M86 102 L92 116 L86 130 L80 116 Z" transform="rotate(4 86 116)" />
-                  <circle className="hero-shield-rivet" cx="50" cy="42" r="3.5" />
-                  <circle className="hero-shield-rivet" cx="130" cy="42" r="3.5" />
-                  <circle className="hero-shield-rivet" cx="40" cy="198" r="3.5" />
-                  <circle className="hero-shield-rivet" cx="140" cy="198" r="3.5" />
-                  <circle className="hero-shield-rivet hero-shield-rivet--top" cx="90" cy="26" r="4.1" />
-                  <circle className="hero-shield-rivet hero-shield-rivet--mid" cx="90" cy="216" r="4.1" />
-                </g>
-                <path className="hero-shield-core" d={shieldCorePath} />
-                <path className="hero-shield-rim" d={shieldCorePath} />
-              </g>
+    <g ref={impactRef}>
+      <g transform="translate(606 78) rotate(10 92 120) scale(0.66)">
+        <g className="hero-shield-rig">
+          <circle className="hero-shield-halo hero-shield-halo--outer" cx="92" cy="118" r="102" />
+          <circle className="hero-shield-halo hero-shield-halo--inner" cx="92" cy="118" r="76" />
+          <path className="hero-shield-shadow" d="M92 206 C128 206 160 216 160 228 C160 242 128 252 92 252 C56 252 24 242 24 228 C24 216 56 206 92 206Z" />
+          <g className="hero-shield-body">
+            <path className="hero-shield-side" d={shieldPath} transform="translate(8 8)" />
+            <path className="hero-shield-depth" d={shieldInsetPath} />
+            <path className="hero-shield-face" d={shieldCorePath} />
+            <g className="hero-shield-plate" clipPath="url(#hero-shield-clip)">
+              <path className="hero-shield-plate-base" d={shieldCorePath} />
+              <path className="hero-shield-highlight" d="M54 30 C64 18 78 12 92 12 C81 42 78 82 78 124 C78 162 82 194 88 220 C68 210 56 192 46 166 C38 142 34 110 34 84 C34 60 40 40 54 30Z" />
+              <path className="hero-shield-emblem" d="M86 92 L100 116 L86 140 L72 116 Z" transform="rotate(4 86 116)" />
+              <path className="hero-shield-emblem hero-shield-emblem--inner" d="M86 102 L92 116 L86 130 L80 116 Z" transform="rotate(4 86 116)" />
+              <circle className="hero-shield-rivet" cx="50" cy="42" r="3.5" />
+              <circle className="hero-shield-rivet" cx="130" cy="42" r="3.5" />
+              <circle className="hero-shield-rivet" cx="40" cy="198" r="3.5" />
+              <circle className="hero-shield-rivet" cx="140" cy="198" r="3.5" />
+              <circle className="hero-shield-rivet hero-shield-rivet--top" cx="90" cy="26" r="4.1" />
+              <circle className="hero-shield-rivet hero-shield-rivet--mid" cx="90" cy="216" r="4.1" />
             </g>
+            <path className="hero-shield-core" d={shieldCorePath} />
+            <path className="hero-shield-rim" d={shieldCorePath} />
           </g>
         </g>
       </g>
@@ -80,11 +137,23 @@ function HeldShield() {
   );
 }
 
-function GuardianLegs() {
+function GuardianLegs({
+  backUpperLegRef,
+  backLowerLegRef,
+  frontUpperLegRef,
+  frontLowerLegRef,
+}: {
+  backUpperLegRef: RefObject<SVGPathElement | null>;
+  backLowerLegRef: RefObject<SVGPathElement | null>;
+  frontUpperLegRef: RefObject<SVGPathElement | null>;
+  frontLowerLegRef: RefObject<SVGPathElement | null>;
+}) {
   return (
     <>
-      <path className="hero-guardian-leg hero-guardian-leg--back" d="M768 188 L730 218 L700 254" />
-      <path className="hero-guardian-leg hero-guardian-leg--front" d="M768 188 L812 218 L844 254" />
+      <path ref={backUpperLegRef} className="hero-guardian-leg hero-guardian-leg--back" d={pathBetween(guardianBackHip, guardianBackKneeBase)} />
+      <path ref={backLowerLegRef} className="hero-guardian-leg hero-guardian-leg--back" d={pathBetween(guardianBackKneeBase, guardianBackFootBase)} />
+      <path ref={frontUpperLegRef} className="hero-guardian-leg hero-guardian-leg--front" d={pathBetween(guardianFrontHip, guardianFrontKneeBase)} />
+      <path ref={frontLowerLegRef} className="hero-guardian-leg hero-guardian-leg--front" d={pathBetween(guardianFrontKneeBase, guardianFrontFootBase)} />
     </>
   );
 }
@@ -110,12 +179,93 @@ export default function HeroShield() {
   const svgRef = useRef<SVGSVGElement>(null);
   const leftEyeRef = useRef<SVGCircleElement>(null);
   const rightEyeRef = useRef<SVGCircleElement>(null);
+  const shieldImpactRef = useRef<SVGGElement>(null);
+  const upperImpactRef = useRef<SVGGElement>(null);
+  const shieldUpperArmRef = useRef<SVGPathElement>(null);
+  const shieldForearmRef = useRef<SVGPathElement>(null);
+  const shieldHandRigRef = useRef<SVGGElement>(null);
+  const bodyRef = useRef<SVGPathElement>(null);
+  const backUpperLegRef = useRef<SVGPathElement>(null);
+  const backLowerLegRef = useRef<SVGPathElement>(null);
+  const frontUpperLegRef = useRef<SVGPathElement>(null);
+  const frontLowerLegRef = useRef<SVGPathElement>(null);
+  const impactFrameRef = useRef<number | null>(null);
   const eyeFrameRef = useRef<number | null>(null);
   const eyeLastTimeRef = useRef<number | null>(null);
   const eyeMotionRef = useRef([
     { ref: leftEyeRef, origin: { x: 762, y: 48 }, current: { x: 762, y: 48 }, velocity: { x: 0, y: 0 }, target: { x: 762, y: 48 } },
     { ref: rightEyeRef, origin: { x: 786, y: 48 }, current: { x: 786, y: 48 }, velocity: { x: 0, y: 0 }, target: { x: 786, y: 48 } },
   ]);
+
+  const playImpact = useCallback(() => {
+    if (impactFrameRef.current) {
+      window.cancelAnimationFrame(impactFrameRef.current);
+    }
+
+    const duration = 260;
+    const easeOut = (value: number) => 1 - Math.pow(1 - value, 3);
+    const applyImpact = (amount: number, shieldX: number) => {
+      shieldImpactRef.current?.setAttribute('transform', `translate(${shieldX.toFixed(2)} 0)`);
+      upperImpactRef.current?.setAttribute('transform', 'translate(0 0)');
+      bodyRef.current?.setAttribute('d', interpolatePath(guardianBodyBase, guardianBodyHit, amount));
+      
+      // Horizontal recoil: elbow nudges right rotating upper arm, hand slides right, whole arm compresses naturally
+      const elbow = interpolatePoint(guardianShieldElbowBase, guardianShieldElbowHit, amount);
+      const shieldHand = interpolatePoint(guardianShieldHandBase, guardianShieldHandHit, amount);
+      
+      shieldUpperArmRef.current?.setAttribute('d', pathBetween(guardianShieldShoulder, elbow));
+      shieldForearmRef.current?.setAttribute('d', pathBetween(elbow, shieldHand));
+      
+      // Pure horizontal translate — zero vertical movement
+      shieldHandRigRef.current?.setAttribute(
+        'transform',
+        `translate(${(shieldHand.x - guardianShieldHandBase.x).toFixed(2)} 0)`
+      );
+
+      const backKnee = interpolatePoint(guardianBackKneeBase, guardianBackKneeHit, amount);
+      const frontKnee = interpolatePoint(guardianFrontKneeBase, guardianFrontKneeHit, amount);
+      backUpperLegRef.current?.setAttribute('d', pathBetween(guardianBackHip, backKnee));
+      backLowerLegRef.current?.setAttribute('d', pathBetween(backKnee, guardianBackFootBase));
+      frontUpperLegRef.current?.setAttribute('d', pathBetween(guardianFrontHip, frontKnee));
+      frontLowerLegRef.current?.setAttribute('d', pathBetween(frontKnee, guardianFrontFootBase));
+    };
+
+    const step = (startTime: number) => {
+      const tick = (time: number) => {
+        const progress = Math.min(1, (time - startTime) / duration);
+        let absorb = 0;
+        let shieldX = 0;
+
+        if (progress < 0.42) {
+          const phase = easeOut(progress / 0.42);
+          absorb = phase;
+          shieldX = 2.5 * phase;
+        } else if (progress < 0.64) {
+          const phase = easeOut((progress - 0.42) / 0.22);
+          absorb = 1 - 0.65 * phase;
+          shieldX = 2.5 - 3.5 * phase;
+        } else {
+          const phase = easeOut((progress - 0.64) / 0.36);
+          absorb = 0.35 * (1 - phase);
+          shieldX = -1 * (1 - phase);
+        }
+
+        applyImpact(absorb, shieldX);
+
+        if (progress < 1) {
+          impactFrameRef.current = window.requestAnimationFrame(tick);
+          return;
+        }
+
+        applyImpact(0, 0);
+        impactFrameRef.current = null;
+      };
+
+      tick(startTime);
+    };
+
+    impactFrameRef.current = window.requestAnimationFrame(step);
+  }, []);
 
   const updateEyeState = useCallback((clientX: number, clientY: number) => {
     const svg = svgRef.current;
@@ -200,6 +350,29 @@ export default function HeroShield() {
   }, []);
 
   useEffect(() => {
+    const impactOffsets = [2916, 4266, 5616];
+    const hitIntervals: number[] = [];
+    const hitTimeouts = impactOffsets.map((offset, index) =>
+      window.setTimeout(() => {
+        playImpact();
+        emitHeroHit(index);
+        hitIntervals.push(window.setInterval(() => {
+          playImpact();
+          emitHeroHit(index);
+        }, 4050));
+      }, offset)
+    );
+
+    return () => {
+      if (impactFrameRef.current) {
+        window.cancelAnimationFrame(impactFrameRef.current);
+      }
+      hitTimeouts.forEach((timeoutId) => window.clearTimeout(timeoutId));
+      hitIntervals.forEach((intervalId) => window.clearInterval(intervalId));
+    };
+  }, [playImpact]);
+
+  useEffect(() => {
     let pointerFrame = 0;
     let nextX = window.innerWidth / 2;
     let nextY = window.innerHeight / 2;
@@ -243,9 +416,9 @@ export default function HeroShield() {
             <stop offset="100%" stopColor="rgba(15,18,25,1)" />
           </radialGradient>
           <linearGradient id="hero-guardian-body" x1="744" y1="136" x2="812" y2="238" gradientUnits="userSpaceOnUse">
-            <stop offset="0%" stopColor="rgba(46,51,62,1)" />
-            <stop offset="44%" stopColor="rgba(26,31,40,1)" />
-            <stop offset="100%" stopColor="rgba(11,13,18,1)" />
+            <stop offset="0%" stopColor="rgba(44,49,59,1)" />
+            <stop offset="44%" stopColor="rgba(23,28,36,1)" />
+            <stop offset="100%" stopColor="rgba(10,12,16,1)" />
           </linearGradient>
           <linearGradient id="hero-shield-face-grad" x1="0" x2="1" y1="0" y2="1">
             <stop offset="0%" stopColor="rgba(219,68,86,0.98)" />
@@ -304,17 +477,31 @@ export default function HeroShield() {
 
         <g className="hero-guardian">
           <ellipse className="hero-guardian-shadow" cx="760" cy="260" rx="118" ry="20" />
-          <GuardianLegs />
-          <g className="hero-guardian-upper" transform="translate(-10 2)">
-            <path className="hero-guardian-arm hero-guardian-arm--shield" d="M768 146 C742 150 718 158 690 168" />
-            <path className="hero-guardian-hand hero-guardian-hand--shield" d="M696 172 C697 171 698 171 699 172 C698 173 698 174 697 174 C696 174 695 173 696 172Z" />
-            <HeldShield />
-            <path className="hero-guardian-arm hero-guardian-arm--flag" d="M790 146 C818 150 848 134 872 108" />
-              {/* place flag so its bottom-right aligns with palm center (872,108) */}
-              <image className="hero-held-flag" href={flagImg} x="736" y="7" width="180" height="135" preserveAspectRatio="xMidYMid meet" />
-              <ellipse className="hero-guardian-hand hero-guardian-hand--flag" cx="872" cy="108" rx="10" ry="8" />
-            <path className="hero-guardian-body" d="M781 142 C776 158 772 174 768 190" />
-            <GuardianFace leftEyeRef={leftEyeRef} rightEyeRef={rightEyeRef} />
+          <g className="hero-guardian-recoil">
+            <g transform="translate(-10 2)">
+              <GuardianLegs
+                backUpperLegRef={backUpperLegRef}
+                backLowerLegRef={backLowerLegRef}
+                frontUpperLegRef={frontUpperLegRef}
+                frontLowerLegRef={frontLowerLegRef}
+              />
+              <g className="hero-guardian-upper">
+                <g ref={upperImpactRef}>
+                  <path ref={shieldUpperArmRef} className="hero-guardian-arm hero-guardian-arm--shield" d={pathBetween(guardianShieldShoulder, guardianShieldElbowBase)} />
+                  <path ref={shieldForearmRef} className="hero-guardian-arm hero-guardian-arm--shield" d={pathBetween(guardianShieldElbowBase, guardianShieldHandBase)} />
+                  <g ref={shieldHandRigRef}>
+                    <path className="hero-guardian-hand hero-guardian-hand--shield" d="M694 171 C696 168 700 167 703 170 C702 175 698 176 695 174 Z" />
+                    <HeldShield impactRef={shieldImpactRef} />
+                  </g>
+                  <path className="hero-guardian-arm hero-guardian-arm--flag" d="M790 146 C818 150 848 134 872 108" />
+                    {/* place flag so its bottom-right aligns with palm center (872,108) */}
+                    <image className="hero-held-flag" href={flagImg} x="736" y="7" width="180" height="135" preserveAspectRatio="xMidYMid meet" />
+                    <ellipse className="hero-guardian-hand hero-guardian-hand--flag" cx="872" cy="108" rx="10" ry="8" />
+                  <path ref={bodyRef} className="hero-guardian-body" d={guardianBodyBase} />
+                  <GuardianFace leftEyeRef={leftEyeRef} rightEyeRef={rightEyeRef} />
+                </g>
+              </g>
+            </g>
           </g>
         </g>
 

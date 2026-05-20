@@ -32,6 +32,10 @@
   transform-box: fill-box;
 }
 
+.hero-guardian-recoil {
+  transform-box: fill-box;
+}
+
 .hero-guardian-upper,
 .hero-guardian-headgroup {
   transform-box: fill-box;
@@ -103,13 +107,22 @@
   opacity: 1;
 }
 
+.hero-guardian-arm--shield {
+  transform-box: fill-box;
+  transform-origin: 764px 148px;
+}
+
 .hero-guardian-arm--flag {
   stroke: url(#hero-guardian-body);
+  transform-box: fill-box;
+  transform-origin: 790px 146px;
 }
 
 .hero-guardian-leg {
   stroke: url(#hero-guardian-body);
   stroke-width: 13;
+  transform-box: fill-box;
+  transform-origin: 768px 188px;
 }
 
 .hero-guardian-leg--front {
@@ -128,6 +141,13 @@
   fill: url(#hero-guardian-body);
   stroke: #1a2030;
   stroke-width: 1;
+}
+
+.hero-guardian-hand--shield {
+  stroke: none;
+  stroke-width: 0;
+  transform-box: fill-box;
+  transform-origin: center;
 }
 
 .hero-held-flag {
