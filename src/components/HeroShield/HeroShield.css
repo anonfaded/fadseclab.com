@@ -296,24 +296,43 @@
   stroke-linecap: round;
   stroke-linejoin: round;
   opacity: 0.9;
+  transform-box: fill-box;
+  transform-origin: center;
 }
 
 .hero-shield-halo--outer {
   stroke: color-mix(in srgb, var(--accent-brand) 40%, transparent);
   stroke-width: 1.2;
   stroke-dasharray: 4 11;
+  animation: halo-spin-cw 20s linear infinite;
 }
 
 .hero-shield-halo--inner {
   stroke: color-mix(in srgb, white 34%, var(--accent-brand) 66%);
   stroke-width: 2.1;
   opacity: 0.5;
+  animation: halo-spin-ccw 13s linear infinite;
+}
+
+@keyframes halo-spin-cw {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes halo-spin-ccw {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(-360deg); }
 }
 
 .hero-shield-body {
   transform-box: fill-box;
   transform-origin: center;
-  animation: shield-breathe 5.5s ease-in-out infinite;
+  animation: shield-breathe 5.5s ease-in-out infinite, shield-glow-pulse 3.8s ease-in-out infinite;
+}
+
+@keyframes shield-glow-pulse {
+  0%, 100% { filter: drop-shadow(0 0 6px rgba(232, 51, 74, 0.18)); }
+  50% { filter: drop-shadow(0 0 22px rgba(232, 51, 74, 0.56)); }
 }
 
 .hero-shield-shadow {
