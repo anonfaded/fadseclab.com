@@ -70,6 +70,80 @@ function ThreatArrow({ label, delay, color, path, id }: (typeof threats)[number]
   );
 }
 
+const podData = [
+  { id: 'trackers', y: 86, delay: '0s', color: '#48d3ff', label: 'AD NET' },
+  { id: 'brokers', y: 132, delay: '1.35s', color: '#84ff56', label: 'BROKER' },
+  { id: 'spyware', y: 178, delay: '2.7s', color: '#ffd166', label: 'MALWARE' },
+] as const;
+
+function ThreatBorder() {
+  // Fence ticks — classic map fortification symbol, pointing into enemy territory
+  const fenceTicks = Array.from({ length: 22 }, (_, i) => 8 + i * 12);
+
+  return (
+    <g className="hero-threat-border" aria-hidden="true">
+      {/* Territory fill */}
+      <rect className="hero-border-zone" x="0" y="0" width="154" height="272" />
+      {/* Diagonal hatch — classic hostile-territory map pattern */}
+      <rect className="hero-border-hatch" x="0" y="0" width="154" height="272" />
+
+      {/* Political border line */}
+      <line className="hero-border-line" x1="154" y1="0" x2="154" y2="272" />
+
+      {/* Fence/wall ticks — perpendicular to border, pointing left into territory */}
+      {fenceTicks.map((y) => (
+        <line key={y} className="hero-border-fence-tick" x1="154" y1={y} x2="142" y2={y} />
+      ))}
+
+      {/* Broadcast antenna — centered in territory */}
+      <g className="hero-border-antenna">
+        {/* Guy wires */}
+        <line className="hero-antenna-wire" x1="55" y1="56" x2="28" y2="230" />
+        <line className="hero-antenna-wire" x1="55" y1="56" x2="82" y2="230" />
+        {/* Base platform */}
+        <rect className="hero-antenna-base" x="38" y="228" width="34" height="5" rx="1" />
+        {/* Mast */}
+        <line className="hero-antenna-mast" x1="55" y1="44" x2="55" y2="229" />
+        {/* Crossbars — widest at center, narrowing toward top */}
+        <line className="hero-antenna-bar" x1="22" y1="108" x2="88" y2="108" />
+        <line className="hero-antenna-bar" x1="28" y1="140" x2="82" y2="140" />
+        <line className="hero-antenna-bar" x1="33" y1="168" x2="77" y2="168" />
+        <line className="hero-antenna-bar" x1="38" y1="196" x2="72" y2="196" />
+        <line className="hero-antenna-bar" x1="43" y1="218" x2="67" y2="218" />
+        {/* Blinking tip */}
+        <circle className="hero-antenna-tip-dot" cx="55" cy="41" r="3" />
+        {/* Signal arcs — concentric semicircles opening rightward from tip */}
+        <path className="hero-antenna-signal hero-antenna-signal--s1" d="M55 24 A18 18 0 0 1 55 60" />
+        <path className="hero-antenna-signal hero-antenna-signal--s2" d="M55 12 A30 30 0 0 1 55 72" />
+        <path className="hero-antenna-signal hero-antenna-signal--s3" d="M55 0 A42 42 0 0 1 55 84" />
+      </g>
+
+      {/* Territory labels */}
+      <text className="hero-border-territory" x="77" y="249" textAnchor="middle">ADVERSARY</text>
+      <text className="hero-border-sublabel" x="77" y="263" textAnchor="middle">SURVEILLANCE ZONE</text>
+
+      {/* Launch-site reticles — targeting marks on the border at each threat origin */}
+      {podData.map((pod) => (
+        <g
+          key={pod.id}
+          className="hero-border-post"
+          style={{ '--pod-color': pod.color, '--pod-delay': pod.delay } as CSSProperties}
+        >
+          {/* Outer targeting ring */}
+          <circle className="hero-border-site-ring" cx="154" cy={pod.y} r="11" />
+          {/* Crosshair lines straddling the border */}
+          <line className="hero-border-site-cross" x1="136" y1={pod.y} x2="172" y2={pod.y} />
+          <line className="hero-border-site-cross" x1="154" y1={pod.y - 18} x2="154" y2={pod.y + 18} />
+          {/* Center dot */}
+          <circle className="hero-border-site-dot" cx="154" cy={pod.y} r="2.5" />
+          {/* Launch flash */}
+          <circle className="hero-pod-flash" cx="154" cy={pod.y} r="14" />
+        </g>
+      ))}
+    </g>
+  );
+}
+
 function ShockBurst({ className, delay }: { className: string; delay: string }) {
   return (
     <g className={className} style={{ '--delay': delay } as CSSProperties}>
@@ -621,10 +695,18 @@ export default function HeroShield() {
             <path d="M754 43 H772 C772 57 754 57 754 43Z" />
             <path d="M780 43 H798 C798 57 780 57 780 43Z" />
           </clipPath>
+          <linearGradient id="hero-border-zone-grad" x1="0" x2="1" y1="0" y2="0">
+            <stop offset="0%" stopColor="#0e0204" stopOpacity="0.92" />
+            <stop offset="100%" stopColor="#1a0507" stopOpacity="0.84" />
+          </linearGradient>
+          <pattern id="hero-border-hatch" x="0" y="0" width="10" height="10" patternUnits="userSpaceOnUse">
+            <line x1="0" y1="10" x2="10" y2="0" stroke="rgba(210,50,30,0.13)" strokeWidth="1.2" strokeLinecap="round" />
+          </pattern>
         </defs>
 
         <ellipse className="hero-defense-floor" cx="520" cy="254" rx="350" ry="24" />
 
+        <ThreatBorder />
         {threats.map((threat) => (
           <ThreatArrow key={threat.id} {...threat} />
         ))}
