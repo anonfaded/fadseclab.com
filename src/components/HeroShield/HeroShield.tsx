@@ -4,10 +4,11 @@ import { useCallback, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import type { CSSProperties, RefObject } from 'react';
 
+// All arrows fire from the single tower launcher muzzle.
 const threats = [
-  { id: 'trackers', label: 'Trackers', lane: 82, delay: '0s', color: '#48d3ff', path: 'M154 86 C330 26 510 52 650 106' },
-  { id: 'brokers', label: 'Data brokers', lane: 132, delay: '1.35s', color: '#84ff56', path: 'M154 132 C334 104 506 114 652 132' },
-  { id: 'spyware', label: 'Spyware', lane: 182, delay: '2.7s', color: '#ffd166', path: 'M154 178 C330 232 510 208 646 154' },
+  { id: 'trackers', label: 'Trackers', lane: 82, delay: '0s', color: '#ff5a45', path: 'M196 62 C330 32 510 62 650 106' },
+  { id: 'brokers', label: 'Data brokers', lane: 132, delay: '1.35s', color: '#ff3f35', path: 'M196 62 C328 76 514 112 652 132' },
+  { id: 'spyware', label: 'Spyware', lane: 182, delay: '2.7s', color: '#ff7264', path: 'M196 62 C320 128 486 188 646 154' },
 ];
 
 const shieldPath = 'M90 4 C118 12 146 18 168 30 L160 128 C154 178 126 214 90 238 C54 214 26 178 20 128 L12 30 C34 18 62 12 90 4Z';
@@ -28,6 +29,8 @@ const guardianFrontHip = { x: 768, y: 188 };
 const guardianFrontKneeBase = { x: 790, y: 224 }; // Test: bend more toward left/shield side
 const guardianFrontKneeHit = guardianFrontKneeBase;
 const guardianFrontFootBase = { x: 830, y: 254 }; // Lower leg points left/inward like the back leg
+
+
 
 function interpolatePath(base: string, target: string, amount: number) {
   const targetNumbers = target.match(/-?\d+(?:\.\d+)?/g)?.map(Number) ?? [];
@@ -70,76 +73,240 @@ function ThreatArrow({ label, delay, color, path, id }: (typeof threats)[number]
   );
 }
 
-const podData = [
-  { id: 'trackers', y: 86, delay: '0s', color: '#48d3ff', label: 'AD NET' },
-  { id: 'brokers', y: 132, delay: '1.35s', color: '#84ff56', label: 'BROKER' },
-  { id: 'spyware', y: 178, delay: '2.7s', color: '#ffd166', label: 'MALWARE' },
-] as const;
-
-function ThreatBorder() {
-  // Fence ticks — classic map fortification symbol, pointing into enemy territory
-  const fenceTicks = Array.from({ length: 22 }, (_, i) => 8 + i * 12);
+function MeshTower() {
+  const rings = [
+    { y: 82, l: 38, r: 64 },
+    { y: 118, l: 31, r: 70 },
+    { y: 158, l: 23, r: 77 },
+    { y: 199, l: 15, r: 84 },
+    { y: 232, l: 8, r: 91 },
+  ];
 
   return (
-    <g className="hero-threat-border" aria-hidden="true">
-      {/* Territory fill */}
-      <rect className="hero-border-zone" x="0" y="0" width="154" height="272" />
-      {/* Diagonal hatch — classic hostile-territory map pattern */}
-      <rect className="hero-border-hatch" x="0" y="0" width="154" height="272" />
-
-      {/* Political border line */}
-      <line className="hero-border-line" x1="154" y1="0" x2="154" y2="272" />
-
-      {/* Fence/wall ticks — perpendicular to border, pointing left into territory */}
-      {fenceTicks.map((y) => (
-        <line key={y} className="hero-border-fence-tick" x1="154" y1={y} x2="142" y2={y} />
-      ))}
-
-      {/* Broadcast antenna — centered in territory */}
-      <g className="hero-border-antenna">
-        {/* Guy wires */}
-        <line className="hero-antenna-wire" x1="55" y1="56" x2="28" y2="230" />
-        <line className="hero-antenna-wire" x1="55" y1="56" x2="82" y2="230" />
-        {/* Base platform */}
-        <rect className="hero-antenna-base" x="38" y="228" width="34" height="5" rx="1" />
-        {/* Mast */}
-        <line className="hero-antenna-mast" x1="55" y1="44" x2="55" y2="229" />
-        {/* Crossbars — widest at center, narrowing toward top */}
-        <line className="hero-antenna-bar" x1="22" y1="108" x2="88" y2="108" />
-        <line className="hero-antenna-bar" x1="28" y1="140" x2="82" y2="140" />
-        <line className="hero-antenna-bar" x1="33" y1="168" x2="77" y2="168" />
-        <line className="hero-antenna-bar" x1="38" y1="196" x2="72" y2="196" />
-        <line className="hero-antenna-bar" x1="43" y1="218" x2="67" y2="218" />
-        {/* Blinking tip */}
-        <circle className="hero-antenna-tip-dot" cx="55" cy="41" r="3" />
-        {/* Signal arcs — concentric semicircles opening rightward from tip */}
-        <path className="hero-antenna-signal hero-antenna-signal--s1" d="M55 24 A18 18 0 0 1 55 60" />
-        <path className="hero-antenna-signal hero-antenna-signal--s2" d="M55 12 A30 30 0 0 1 55 72" />
-        <path className="hero-antenna-signal hero-antenna-signal--s3" d="M55 0 A42 42 0 0 1 55 84" />
-      </g>
-
-      {/* Territory labels */}
-      <text className="hero-border-territory" x="77" y="249" textAnchor="middle">ADVERSARY</text>
-      <text className="hero-border-sublabel" x="77" y="263" textAnchor="middle">SURVEILLANCE ZONE</text>
-
-      {/* Launch-site reticles — targeting marks on the border at each threat origin */}
-      {podData.map((pod) => (
-        <g
-          key={pod.id}
-          className="hero-border-post"
-          style={{ '--pod-color': pod.color, '--pod-delay': pod.delay } as CSSProperties}
-        >
-          {/* Outer targeting ring */}
-          <circle className="hero-border-site-ring" cx="154" cy={pod.y} r="11" />
-          {/* Crosshair lines straddling the border */}
-          <line className="hero-border-site-cross" x1="136" y1={pod.y} x2="172" y2={pod.y} />
-          <line className="hero-border-site-cross" x1="154" y1={pod.y - 18} x2="154" y2={pod.y + 18} />
-          {/* Center dot */}
-          <circle className="hero-border-site-dot" cx="154" cy={pod.y} r="2.5" />
-          {/* Launch flash */}
-          <circle className="hero-pod-flash" cx="154" cy={pod.y} r="14" />
+    <g className="hero-ad-tower" transform="translate(84 0)">
+      <ellipse className="hero-ad-shadow" cx="49" cy="239" rx="58" ry="10" />
+      <polygon className="hero-ad-tower-side-fill" points="64,82 76,76 102,225 91,232" />
+      <polygon className="hero-ad-tower-fill" points="38,82 64,82 91,232 8,232" />
+      <polygon className="hero-ad-tower-top-cap" points="38,82 64,82 76,76 49,76" />
+      {rings.map((ring) => (
+        <g key={ring.y}>
+          <line className="hero-ad-tower-ring" x1={ring.l} y1={ring.y} x2={ring.r} y2={ring.y} />
+          <line className="hero-ad-tower-side-ring" x1={ring.r} y1={ring.y} x2={ring.r + 9} y2={ring.y - 5} />
         </g>
       ))}
+      <line className="hero-ad-tower-leg hero-ad-tower-leg--edge" x1="38" y1="82" x2="8" y2="232" />
+      <line className="hero-ad-tower-leg hero-ad-tower-leg--edge" x1="64" y1="82" x2="91" y2="232" />
+      <line className="hero-ad-tower-leg hero-ad-tower-leg--rear" x1="76" y1="76" x2="102" y2="225" />
+      <line className="hero-ad-tower-leg" x1="46" y1="85" x2="29" y2="232" />
+      <line className="hero-ad-tower-leg" x1="57" y1="85" x2="73" y2="232" />
+      {rings.slice(0, -1).map((top, index) => {
+        const bottom = rings[index + 1];
+        return (
+          <g key={`tower-brace-${top.y}`}>
+            <line className="hero-ad-tower-brace" x1={top.l} y1={top.y} x2={bottom.r} y2={bottom.y} />
+            <line className="hero-ad-tower-brace" x1={top.r} y1={top.y} x2={bottom.l} y2={bottom.y} />
+          </g>
+        );
+      })}
+      <line className="hero-ad-tower-foot" x1="8" y1="232" x2="-8" y2="242" />
+      <line className="hero-ad-tower-foot" x1="8" y1="232" x2="27" y2="243" />
+      <line className="hero-ad-tower-foot" x1="91" y1="232" x2="69" y2="243" />
+      <line className="hero-ad-tower-foot" x1="91" y1="232" x2="108" y2="241" />
+      <ellipse className="hero-ad-tower-pad" cx="-8" cy="242" rx="5" ry="1.8" />
+      <ellipse className="hero-ad-tower-pad" cx="27" cy="243" rx="5" ry="1.8" />
+      <ellipse className="hero-ad-tower-pad" cx="69" cy="243" rx="5" ry="1.8" />
+      <ellipse className="hero-ad-tower-pad" cx="108" cy="241" rx="5" ry="1.8" />
+
+      <g className="hero-ad-launcher">
+        <ellipse className="hero-ad-launcher-ring" cx="52" cy="82" rx="34" ry="8.2" />
+        <polygon className="hero-ad-launcher-top" points="27,74 74,74 88,64 42,64" />
+        <polygon className="hero-ad-launcher-face" points="32,74 74,74 69,54 38,54" />
+        <polygon className="hero-ad-launcher-side" points="74,74 88,64 82,47 69,54" />
+        <path className="hero-ad-launcher-detail" d="M41 60 H65 M39 66 H69" />
+        <path className="hero-ad-barrel" d="M72 62 L89 58 H112 V67 H89 Z" />
+        <ellipse className="hero-ad-muzzle" cx="112" cy="62" rx="3.2" ry="5.2" />
+      </g>
+
+      {threats.map((t) => (
+        <ellipse key={t.id} className="hero-muzzle-flash"
+          cx="112" cy="62" rx="15" ry="8"
+          style={{ '--pod-delay': t.delay, '--threat': t.color } as CSSProperties}
+        />
+      ))}
+
+      <line className="hero-ad-antenna" x1="52" y1="54" x2="52" y2="32" />
+      <path className="hero-ad-antenna-cross" d="M42 43 H62 M46 38 H58" />
+      <circle className="hero-antenna-tip-dot" cx="52" cy="32" r="2.2" />
+    </g>
+  );
+}
+
+function RightFence() {
+  const posts = [
+    { foot: { x: 224, y: 268 }, top: { x: 224, y: 196 }, w: 7 },
+    { foot: { x: 242, y: 214 }, top: { x: 242, y: 157 }, w: 6 },
+    { foot: { x: 263, y: 150 }, top: { x: 263, y: 105 }, w: 5 },
+    { foot: { x: 286, y: 88 }, top: { x: 286, y: 51 }, w: 4 },
+  ];
+  const meshSteps = [0, 0.07, 0.14, 0.21, 0.28, 0.35, 0.42, 0.49, 0.56, 0.63, 0.7, 0.77, 0.84, 0.91];
+  const cableHeights = [0.24, 0.48, 0.72];
+  const wireLoops = [0.08, 0.2, 0.32, 0.44, 0.56, 0.68, 0.8, 0.92];
+  const topStart = posts[0].top;
+  const topEnd = posts[posts.length - 1].top;
+  const bottomStart = posts[0].foot;
+  const bottomEnd = posts[posts.length - 1].foot;
+  const pointOn = (start: typeof topStart, end: typeof topStart, amount: number) => interpolatePoint(start, end, amount);
+  const topPath = posts.map((post, index) => `${index === 0 ? 'M' : 'L'}${post.top.x} ${post.top.y}`).join(' ');
+  const cablePath = (height: number) => posts.map((post, index) => {
+    const mid = interpolatePoint(post.top, post.foot, height);
+    return `${index === 0 ? 'M' : 'L'}${mid.x.toFixed(1)} ${mid.y.toFixed(1)}`;
+  }).join(' ');
+  const footPath = posts.map((post, index) => `${index === 0 ? 'M' : 'L'}${post.foot.x} ${post.foot.y}`).join(' ');
+
+  return (
+    <g className="hero-ad-fence">
+      <polygon className="hero-ad-fence-shadow" points="216,273 292,88 319,91 242,282" />
+      <polygon className="hero-ad-fence-net" points="224,196 286,51 286,88 224,268" />
+      {meshSteps.map((step) => {
+        const topA = pointOn(topStart, topEnd, step);
+        const bottomB = pointOn(bottomStart, bottomEnd, Math.min(step + 0.08, 1));
+        const bottomA = pointOn(bottomStart, bottomEnd, step);
+        const topB = pointOn(topStart, topEnd, Math.min(step + 0.08, 1));
+        return (
+          <g key={step}>
+            <line className="hero-ad-fence-mesh-line" x1={topA.x} y1={topA.y} x2={bottomB.x} y2={bottomB.y} />
+            <line className="hero-ad-fence-mesh-line hero-ad-fence-mesh-line--back" x1={bottomA.x} y1={bottomA.y} x2={topB.x} y2={topB.y} />
+          </g>
+        );
+      })}
+      <path className="hero-ad-fence-rail hero-ad-fence-rail--top" d={topPath} />
+      {cableHeights.map((height) => (
+        <path key={height} className="hero-ad-fence-rail hero-ad-fence-rail--mid" d={cablePath(height)} />
+      ))}
+      <path className="hero-ad-fence-rail" d={footPath} />
+      {wireLoops.map((step) => {
+        const point = pointOn(topStart, topEnd, step);
+        return <ellipse key={step} className="hero-ad-fence-wire-loop" cx={point.x} cy={point.y - 5} rx="7" ry="2.4" transform={`rotate(-66 ${point.x} ${point.y - 5})`} />;
+      })}
+      <g className="hero-fence-electric" aria-hidden="true">
+        <path className="hero-fence-bolt hero-fence-bolt--a" d="M238 171 L249 158 L245 173 L257 164" />
+        <path className="hero-fence-bolt hero-fence-bolt--b" d="M260 116 L270 104 L267 118 L278 110" />
+        <path className="hero-fence-bolt hero-fence-bolt--c" d="M226 218 L237 206 L233 221 L245 212" />
+      </g>
+      {posts.map((post) => (
+        <g key={post.foot.y}>
+          <ellipse className="hero-ad-fence-foot" cx={post.foot.x + post.w * 0.5} cy={post.foot.y + 3} rx={post.w * 1.65} ry={post.w * 0.5} />
+          <polygon className="hero-ad-fence-cap" points={`${post.top.x - 2},${post.top.y + 1} ${post.top.x + post.w + 2},${post.top.y - 2} ${post.top.x + post.w + 6},${post.top.y - 7} ${post.top.x + 2},${post.top.y - 4}`} />
+          <polygon className="hero-ad-fence-post" points={`${post.foot.x},${post.foot.y} ${post.foot.x + post.w},${post.foot.y - 1.8} ${post.top.x + post.w},${post.top.y - 2.4} ${post.top.x},${post.top.y}`} />
+          <polygon className="hero-ad-fence-post-side" points={`${post.foot.x + post.w},${post.foot.y - 1.8} ${post.foot.x + post.w + 4},${post.foot.y - 5} ${post.top.x + post.w + 4},${post.top.y - 6} ${post.top.x + post.w},${post.top.y - 2.4}`} />
+        </g>
+      ))}
+    </g>
+  );
+}
+
+function PowerCables() {
+  const towerCable = 'M132 234 C121 215 123 198 136 181 C151 160 137 141 149 121 C158 105 151 91 136 82';
+  const fenceCable = 'M139 244 C165 240 196 218 224 196';
+
+  return (
+    <g className="hero-power-cables" aria-hidden="true">
+      <path className="hero-power-cable-shadow" d={towerCable} />
+      <path className="hero-power-cable-shadow" d={fenceCable} />
+      <path className="hero-power-cable hero-power-cable--tower" d={towerCable} />
+      <path className="hero-power-cable hero-power-cable--fence" d={fenceCable} />
+      <path className="hero-power-pulse hero-power-pulse--tower" d={towerCable} />
+      <path className="hero-power-pulse hero-power-pulse--fence" d={fenceCable} />
+      <path className="hero-power-spark hero-power-spark--a" d="M130 185 L138 176 L136 187 L146 182" />
+      <path className="hero-power-spark hero-power-spark--b" d="M145 124 L153 115 L151 126 L160 121" />
+      <path className="hero-power-spark hero-power-spark--c" d="M183 225 L193 216 L190 228 L201 222" />
+    </g>
+  );
+}
+
+function StageFloor() {
+  return (
+    <g className="hero-stage-floor">
+      <ellipse className="hero-fence-island-shadow" cx="260" cy="242" rx="76" ry="18" />
+      <polygon className="hero-stage-floor-slab" points="214,272 230,198 286,58 320,73 272,286" />
+      <polygon className="hero-fence-island-side" points="214,272 272,286 320,73 318,87 274,296 212,281" />
+      <path className="hero-floor-seam" d="M226 258 L244 202 L288 83 M246 278 L264 210 L305 86" />
+      <path className="hero-floor-seam hero-floor-seam--cross" d="M224 222 L306 87 M218 248 L292 145 M214 272 L274 286" />
+      <path className="hero-fence-island-fade" d="M278 73 C306 82 323 101 330 130 C315 105 300 93 278 88 Z" />
+    </g>
+  );
+}
+
+function PowerGenerator() {
+  const SDX = 10, SDY = -6;
+
+  return (
+    <g className="hero-generator">
+      <ellipse className="hero-generator-shadow" cx="88" cy="271" rx="66" ry="9" />
+      <line className="hero-generator-skid" x1="38" y1="263" x2="142" y2="257" />
+      <line className="hero-generator-skid" x1="46" y1="270" x2="148" y2="264" />
+      <polygon className="hero-generator-side" points={`142,218 ${142 + SDX},${218 + SDY} ${142 + SDX},${255 + SDY} 142,262`} />
+      <polygon className="hero-generator-top" points={`34,226 142,218 ${142 + SDX},${218 + SDY} ${34 + SDX},${226 + SDY}`} />
+      <polygon className="hero-generator-face" points="34,226 142,218 142,262 34,270" />
+      <polygon className="hero-generator-stripe" points="34,226 142,218 142,230 34,238" />
+      {[0, 1, 2, 3, 4, 5, 6, 7].map((index) => (
+        <polygon key={index} className="hero-generator-mark" points={`${41 + index * 12},225.5 ${49 + index * 12},225 ${45 + index * 12},237 ${37 + index * 12},237.6`} />
+      ))}
+      <path className="hero-generator-vent" d="M48 243 L76 241 M48 249 L78 247 M48 255 L73 253" />
+      <polygon className="hero-generator-panel" points="44,240 84,237 84,258 44,261" />
+      <ellipse className="hero-generator-core" cx="113" cy="241" rx="15" ry="17" />
+      <ellipse className="hero-generator-core-ring" cx="113" cy="241" rx="9" ry="11" />
+      <path className="hero-generator-bolt-icon" d="M114 229 L104 243 H113 L108 254 L123 237 H115 Z" />
+      <circle className="hero-generator-port" cx="136" cy="236" r="3.2" />
+      <circle className="hero-generator-port hero-generator-port--lower" cx="139" cy="247" r="2.6" />
+      <circle className="hero-generator-bolt" cx="41" cy="239" r="1.6" />
+      <circle className="hero-generator-bolt" cx="137" cy="232" r="1.6" />
+      <circle className="hero-generator-bolt" cx="41" cy="265" r="1.6" />
+      <circle className="hero-generator-bolt" cx="137" cy="257" r="1.6" />
+      <text className="hero-generator-title" x="64" y="268" textAnchor="middle" transform="rotate(-4 64 268)">GRID CORE</text>
+    </g>
+  );
+}
+
+function TerrainIsland() {
+  return (
+    <g className="hero-terrain-island">
+      <ellipse className="hero-island-shadow" cx="134" cy="247" rx="82" ry="16" />
+      <polygon className="hero-island-top" points="58,244 103,204 175,196 208,220 166,253 74,260" />
+      <polygon className="hero-island-side" points="74,260 166,253 208,220 203,232 166,264 70,269" />
+      <path className="hero-island-ridge" d="M82 244 L148 205 M107 257 L185 220 M68 253 L115 215" />
+      <path className="hero-island-front" d="M74 260 L166 253 L203 232" />
+    </g>
+  );
+}
+
+function GeneratorIsland() {
+  return (
+    <g className="hero-generator-island">
+      <ellipse className="hero-generator-island-shadow" cx="88" cy="275" rx="82" ry="12" />
+      <polygon className="hero-generator-island-top" points="10,268 49,241 127,236 163,257 126,283 24,286" />
+      <polygon className="hero-generator-island-side" points="24,286 126,283 163,257 158,267 125,293 20,293" />
+      <path className="hero-generator-island-ridge" d="M24 270 L80 244 M49 282 L132 255 M14 278 L55 249" />
+    </g>
+  );
+}
+
+function ThreatBorder() {
+  return (
+    <g className="hero-threat-border" aria-hidden="true">
+      <StageFloor />
+      <TerrainIsland />
+      <GeneratorIsland />
+      <PowerCables />
+      <RightFence />
+
+      <MeshTower />
+
+      <circle className="hero-signal-ring hero-signal-ring--s1" cx="136" cy="32" r="4" />
+      <circle className="hero-signal-ring hero-signal-ring--s2" cx="136" cy="32" r="4" />
+      <circle className="hero-signal-ring hero-signal-ring--s3" cx="136" cy="32" r="4" />
+
+      <PowerGenerator />
     </g>
   );
 }
@@ -695,13 +862,37 @@ export default function HeroShield() {
             <path d="M754 43 H772 C772 57 754 57 754 43Z" />
             <path d="M780 43 H798 C798 57 780 57 780 43Z" />
           </clipPath>
-          <linearGradient id="hero-border-zone-grad" x1="0" x2="1" y1="0" y2="0">
-            <stop offset="0%" stopColor="#0e0204" stopOpacity="0.92" />
-            <stop offset="100%" stopColor="#1a0507" stopOpacity="0.84" />
+          <linearGradient id="hero-border-zone-grad" x1="0" x2="1" y1="0" y2="1">
+            <stop offset="0%" stopColor="#03060e" />
+            <stop offset="55%" stopColor="#060a18" />
+            <stop offset="100%" stopColor="#0a0e1e" stopOpacity="0.72" />
           </linearGradient>
-          <pattern id="hero-border-hatch" x="0" y="0" width="10" height="10" patternUnits="userSpaceOnUse">
-            <line x1="0" y1="10" x2="10" y2="0" stroke="rgba(210,50,30,0.13)" strokeWidth="1.2" strokeLinecap="round" />
+          <pattern id="hero-border-hatch" x="0" y="0" width="12" height="12" patternUnits="userSpaceOnUse">
+            <line x1="0" y1="12" x2="12" y2="0" stroke="rgba(255, 86, 62, 0.055)" strokeWidth="0.9" />
+            <line x1="0" y1="0" x2="12" y2="12" stroke="rgba(255, 140, 112, 0.035)" strokeWidth="0.7" />
           </pattern>
+          {/* Chain-link diamond mesh for fence panel fill */}
+          <pattern id="hero-fence-mesh-pat" x="0" y="0" width="9" height="9" patternUnits="userSpaceOnUse">
+            <line x1="0" y1="0" x2="4.5" y2="4.5" stroke="rgba(255, 146, 120, 0.48)" strokeWidth="0.7" />
+            <line x1="4.5" y1="4.5" x2="9" y2="0" stroke="rgba(255, 146, 120, 0.48)" strokeWidth="0.7" />
+            <line x1="0" y1="4.5" x2="4.5" y2="9" stroke="rgba(210, 92, 74, 0.42)" strokeWidth="0.65" />
+            <line x1="4.5" y1="9" x2="9" y2="4.5" stroke="rgba(210, 92, 74, 0.42)" strokeWidth="0.65" />
+          </pattern>
+          <pattern id="hero-fence-mesh" width="6" height="6" patternUnits="userSpaceOnUse">
+            <path d="M0 0 L6 6 M6 0 L0 6" stroke="rgba(255, 255, 255, 0.16)" strokeWidth="0.45" />
+          </pattern>
+          <pattern id="hero-hazard-stripes" width="10" height="10" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+            <rect width="5" height="10" fill="#7f1d1d" />
+            <rect x="5" width="5" height="10" fill="#18181b" />
+          </pattern>
+
+          {/* Concrete Quarantine Wall Gradients */}
+          <linearGradient id="hero-concrete-grad" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stopColor="#2c2c31" />
+            <stop offset="40%" stopColor="#3a3a41" />
+            <stop offset="80%" stopColor="#25252a" />
+            <stop offset="100%" stopColor="#1c1c1f" />
+          </linearGradient>
         </defs>
 
         <ellipse className="hero-defense-floor" cx="520" cy="254" rx="350" ry="24" />
