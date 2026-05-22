@@ -122,10 +122,10 @@ main {
 
 .hero-section {
   position: relative;
-  min-height: 720px;
+  min-height: 620px;
   display: grid;
   place-items: center;
-  padding: clamp(96px, 14vh, 154px) 0 56px;
+  padding: clamp(60px, 10vh, 100px) 0 32px;
   text-align: center;
   overflow: hidden;
   border-radius: 0;
@@ -208,8 +208,8 @@ main {
 
 .hero-section h1 {
   max-width: 940px;
-  margin-top: 14px;
-  font-size: clamp(50px, 8vw, 104px);
+  margin-top: 10px;
+  font-size: clamp(38px, 6.5vw, 72px);
   font-weight: 900;
   line-height: 0.92;
   letter-spacing: 0;
@@ -221,9 +221,9 @@ main {
 
 .hero-lede {
   max-width: 680px;
-  margin-top: 20px;
+  margin-top: 14px;
   color: var(--text-soft);
-  font-size: clamp(16px, 1.7vw, 20px);
+  font-size: clamp(14px, 1.4vw, 16px);
   line-height: 1.58;
 }
 
@@ -232,8 +232,8 @@ main {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 10px;
-  margin-top: 28px;
+  gap: 8px;
+  margin-top: 18px;
 }
 
 .hero-actions a,
@@ -242,8 +242,9 @@ main {
 }
 
 .hero-action {
-  height: 40px;
-  padding-inline: 16px;
+  height: 36px;
+  padding-inline: 14px;
+  font-size: 13px;
 }
 
 .hero-action svg,

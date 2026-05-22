@@ -1,7 +1,7 @@
 .hero-defense {
-  width: min(920px, calc(100vw - 28px));
-  height: clamp(250px, 26vw, 320px);
-  margin: 0 auto 14px;
+  width: min(780px, calc(100vw - 28px));
+  height: clamp(200px, 22vw, 260px);
+  margin: 0 auto 8px;
   display: grid;
   place-items: center;
   perspective: 900px;
@@ -327,7 +327,7 @@
 .hero-shield-body {
   transform-box: fill-box;
   transform-origin: center;
-  animation: shield-breathe 5.5s ease-in-out infinite, shield-glow-pulse 3.8s ease-in-out infinite;
+  animation: shield-breathe 5.5s ease-in-out infinite;
 }
 
 @keyframes shield-glow-pulse {
@@ -770,12 +770,12 @@
 
 .hero-cursor-smoke {
   opacity: 0;
-  will-change: transform, opacity, filter;
+  will-change: transform, opacity;
 }
 
 .hero-cursor-smoke-cloud {
   paint-order: fill stroke markers;
-  filter: saturate(1.2);
+  filter: none;
 }
 
 .hero-cursor-reticle {
@@ -783,25 +783,25 @@
 }
 
 .hero-cursor-charge-ring {
-  filter: drop-shadow(0 0 7px rgba(255, 63, 87, 0.62));
+  filter: none;
   will-change: r, opacity;
 }
 
 .hero-cursor-shot-ring {
-  filter: drop-shadow(0 0 10px rgba(255, 63, 87, 0.72));
-  mix-blend-mode: screen;
+  filter: none;
+  mix-blend-mode: normal;
   will-change: r, opacity;
 }
 
 .hero-cursor-h,
 .hero-cursor-v {
   opacity: 0.96;
-  filter: drop-shadow(0 0 4px rgba(255, 63, 87, 0.68));
+  filter: none;
   stroke-linecap: round;
 }
 
 .hero-cursor-center {
-  filter: drop-shadow(0 0 6px rgba(255, 63, 87, 0.84));
+  filter: none;
   will-change: r, opacity;
 }
 
@@ -1565,10 +1565,30 @@
   .hero-power-spark,
   .hero-fence-bolt,
   .hero-generator-core,
-  .hero-generator-core-ring { animation: none; }
+  .hero-generator-core-ring,
+  .hero-generator-smoke-puff { animation: none; }
 }
 
 /* ── Clean adversary redraw: side-view border, tower island, clear right field ── */
+.hero-territory-floor-slab {
+  fill: rgba(11, 10, 14, 0.92);
+  stroke: rgba(178, 186, 195, 0.12);
+  stroke-width: 0.6;
+}
+
+.hero-territory-floor-front {
+  fill: rgba(6, 5, 9, 0.98);
+  stroke: rgba(178, 186, 195, 0.09);
+  stroke-width: 0.5;
+}
+
+.hero-territory-horizon-fade {
+  fill: rgba(57, 16, 18, 0.22);
+  stroke: rgba(255, 93, 67, 0.07);
+  stroke-width: 0.6;
+  filter: none;
+}
+
 .hero-stage-floor {
   opacity: 1;
   mask-image: none;
@@ -1679,7 +1699,7 @@
 }
 
 .hero-power-cables {
-  filter: drop-shadow(0 0 5px rgba(255, 66, 46, 0.18));
+  filter: none;
 }
 
 .hero-power-cable-shadow,
@@ -1692,16 +1712,16 @@
 
 .hero-power-cable-shadow {
   stroke: rgba(0, 0, 0, 0.58);
-  stroke-width: 5.6;
+  stroke-width: 4.4;
 }
 
 .hero-power-cable {
-  stroke: rgba(36, 38, 43, 0.98);
-  stroke-width: 3.4;
+  stroke: rgba(150, 27, 23, 0.98);
+  stroke-width: 2.05;
 }
 
 .hero-power-cable--tower {
-  stroke-dasharray: 1.6 5.2;
+  stroke: rgba(178, 34, 28, 0.98);
 }
 
 .hero-power-cable--fence {
@@ -1709,9 +1729,9 @@
 }
 
 .hero-power-pulse {
-  stroke: rgba(255, 74, 52, 0.88);
-  stroke-width: 1.35;
-  stroke-dasharray: 10 76;
+  stroke: rgba(255, 104, 78, 0.82);
+  stroke-width: 0.78;
+  stroke-dasharray: 8 92;
   animation: hero-power-flow 2.2s linear infinite;
 }
 
@@ -1720,15 +1740,39 @@
   animation-delay: -0.55s;
 }
 
-.hero-power-spark,
-.hero-fence-bolt {
+.hero-wire-wrap {
+  fill: none;
+  stroke: rgba(255, 82, 60, 0.78);
+  stroke-width: 0.68;
+  filter: none;
+}
+
+.hero-wire-wrap--b {
+  opacity: 0.88;
+}
+
+.hero-wire-wrap--c {
+  opacity: 0.72;
+}
+
+.hero-power-spark {
   fill: none;
   stroke: rgba(255, 91, 66, 0.95);
   stroke-width: 1.35;
   stroke-linecap: round;
   stroke-linejoin: round;
-  filter: drop-shadow(0 0 5px rgba(255, 66, 46, 0.62));
+  filter: none;
   animation: hero-electric-flicker 1.5s steps(2, end) infinite;
+}
+
+.hero-fence-bolt {
+  fill: none;
+  stroke: rgba(113, 206, 255, 0.95);
+  stroke-width: 1.05;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  filter: none;
+  animation: hero-electric-flicker 1.35s steps(2, end) infinite;
 }
 
 .hero-power-spark--b,
@@ -1739,10 +1783,6 @@
 .hero-power-spark--c,
 .hero-fence-bolt--c {
   animation-delay: -0.9s;
-}
-
-.hero-fence-bolt {
-  stroke-width: 1.05;
 }
 
 @keyframes hero-power-flow {
@@ -1758,7 +1798,7 @@
 }
 
 .hero-ad-tower {
-  filter: drop-shadow(0 9px 14px rgba(0, 0, 0, 0.55));
+  filter: none;
 }
 
 .hero-ad-shadow {
@@ -1875,17 +1915,68 @@
   fill: none;
   stroke: rgba(255, 64, 48, 0.62);
   stroke-width: 1.2px;
-  filter: drop-shadow(0 0 5px rgba(255, 55, 36, 0.42));
+  filter: none;
 }
 
 .hero-muzzle-flash {
   fill: var(--threat, #ff4030);
-  filter: blur(1.6px);
-  mix-blend-mode: screen;
+  filter: none;
+  mix-blend-mode: normal;
+  opacity: 0.32;
 }
 
 .hero-ad-fence {
   opacity: 1;
+}
+
+.hero-ad-fence-return {
+  opacity: 0.78;
+  filter: none;
+}
+
+.hero-ad-fence-corner {
+  opacity: 0.72;
+  filter: none;
+}
+
+.hero-ad-fence-return .hero-ad-fence-mesh-line,
+.hero-ad-fence-corner .hero-ad-fence-mesh-line {
+  stroke: rgba(207, 214, 221, 0.16);
+}
+
+.hero-ad-fence-return .hero-ad-fence-mesh-line--back,
+.hero-ad-fence-corner .hero-ad-fence-mesh-line--back {
+  stroke: rgba(255, 95, 70, 0.08);
+}
+
+.hero-ad-fence-return .hero-ad-fence-post,
+.hero-ad-fence-return .hero-ad-fence-post-side,
+.hero-ad-fence-return .hero-ad-fence-cap,
+.hero-ad-fence-corner .hero-ad-fence-post,
+.hero-ad-fence-corner .hero-ad-fence-post-side,
+.hero-ad-fence-corner .hero-ad-fence-cap {
+  opacity: 0.82;
+}
+
+.hero-ad-fence-return-rail {
+  fill: none;
+  stroke: rgba(232, 236, 240, 0.3);
+  stroke-width: 0.76;
+  stroke-linecap: round;
+  stroke-dasharray: 7 10;
+}
+
+.hero-ad-fence-return-rail--low {
+  stroke: rgba(255, 95, 70, 0.14);
+  stroke-width: 0.66;
+}
+
+.hero-ad-fence-vapor {
+  fill: none;
+  stroke: rgba(255, 90, 62, 0.07);
+  stroke-width: 8;
+  filter: none;
+  opacity: 0.52;
 }
 
 .hero-ad-fence-shadow {
@@ -1955,7 +2046,30 @@
 }
 
 .hero-generator {
-  filter: drop-shadow(0 8px 12px rgba(0, 0, 0, 0.52));
+  filter: none;
+}
+
+.hero-generator-smoke {
+  opacity: 0.95;
+  pointer-events: none;
+}
+
+.hero-generator-smoke-puff {
+  fill: rgba(180, 189, 198, 0.34);
+  filter: none;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: hero-generator-smoke 2.8s ease-out infinite;
+}
+
+.hero-generator-smoke-puff--b {
+  animation-delay: -1s;
+  opacity: 0.78;
+}
+
+.hero-generator-smoke-puff--c {
+  animation-delay: -2s;
+  opacity: 0.68;
 }
 
 .hero-generator-shadow {
@@ -1992,6 +2106,7 @@
 
 .hero-generator-mark {
   fill: rgba(0, 0, 0, 0.32);
+  opacity: 0.72;
 }
 
 .hero-generator-panel {
@@ -2007,12 +2122,38 @@
   stroke-linecap: round;
 }
 
+.hero-generator-exhaust-pipe {
+  fill: none;
+  stroke: rgba(194, 202, 211, 0.72);
+  stroke-width: 1.75;
+  stroke-linecap: round;
+}
+
+.hero-generator-muffler {
+  fill: rgba(20, 21, 25, 0.98);
+  stroke: rgba(213, 218, 224, 0.5);
+  stroke-width: 0.72;
+}
+
+.hero-generator-muffler-cap {
+  fill: rgba(7, 8, 11, 0.98);
+  stroke: rgba(213, 218, 224, 0.42);
+  stroke-width: 0.55;
+}
+
+.hero-generator-exhaust-nozzle {
+  fill: none;
+  stroke: rgba(194, 202, 211, 0.62);
+  stroke-width: 1.2;
+  stroke-linecap: round;
+}
+
 .hero-generator-core,
 .hero-generator-core-ring {
   fill: rgba(12, 13, 17, 0.92);
   stroke: rgba(255, 82, 60, 0.82);
   stroke-width: 1.2;
-  filter: drop-shadow(0 0 7px rgba(255, 69, 48, 0.42));
+  filter: none;
   transform-box: fill-box;
   transform-origin: center;
 }
@@ -2030,14 +2171,14 @@
 
 .hero-generator-bolt-icon {
   fill: rgba(255, 95, 70, 0.92);
-  filter: drop-shadow(0 0 5px rgba(255, 69, 48, 0.58));
+  filter: none;
 }
 
 .hero-generator-port {
   fill: rgba(255, 83, 61, 0.96);
   stroke: rgba(8, 8, 12, 0.9);
   stroke-width: 0.8;
-  filter: drop-shadow(0 0 5px rgba(255, 69, 48, 0.52));
+  filter: none;
 }
 
 .hero-generator-port--lower {
@@ -2051,13 +2192,28 @@
   stroke-width: 0.4;
 }
 
-.hero-generator-title {
-  fill: rgba(226, 231, 236, 0.9);
+.hero-generator-title,
+.hero-generator-sub {
+  fill: rgba(255, 239, 233, 0.98);
   font-family: var(--font-mono);
-  font-size: 5.4px;
-  font-weight: 800;
-  letter-spacing: 0.12em;
   text-transform: uppercase;
+  paint-order: stroke;
+  stroke: rgba(84, 12, 10, 0.72);
+  stroke-width: 0.7px;
+}
+
+.hero-generator-title {
+  font-size: 7.2px;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+}
+
+.hero-generator-sub {
+  fill: rgba(255, 216, 207, 0.96);
+  font-size: 4.05px;
+  font-weight: 800;
+  letter-spacing: 0.055em;
+  stroke-width: 0.5px;
 }
 
 @keyframes hero-generator-hum {
@@ -2068,4 +2224,10 @@
 @keyframes hero-generator-ring {
   0%, 100% { transform: scale(1); opacity: 0.56; }
   50%      { transform: scale(1.08); opacity: 0.96; }
+}
+
+@keyframes hero-generator-smoke {
+  0%   { transform: translateY(0) scale(0.8); opacity: 0; }
+  18%  { opacity: 0.72; }
+  100% { transform: translateY(-22px) scale(1.75); opacity: 0; }
 }

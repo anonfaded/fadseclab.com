@@ -4,11 +4,11 @@ import { useCallback, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import type { CSSProperties, RefObject } from 'react';
 
-// All arrows fire from the single tower launcher muzzle.
+// All arrows fire from the single tower launcher muzzle (scaled tower: muzzle now at 236,71).
 const threats = [
-  { id: 'trackers', label: 'Trackers', lane: 82, delay: '0s', color: '#ff5a45', path: 'M196 62 C330 32 510 62 650 106' },
-  { id: 'brokers', label: 'Data brokers', lane: 132, delay: '1.35s', color: '#ff3f35', path: 'M196 62 C328 76 514 112 652 132' },
-  { id: 'spyware', label: 'Spyware', lane: 182, delay: '2.7s', color: '#ff7264', path: 'M196 62 C320 128 486 188 646 154' },
+  { id: 'trackers', label: 'Trackers', lane: 82, delay: '0s', color: '#ff5a45', path: 'M236 71 C378 43 560 71 700 115' },
+  { id: 'brokers', label: 'Data brokers', lane: 132, delay: '1.35s', color: '#ff3f35', path: 'M236 71 C382 87 565 123 702 141' },
+  { id: 'spyware', label: 'Spyware', lane: 182, delay: '2.7s', color: '#ff7264', path: 'M236 71 C368 137 544 197 696 163' },
 ];
 
 const shieldPath = 'M90 4 C118 12 146 18 168 30 L160 128 C154 178 126 214 90 238 C54 214 26 178 20 128 L12 30 C34 18 62 12 90 4Z';
@@ -83,7 +83,7 @@ function MeshTower() {
   ];
 
   return (
-    <g className="hero-ad-tower" transform="translate(84 0)">
+    <g className="hero-ad-tower" transform="translate(135 15) scale(0.9)">
       <ellipse className="hero-ad-shadow" cx="49" cy="239" rx="58" ry="10" />
       <polygon className="hero-ad-tower-side-fill" points="64,82 76,76 102,225 91,232" />
       <polygon className="hero-ad-tower-fill" points="38,82 64,82 91,232 8,232" />
@@ -141,85 +141,170 @@ function MeshTower() {
   );
 }
 
-function RightFence() {
-  const posts = [
-    { foot: { x: 224, y: 268 }, top: { x: 224, y: 196 }, w: 7 },
-    { foot: { x: 242, y: 214 }, top: { x: 242, y: 157 }, w: 6 },
-    { foot: { x: 263, y: 150 }, top: { x: 263, y: 105 }, w: 5 },
-    { foot: { x: 286, y: 88 }, top: { x: 286, y: 51 }, w: 4 },
-  ];
-  const meshSteps = [0, 0.07, 0.14, 0.21, 0.28, 0.35, 0.42, 0.49, 0.56, 0.63, 0.7, 0.77, 0.84, 0.91];
-  const cableHeights = [0.24, 0.48, 0.72];
-  const wireLoops = [0.08, 0.2, 0.32, 0.44, 0.56, 0.68, 0.8, 0.92];
-  const topStart = posts[0].top;
-  const topEnd = posts[posts.length - 1].top;
-  const bottomStart = posts[0].foot;
-  const bottomEnd = posts[posts.length - 1].foot;
-  const pointOn = (start: typeof topStart, end: typeof topStart, amount: number) => interpolatePoint(start, end, amount);
-  const topPath = posts.map((post, index) => `${index === 0 ? 'M' : 'L'}${post.top.x} ${post.top.y}`).join(' ');
-  const cablePath = (height: number) => posts.map((post, index) => {
-    const mid = interpolatePoint(post.top, post.foot, height);
-    return `${index === 0 ? 'M' : 'L'}${mid.x.toFixed(1)} ${mid.y.toFixed(1)}`;
-  }).join(' ');
-  const footPath = posts.map((post, index) => `${index === 0 ? 'M' : 'L'}${post.foot.x} ${post.foot.y}`).join(' ');
+// Shared fence helpers — used by both FenceUpperWall and FenceFrontWall
+type FencePost = { foot: { x: number; y: number }; top: { x: number; y: number }; w: number };
+const MESH_STEPS = [0, 0.12, 0.24, 0.36, 0.48, 0.6, 0.72, 0.84];
+const MID_HEIGHTS = [0.28, 0.56];
 
+function renderFenceMesh(posts: FencePost[]) {
+  const topStart = posts[0].top, topEnd = posts[posts.length - 1].top;
+  const bottomStart = posts[0].foot, bottomEnd = posts[posts.length - 1].foot;
+  return MESH_STEPS.map((step) => {
+    const tA = interpolatePoint(topStart, topEnd, step);
+    const bB = interpolatePoint(bottomStart, bottomEnd, Math.min(step + 0.08, 1));
+    const bA = interpolatePoint(bottomStart, bottomEnd, step);
+    const tB = interpolatePoint(topStart, topEnd, Math.min(step + 0.08, 1));
+    return (
+      <g key={`m${step}`}>
+        <line className="hero-ad-fence-mesh-line" x1={tA.x} y1={tA.y} x2={bB.x} y2={bB.y} />
+        <line className="hero-ad-fence-mesh-line hero-ad-fence-mesh-line--back" x1={bA.x} y1={bA.y} x2={tB.x} y2={tB.y} />
+      </g>
+    );
+  });
+}
+
+function renderFencePosts(posts: FencePost[]) {
+  return posts.map((post) => (
+    <g key={`p${post.foot.x}-${post.foot.y}`}>
+      <ellipse className="hero-ad-fence-foot" cx={post.foot.x + post.w * 0.5} cy={post.foot.y + 3} rx={post.w * 1.65} ry={post.w * 0.5} />
+      <polygon className="hero-ad-fence-cap" points={`${post.top.x - 2},${post.top.y + 1} ${post.top.x + post.w + 2},${post.top.y - 2} ${post.top.x + post.w + 6},${post.top.y - 7} ${post.top.x + 2},${post.top.y - 4}`} />
+      <polygon className="hero-ad-fence-post" points={`${post.foot.x},${post.foot.y} ${post.foot.x + post.w},${post.foot.y - 1.8} ${post.top.x + post.w},${post.top.y - 2.4} ${post.top.x},${post.top.y}`} />
+      <polygon className="hero-ad-fence-post-side" points={`${post.foot.x + post.w},${post.foot.y - 1.8} ${post.foot.x + post.w + 4},${post.foot.y - 5} ${post.top.x + post.w + 4},${post.top.y - 6} ${post.top.x + post.w},${post.top.y - 2.4}`} />
+    </g>
+  ));
+}
+
+function renderFenceSegment(posts: FencePost[], keyPrefix: string) {
+  const rail = (sel: 'top' | 'foot') =>
+    posts.map((p, i) => `${i === 0 ? 'M' : 'L'}${p[sel].x} ${p[sel].y}`).join(' ');
+  const midRail = (h: number) =>
+    posts.map((p, i) => {
+      const m = interpolatePoint(p.top, p.foot, h);
+      return `${i === 0 ? 'M' : 'L'}${m.x.toFixed(1)} ${m.y.toFixed(1)}`;
+    }).join(' ');
+  return (
+    <>
+      {renderFenceMesh(posts)}
+      <path className="hero-ad-fence-rail hero-ad-fence-rail--top" d={rail('top')} />
+      {MID_HEIGHTS.map((h) => <path key={`${keyPrefix}-mid-${h}`} className="hero-ad-fence-rail hero-ad-fence-rail--mid" d={midRail(h)} />)}
+      <path className="hero-ad-fence-rail" d={rail('foot')} />
+      {renderFencePosts(posts)}
+    </>
+  );
+}
+
+function TerritoryFloor() {
+  // Curved compound slab: right wall turns into a back run, then closes into the front fence.
+  return (
+    <g className="hero-territory-floor">
+      <path
+        className="hero-territory-floor-slab"
+        d="M286 88 C198 112 82 146 -55 190 C-142 215 -220 270 -294 323 L224 295 L224 268 Z"
+      />
+      <polygon className="hero-territory-floor-front"
+        points="224,295 -350,325 -350,337 224,308"
+      />
+      <path className="hero-territory-horizon-fade" d="M286 88 C198 112 82 146 -55 190 C-142 215 -220 270 -294 323 L-294 296 C-214 245 -138 205 -55 180 C78 141 197 108 286 88Z" />
+    </g>
+  );
+}
+
+function FenceUpperWall() {
+  const mainPosts: FencePost[] = [
+    { foot: { x: 224, y: 268 }, top: { x: 224, y: 196 }, w: 8 },
+    { foot: { x: 242, y: 214 }, top: { x: 242, y: 157 }, w: 7 },
+    { foot: { x: 263, y: 150 }, top: { x: 263, y: 105 }, w: 6 },
+    { foot: { x: 286, y: 88 }, top: { x: 286, y: 51 }, w: 5 },
+  ];
+  const returnPosts: FencePost[] = [
+    { foot: { x: 286, y: 88 }, top: { x: 286, y: 51 }, w: 5 },
+    { foot: { x: 248, y: 99 }, top: { x: 248, y: 62 }, w: 5 },
+    { foot: { x: 205, y: 112 }, top: { x: 205, y: 75 }, w: 5 },
+    { foot: { x: 155, y: 128 }, top: { x: 155, y: 91 }, w: 4 },
+    { foot: { x: 95, y: 146 }, top: { x: 95, y: 111 }, w: 4 },
+    { foot: { x: 25, y: 166 }, top: { x: 25, y: 132 }, w: 3 },
+    { foot: { x: -55, y: 190 }, top: { x: -55, y: 154 }, w: 3 },
+  ];
+  const cornerPosts: FencePost[] = [
+    { foot: { x: -55, y: 190 }, top: { x: -55, y: 154 }, w: 3 },
+    { foot: { x: -112, y: 213 }, top: { x: -112, y: 176 }, w: 3 },
+    { foot: { x: -165, y: 244 }, top: { x: -165, y: 207 }, w: 3 },
+    { foot: { x: -220, y: 283 }, top: { x: -220, y: 238 }, w: 3 },
+    { foot: { x: -294, y: 323 }, top: { x: -294, y: 276 }, w: 3 },
+  ];
   return (
     <g className="hero-ad-fence">
-      <polygon className="hero-ad-fence-shadow" points="216,273 292,88 319,91 242,282" />
-      <polygon className="hero-ad-fence-net" points="224,196 286,51 286,88 224,268" />
-      {meshSteps.map((step) => {
-        const topA = pointOn(topStart, topEnd, step);
-        const bottomB = pointOn(bottomStart, bottomEnd, Math.min(step + 0.08, 1));
-        const bottomA = pointOn(bottomStart, bottomEnd, step);
-        const topB = pointOn(topStart, topEnd, Math.min(step + 0.08, 1));
-        return (
-          <g key={step}>
-            <line className="hero-ad-fence-mesh-line" x1={topA.x} y1={topA.y} x2={bottomB.x} y2={bottomB.y} />
-            <line className="hero-ad-fence-mesh-line hero-ad-fence-mesh-line--back" x1={bottomA.x} y1={bottomA.y} x2={topB.x} y2={topB.y} />
-          </g>
-        );
-      })}
-      <path className="hero-ad-fence-rail hero-ad-fence-rail--top" d={topPath} />
-      {cableHeights.map((height) => (
-        <path key={height} className="hero-ad-fence-rail hero-ad-fence-rail--mid" d={cablePath(height)} />
-      ))}
-      <path className="hero-ad-fence-rail" d={footPath} />
-      {wireLoops.map((step) => {
-        const point = pointOn(topStart, topEnd, step);
-        return <ellipse key={step} className="hero-ad-fence-wire-loop" cx={point.x} cy={point.y - 5} rx="7" ry="2.4" transform={`rotate(-66 ${point.x} ${point.y - 5})`} />;
-      })}
-      <g className="hero-fence-electric" aria-hidden="true">
-        <path className="hero-fence-bolt hero-fence-bolt--a" d="M238 171 L249 158 L245 173 L257 164" />
-        <path className="hero-fence-bolt hero-fence-bolt--b" d="M260 116 L270 104 L267 118 L278 110" />
-        <path className="hero-fence-bolt hero-fence-bolt--c" d="M226 218 L237 206 L233 221 L245 212" />
+      <g className="hero-ad-fence-main">
+        {renderFenceSegment(mainPosts, 'upper')}
       </g>
-      {posts.map((post) => (
-        <g key={post.foot.y}>
-          <ellipse className="hero-ad-fence-foot" cx={post.foot.x + post.w * 0.5} cy={post.foot.y + 3} rx={post.w * 1.65} ry={post.w * 0.5} />
-          <polygon className="hero-ad-fence-cap" points={`${post.top.x - 2},${post.top.y + 1} ${post.top.x + post.w + 2},${post.top.y - 2} ${post.top.x + post.w + 6},${post.top.y - 7} ${post.top.x + 2},${post.top.y - 4}`} />
-          <polygon className="hero-ad-fence-post" points={`${post.foot.x},${post.foot.y} ${post.foot.x + post.w},${post.foot.y - 1.8} ${post.top.x + post.w},${post.top.y - 2.4} ${post.top.x},${post.top.y}`} />
-          <polygon className="hero-ad-fence-post-side" points={`${post.foot.x + post.w},${post.foot.y - 1.8} ${post.foot.x + post.w + 4},${post.foot.y - 5} ${post.top.x + post.w + 4},${post.top.y - 6} ${post.top.x + post.w},${post.top.y - 2.4}`} />
-        </g>
-      ))}
+      <g className="hero-ad-fence-return">
+        {renderFenceSegment(returnPosts, 'upper-return')}
+        <path className="hero-ad-fence-return-rail" d="M286 51 C205 70 111 100 -55 154" />
+        <path className="hero-ad-fence-return-rail hero-ad-fence-return-rail--low" d="M286 88 C205 113 108 146 -55 190" />
+      </g>
+      <g className="hero-ad-fence-corner">
+        {renderFenceSegment(cornerPosts, 'upper-corner')}
+        <path className="hero-ad-fence-return-rail" d="M-55 154 C-118 174 -178 216 -294 276" />
+        <path className="hero-ad-fence-return-rail hero-ad-fence-return-rail--low" d="M-55 190 C-128 216 -202 282 -294 323" />
+      </g>
+      <path className="hero-ad-fence-vapor" d="M286 88 C198 112 82 146 -55 190 C-142 215 -220 270 -294 323" />
+      <g className="hero-fence-electric" aria-hidden="true">
+        <path className="hero-fence-bolt hero-fence-bolt--a" d="M241 151 L247 144 L246 153 L254 148" />
+        <path className="hero-fence-bolt hero-fence-bolt--b" d="M263 99 L269 92 L268 101 L276 96" />
+        <path className="hero-fence-bolt hero-fence-bolt--c" d="M279 65 L285 58 L284 67 L292 62" />
+      </g>
+    </g>
+  );
+}
+
+function FenceFrontWall() {
+  // Front/bottom wall — runs from corner (x=224) left to viewport edge (x≈-294)
+  // Rendered AFTER generator so it appears visually in front of it (correct isometric depth)
+  const posts: FencePost[] = [
+    { foot: { x: 224, y: 295 }, top: { x: 224, y: 248 }, w: 8 },
+    { foot: { x: 187, y: 300 }, top: { x: 187, y: 253 }, w: 8 },
+    { foot: { x: 150, y: 304 }, top: { x: 150, y: 257 }, w: 7 },
+    { foot: { x: 113, y: 307 }, top: { x: 113, y: 260 }, w: 7 },
+    { foot: { x: 76, y: 310 }, top: { x: 76, y: 263 }, w: 7 },
+    { foot: { x: 39, y: 312 }, top: { x: 39, y: 265 }, w: 6 },
+    { foot: { x: 2, y: 314 }, top: { x: 2, y: 267 }, w: 6 },
+    { foot: { x: -35, y: 316 }, top: { x: -35, y: 269 }, w: 6 },
+    { foot: { x: -72, y: 317 }, top: { x: -72, y: 270 }, w: 5 },
+    { foot: { x: -109, y: 318 }, top: { x: -109, y: 271 }, w: 5 },
+    { foot: { x: -146, y: 319 }, top: { x: -146, y: 272 }, w: 5 },
+    { foot: { x: -183, y: 320 }, top: { x: -183, y: 273 }, w: 4 },
+    { foot: { x: -220, y: 321 }, top: { x: -220, y: 274 }, w: 4 },
+    { foot: { x: -257, y: 322 }, top: { x: -257, y: 275 }, w: 4 },
+    { foot: { x: -294, y: 323 }, top: { x: -294, y: 276 }, w: 3 },
+  ];
+  return (
+    <g className="hero-ad-fence">
+      {renderFenceSegment(posts, 'front')}
     </g>
   );
 }
 
 function PowerCables() {
-  const towerCable = 'M132 234 C121 215 123 198 136 181 C151 160 137 141 149 121 C158 105 151 91 136 82';
-  const fenceCable = 'M139 244 C165 240 196 218 224 196';
+  // Cable travels ground level, then spirals around left tower leg as it climbs
+  // Left leg: base ~(169, 186), top ~(157, 78), center x changes from 169→157
+  // Spiral wraps around the leg with lateral motion (left-right oscillation around leg)
+  const cable = `
+    M60,265
+    L140,265
+    C150,265 158,264 163,258
+    C168,200 172,175 167,150
+    C162,135 157,120 158,100
+    C159,88 160,78 160,78
+    C159,95 160,110 161,130
+    C162,150 165,170 169,185
+    C167,210 150,260 90,265
+  `;
 
   return (
     <g className="hero-power-cables" aria-hidden="true">
-      <path className="hero-power-cable-shadow" d={towerCable} />
-      <path className="hero-power-cable-shadow" d={fenceCable} />
-      <path className="hero-power-cable hero-power-cable--tower" d={towerCable} />
-      <path className="hero-power-cable hero-power-cable--fence" d={fenceCable} />
-      <path className="hero-power-pulse hero-power-pulse--tower" d={towerCable} />
-      <path className="hero-power-pulse hero-power-pulse--fence" d={fenceCable} />
-      <path className="hero-power-spark hero-power-spark--a" d="M130 185 L138 176 L136 187 L146 182" />
-      <path className="hero-power-spark hero-power-spark--b" d="M145 124 L153 115 L151 126 L160 121" />
-      <path className="hero-power-spark hero-power-spark--c" d="M183 225 L193 216 L190 228 L201 222" />
+      <path className="hero-power-cable-shadow" d={cable} />
+      <path className="hero-power-cable hero-power-cable--tower" d={cable} />
+      <path className="hero-power-pulse hero-power-pulse--tower" d={cable} />
     </g>
   );
 }
@@ -238,55 +323,85 @@ function StageFloor() {
 }
 
 function PowerGenerator() {
-  const SDX = 10, SDY = -6;
+  const s = 1.5;  // Scale factor
+  const offsX = -120, offsY = -110;  // Positioned deeper in compound so top peeks above front fence
+  const SDX = 14 * s, SDY = -9 * s;
 
   return (
-    <g className="hero-generator">
-      <ellipse className="hero-generator-shadow" cx="88" cy="271" rx="66" ry="9" />
-      <line className="hero-generator-skid" x1="38" y1="263" x2="142" y2="257" />
-      <line className="hero-generator-skid" x1="46" y1="270" x2="148" y2="264" />
-      <polygon className="hero-generator-side" points={`142,218 ${142 + SDX},${218 + SDY} ${142 + SDX},${255 + SDY} 142,262`} />
-      <polygon className="hero-generator-top" points={`34,226 142,218 ${142 + SDX},${218 + SDY} ${34 + SDX},${226 + SDY}`} />
-      <polygon className="hero-generator-face" points="34,226 142,218 142,262 34,270" />
-      <polygon className="hero-generator-stripe" points="34,226 142,218 142,230 34,238" />
-      {[0, 1, 2, 3, 4, 5, 6, 7].map((index) => (
-        <polygon key={index} className="hero-generator-mark" points={`${41 + index * 12},225.5 ${49 + index * 12},225 ${45 + index * 12},237 ${37 + index * 12},237.6`} />
-      ))}
-      <path className="hero-generator-vent" d="M48 243 L76 241 M48 249 L78 247 M48 255 L73 253" />
-      <polygon className="hero-generator-panel" points="44,240 84,237 84,258 44,261" />
-      <ellipse className="hero-generator-core" cx="113" cy="241" rx="15" ry="17" />
-      <ellipse className="hero-generator-core-ring" cx="113" cy="241" rx="9" ry="11" />
-      <path className="hero-generator-bolt-icon" d="M114 229 L104 243 H113 L108 254 L123 237 H115 Z" />
-      <circle className="hero-generator-port" cx="136" cy="236" r="3.2" />
-      <circle className="hero-generator-port hero-generator-port--lower" cx="139" cy="247" r="2.6" />
-      <circle className="hero-generator-bolt" cx="41" cy="239" r="1.6" />
-      <circle className="hero-generator-bolt" cx="137" cy="232" r="1.6" />
-      <circle className="hero-generator-bolt" cx="41" cy="265" r="1.6" />
-      <circle className="hero-generator-bolt" cx="137" cy="257" r="1.6" />
-      <text className="hero-generator-title" x="64" y="268" textAnchor="middle" transform="rotate(-4 64 268)">GRID CORE</text>
+    <g className="hero-generator" transform={`translate(${offsX} ${offsY})`}>
+      <g className="hero-generator-smoke" aria-hidden="true">
+        <ellipse className="hero-generator-smoke-puff hero-generator-smoke-puff--a" cx={166*s} cy={200*s} rx={6.2*s} ry={3.3*s} />
+        <ellipse className="hero-generator-smoke-puff hero-generator-smoke-puff--b" cx={174*s} cy={190*s} rx={8.1*s} ry={4.5*s} />
+        <ellipse className="hero-generator-smoke-puff hero-generator-smoke-puff--c" cx={163*s} cy={181*s} rx={9.6*s} ry={5.2*s} />
+      </g>
+      <ellipse className="hero-generator-shadow" cx={88*s} cy={271*s} rx={66*s} ry={9*s} />
+      <line className="hero-generator-skid" x1={38*s} y1={263*s} x2={142*s} y2={257*s} />
+      <line className="hero-generator-skid" x1={46*s} y1={270*s} x2={148*s} y2={264*s} />
+      <polygon className="hero-generator-side" points={`${142*s},${218*s} ${142*s + SDX},${218*s + SDY} ${142*s + SDX},${255*s + SDY} ${142*s},${262*s}`} />
+      <polygon className="hero-generator-top" points={`${34*s},${226*s} ${142*s},${218*s} ${142*s + SDX},${218*s + SDY} ${34*s + SDX},${226*s + SDY}`} />
+      <polygon className="hero-generator-face" points={`${34*s},${226*s} ${142*s},${218*s} ${142*s},${262*s} ${34*s},${270*s}`} />
+      <polygon className="hero-generator-stripe" points={`${34*s},${226*s} ${142*s},${218*s} ${142*s},${230*s} ${34*s},${238*s}`} />
+      {[0, 1, 2, 3, 4, 5, 6, 7].map((index) => {
+        const stripeTopY = (x: number) => (226 - ((x - 34) * 8) / 108) * s;
+        const stripeBottomY = (x: number) => (238 - ((x - 34) * 8) / 108) * s;
+        return (
+          <polygon
+            key={index}
+            className="hero-generator-mark"
+            points={`${(43 + index * 12)*s},${stripeTopY(43 + index * 12)} ${(51 + index * 12)*s},${stripeTopY(51 + index * 12)} ${(47 + index * 12)*s},${stripeBottomY(47 + index * 12)} ${(39 + index * 12)*s},${stripeBottomY(39 + index * 12)}`}
+          />
+        );
+      })}
+      <g className="hero-generator-exhaust">
+        <path className="hero-generator-exhaust-pipe" d={`M${140*s} ${224*s} C${148*s} ${218*s} ${151*s} ${212*s} ${157*s} ${208*s}`} />
+        <polygon className="hero-generator-muffler" points={`${153*s},${206*s} ${169*s},${201*s} ${175*s},${209*s} ${158*s},${216*s}`} />
+        <ellipse className="hero-generator-muffler-cap" cx={174*s} cy={205*s} rx={3.1*s} ry={5.1*s} transform={`rotate(-25 ${174*s} ${205*s})`} />
+        <path className="hero-generator-exhaust-nozzle" d={`M${176*s} ${204*s} L${183*s} ${201*s}`} />
+      </g>
+      <path className="hero-generator-vent" d={`M${48*s} ${243*s} L${76*s} ${241*s} M${48*s} ${249*s} L${78*s} ${247*s} M${48*s} ${255*s} L${73*s} ${253*s}`} />
+      <polygon className="hero-generator-panel" points={`${44*s},${240*s} ${84*s},${237*s} ${84*s},${258*s} ${44*s},${261*s}`} />
+      <ellipse className="hero-generator-core" cx={116*s} cy={243*s} rx={11.5*s} ry={13.5*s} />
+      <ellipse className="hero-generator-core-ring" cx={116*s} cy={243*s} rx={6.8*s} ry={8.5*s} />
+      <path className="hero-generator-bolt-icon" d={`M${116*s} ${235*s} L${109*s} ${244*s} H${116*s} L${112*s} ${252*s} L${124*s} ${240*s} H${118*s} Z`} />
+      <circle className="hero-generator-port" cx={136*s} cy={236*s} r={3.2*s} />
+      <circle className="hero-generator-port hero-generator-port--lower" cx={139*s} cy={247*s} r={2.6*s} />
+      <circle className="hero-generator-bolt" cx={41*s} cy={239*s} r={1.6*s} />
+      <circle className="hero-generator-bolt" cx={137*s} cy={232*s} r={1.6*s} />
+      <circle className="hero-generator-bolt" cx={41*s} cy={265*s} r={1.6*s} />
+      <circle className="hero-generator-bolt" cx={137*s} cy={257*s} r={1.6*s} />
+      <text className="hero-generator-title" x={87*s} y={228.5*s} textAnchor="middle" transform={`rotate(-4 ${87*s} ${228.5*s})`} fontSize={`${20*s}`}>ADVERSARY</text>
+      <text className="hero-generator-sub" x={87*s} y={234.2*s} textAnchor="middle" transform={`rotate(-4 ${87*s} ${234.2*s})`} fontSize={`${15*s}`}>SURVEILLANCE ZONE</text>
     </g>
   );
 }
 
 function TerrainIsland() {
+  // Tower world-space footprint: x≈129–219, center x=174, base y≈194
+  // Island is a wide isometric hexagonal slab, moved up (smaller y values)
   return (
     <g className="hero-terrain-island">
-      <ellipse className="hero-island-shadow" cx="134" cy="247" rx="82" ry="16" />
-      <polygon className="hero-island-top" points="58,244 103,204 175,196 208,220 166,253 74,260" />
-      <polygon className="hero-island-side" points="74,260 166,253 208,220 203,232 166,264 70,269" />
-      <path className="hero-island-ridge" d="M82 244 L148 205 M107 257 L185 220 M68 253 L115 215" />
-      <path className="hero-island-front" d="M74 260 L166 253 L203 232" />
+      <ellipse className="hero-island-shadow" cx="174" cy="220" rx="68" ry="13" />
+      {/* Top face — wide hexagon, moved up */}
+      <polygon className="hero-island-top" points="174,160 228,170 228,193 174,205 120,193 120,170" />
+      {/* Front-bottom visible side face */}
+      <polygon className="hero-island-side" points="120,193 228,193 234,208 174,216 114,208" />
+      {/* Surface ridge texture lines for depth */}
+      <path className="hero-island-ridge" d="M144,171 L212,193 M154,203 L208,166 M120,181 L174,205" />
+      {/* Front edge highlight */}
+      <path className="hero-island-front" d="M120,193 L174,205 L228,193" />
     </g>
   );
 }
 
 function GeneratorIsland() {
+  const s = 1.5;
+  const offsX = -120, offsY = -110;
   return (
-    <g className="hero-generator-island">
-      <ellipse className="hero-generator-island-shadow" cx="88" cy="275" rx="82" ry="12" />
-      <polygon className="hero-generator-island-top" points="10,268 49,241 127,236 163,257 126,283 24,286" />
-      <polygon className="hero-generator-island-side" points="24,286 126,283 163,257 158,267 125,293 20,293" />
-      <path className="hero-generator-island-ridge" d="M24 270 L80 244 M49 282 L132 255 M14 278 L55 249" />
+    <g className="hero-generator-island" transform={`translate(${offsX} ${offsY})`}>
+      <ellipse className="hero-generator-island-shadow" cx={91*s} cy={275*s} rx={88*s} ry={13*s} />
+      <polygon className="hero-generator-island-top" points={`${12*s},${267*s} ${48*s},${241*s} ${135*s},${235*s} ${168*s},${257*s} ${132*s},${284*s} ${19*s},${286*s}`} />
+      <polygon className="hero-generator-island-side" points={`${19*s},${286*s} ${132*s},${284*s} ${168*s},${257*s} ${162*s},${268*s} ${131*s},${294*s} ${15*s},${293*s}`} />
+      <path className="hero-generator-island-ridge" d={`M${24*s} ${270*s} L${80*s} ${244*s} M${49*s} ${282*s} L${136*s} ${255*s} M${14*s} ${278*s} L${55*s} ${249*s}`} />
     </g>
   );
 }
@@ -294,19 +409,24 @@ function GeneratorIsland() {
 function ThreatBorder() {
   return (
     <g className="hero-threat-border" aria-hidden="true">
+      {/* Territory ground fills behind everything */}
+      <TerritoryFloor />
       <StageFloor />
       <TerrainIsland />
       <GeneratorIsland />
-      <PowerCables />
-      <RightFence />
+      {/* Upper right wall renders before generator (behind it in depth) */}
+      <FenceUpperWall />
 
       <MeshTower />
+      <PowerCables />
 
-      <circle className="hero-signal-ring hero-signal-ring--s1" cx="136" cy="32" r="4" />
-      <circle className="hero-signal-ring hero-signal-ring--s2" cx="136" cy="32" r="4" />
-      <circle className="hero-signal-ring hero-signal-ring--s3" cx="136" cy="32" r="4" />
+      <circle className="hero-signal-ring hero-signal-ring--s1" cx="183" cy="47" r="4" />
+      <circle className="hero-signal-ring hero-signal-ring--s2" cx="183" cy="47" r="4" />
+      <circle className="hero-signal-ring hero-signal-ring--s3" cx="183" cy="47" r="4" />
 
       <PowerGenerator />
+      {/* Front wall renders AFTER generator — appears in front of it (correct isometric depth) */}
+      <FenceFrontWall />
     </g>
   );
 }
@@ -902,6 +1022,10 @@ export default function HeroShield() {
           <ThreatArrow key={threat.id} {...threat} />
         ))}
 
+        <ShockBurst className="hero-shield-hit hero-shield-hit--one hero-shockfield hero-shockfield--one" delay="0s" />
+        <ShockBurst className="hero-shield-hit hero-shield-hit--two hero-shockfield hero-shockfield--two" delay="1.35s" />
+        <ShockBurst className="hero-shield-hit hero-shield-hit--three hero-shockfield hero-shockfield--three" delay="2.7s" />
+
         <g className="hero-guardian">
           <ellipse className="hero-guardian-shadow" cx="760" cy="260" rx="118" ry="20" />
           <g className="hero-guardian-recoil">
@@ -931,10 +1055,6 @@ export default function HeroShield() {
             </g>
           </g>
         </g>
-
-        <ShockBurst className="hero-shield-hit hero-shield-hit--one hero-shockfield hero-shockfield--one" delay="0s" />
-        <ShockBurst className="hero-shield-hit hero-shield-hit--two hero-shockfield hero-shockfield--two" delay="1.35s" />
-        <ShockBurst className="hero-shield-hit hero-shield-hit--three hero-shockfield hero-shockfield--three" delay="2.7s" />
       </svg>
       </div>
       {createPortal(cursorOverlay, document.body)}

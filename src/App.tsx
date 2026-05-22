@@ -342,7 +342,6 @@ const App: React.FC = () => {
         <section className="hero-section">
           <HeroSignalBackdrop />
           <div className="hero-copy">
-            <HeroShield />
             <Badge variant="outline" className="hero-reveal section-badge">
               <ShieldCheck />
               Privacy-first FOSS software company
@@ -364,6 +363,7 @@ const App: React.FC = () => {
                 <Mail />
               </Button>
             </div>
+            <HeroShield />
           </div>
         </section>
 
