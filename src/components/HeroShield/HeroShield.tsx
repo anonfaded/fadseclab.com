@@ -89,15 +89,23 @@ function ThreatArrow({
   id,
   repeat = true,
 }: Threat & { repeat?: boolean }) {
+  const motionRef = useRef<SVGAnimateMotionElement>(null);
   const pathId = repeat ? `threat-path-${id}` : `threat-path-${id}-${delay.replace(/[^a-z0-9]/gi, '')}`;
+
+  useEffect(() => {
+    if (!repeat) {
+      window.requestAnimationFrame(() => motionRef.current?.beginElement());
+    }
+  }, [repeat]);
 
   return (
     <g className="hero-threat" style={{ '--delay': delay, '--threat': color } as CSSProperties}>
       <path id={pathId} className="hero-threat-path" d={path} />
       <g className={`hero-arrow${repeat ? '' : ' hero-arrow--manual'}`}>
         <animateMotion
+          ref={motionRef}
           dur="4.05s"
-          begin={delay}
+          begin={repeat ? delay : 'indefinite'}
           repeatCount={repeat ? 'indefinite' : '1'}
           fill={repeat ? 'remove' : 'freeze'}
           rotate="auto"
@@ -1064,12 +1072,8 @@ function HeldShield({ impactRef, showImpacts }: { impactRef: RefObject<SVGGEleme
                 <path className="hero-shield-gouge" d="M118 76 L132 67 M122 81 L140 75" />
                 <path className="hero-shield-gouge hero-shield-gouge--lower" d="M42 130 L55 123 M45 136 L63 131" />
                 <path className="hero-shield-gouge hero-shield-gouge--edge" d="M129 139 L144 132 M133 145 L151 141" />
-                <ellipse className="hero-shield-dent" cx="66" cy="76" rx="9" ry="4.2" transform="rotate(11 66 76)" />
-                <ellipse className="hero-shield-dent" cx="52" cy="116" rx="8" ry="3.8" transform="rotate(8 52 116)" />
-                <ellipse className="hero-shield-dent" cx="50" cy="154" rx="7.4" ry="3.4" transform="rotate(12 50 154)" />
-                <ellipse className="hero-shield-dent hero-shield-dent--soft" cx="122" cy="58" rx="8" ry="3.4" transform="rotate(-5 122 58)" />
-                <ellipse className="hero-shield-dent hero-shield-dent--soft" cx="122" cy="166" rx="9" ry="3.8" transform="rotate(-12 122 166)" />
-                <ellipse className="hero-shield-dent hero-shield-dent--soft" cx="138" cy="112" rx="7.2" ry="3.2" transform="rotate(-10 138 112)" />
+                <path className="hero-shield-hairline" d="M64 66 L55 82 M68 69 L59 90 M53 112 L44 128 M57 115 L48 137 M52 151 L43 169 M57 155 L49 181" />
+                <path className="hero-shield-hairline hero-shield-hairline--right" d="M124 54 L116 73 M130 57 L122 82 M128 160 L118 179 M134 163 L124 190 M141 105 L132 124" />
                 <circle className="hero-shield-pit" cx="48" cy="88" r="2.2" />
                 <circle className="hero-shield-pit" cx="132" cy="122" r="2.5" />
                 <circle className="hero-shield-pit" cx="83" cy="184" r="2" />
@@ -1089,7 +1093,7 @@ function HeldShield({ impactRef, showImpacts }: { impactRef: RefObject<SVGGEleme
               <>
                 <ShieldImpactMark className="hero-shield-impact-mark hero-shield-impact-mark--one" delay="0s" x={78} y={68} />
                 <ShieldImpactMark className="hero-shield-impact-mark hero-shield-impact-mark--two" delay="1.35s" x={71} y={118} />
-                <ShieldImpactMark className="hero-shield-impact-mark hero-shield-impact-mark--three" delay="2.7s" x={64} y={158} />
+                <ShieldImpactMark className="hero-shield-impact-mark hero-shield-impact-mark--three" delay="2.7s" x={58} y={178} />
               </>
             )}
           </g>

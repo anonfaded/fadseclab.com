@@ -506,21 +506,23 @@
   opacity: 0.68;
 }
 
-.hero-shield-dent {
-  fill: rgba(0, 0, 0, 0.46);
-  stroke: rgba(255, 184, 184, 0.12);
-  stroke-width: 0.9;
-}
-
-.hero-shield-dent--soft {
-  fill: rgba(0, 0, 0, 0.38);
-  opacity: 0.86;
-}
-
 .hero-shield-pit {
   fill: rgba(0, 0, 0, 0.92);
   stroke: rgba(255, 190, 190, 0.1);
   stroke-width: 0.55;
+}
+
+.hero-shield-hairline {
+  fill: none;
+  stroke: rgba(0, 0, 0, 0.78);
+  stroke-width: 1.05;
+  stroke-linecap: round;
+  opacity: 0.86;
+}
+
+.hero-shield-hairline--right {
+  stroke-width: 0.95;
+  opacity: 0.78;
 }
 
 .hero-shield-rivet {
