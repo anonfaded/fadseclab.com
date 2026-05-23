@@ -19,7 +19,7 @@
 
 .hero-adversary-three {
   position: absolute;
-  inset: -10% 39% -12% -2%;
+  inset: -10% 42% -14% -28%;
   z-index: 1;
   pointer-events: none;
 }
@@ -67,13 +67,13 @@
 
 @media (max-width: 760px) {
   .hero-adversary-three {
-    inset: 0 20% -4% -10%;
+    inset: 5% 16% -4% -42%;
   }
 }
 
 @media (max-width: 520px) {
   .hero-adversary-three {
-    inset: 4% 18% 0 -8%;
+    inset: 8% 14% -4% -48%;
   }
 }
 
@@ -299,6 +299,16 @@
   animation-delay: var(--delay);
 }
 
+.hero-arrow--manual {
+  animation-iteration-count: 1;
+  animation-fill-mode: forwards;
+}
+
+.hero-arrow-body {
+  transform-box: fill-box;
+  transform-origin: 42px 0;
+}
+
 .hero-arrow-shaft,
 .hero-arrow-trail {
   stroke: var(--threat);
@@ -448,6 +458,71 @@
   opacity: 0.68;
 }
 
+.hero-shield-battle-marks {
+  opacity: 0.9;
+  mix-blend-mode: multiply;
+}
+
+.hero-shield-scar {
+  fill: none;
+  stroke: rgba(0, 0, 0, 0.92);
+  stroke-width: 2.45;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.hero-shield-scar--two {
+  stroke-width: 1.8;
+  opacity: 0.72;
+}
+
+.hero-shield-scar--three {
+  stroke-width: 1.7;
+  opacity: 0.8;
+}
+
+.hero-shield-scar--four,
+.hero-shield-scar--five,
+.hero-shield-scar--six,
+.hero-shield-scar--seven,
+.hero-shield-scar--eight {
+  stroke-width: 1.9;
+  opacity: 0.82;
+}
+
+.hero-shield-gouge {
+  fill: none;
+  stroke: rgba(0, 0, 0, 0.82);
+  stroke-width: 1.4;
+  stroke-linecap: round;
+  opacity: 0.74;
+}
+
+.hero-shield-gouge--lower {
+  opacity: 0.48;
+}
+
+.hero-shield-gouge--edge {
+  opacity: 0.68;
+}
+
+.hero-shield-dent {
+  fill: rgba(0, 0, 0, 0.46);
+  stroke: rgba(255, 184, 184, 0.12);
+  stroke-width: 0.9;
+}
+
+.hero-shield-dent--soft {
+  fill: rgba(0, 0, 0, 0.38);
+  opacity: 0.86;
+}
+
+.hero-shield-pit {
+  fill: rgba(0, 0, 0, 0.92);
+  stroke: rgba(255, 190, 190, 0.1);
+  stroke-width: 0.55;
+}
+
 .hero-shield-rivet {
   fill: url(#hero-shield-rivet-grad);
   stroke: rgba(24, 9, 13, 0.42);
@@ -536,63 +611,67 @@
   animation-delay: 2.7s;
 }
 
-.hero-shockfield {
+.hero-shield-impact-mark {
   opacity: 0;
-  transform-box: fill-box;
-  transform-origin: center;
-  animation: shock-burst 4.05s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+  animation: shield-impact-mark 4.05s cubic-bezier(0.16, 1, 0.3, 1) infinite;
 }
 
-.hero-shockfield--one {
+.hero-shield-impact-mark--one {
   animation-delay: 0s;
 }
 
-.hero-shockfield--two {
+.hero-shield-impact-mark--two {
   animation-delay: 1.35s;
 }
 
-.hero-shockfield--three {
+.hero-shield-impact-mark--three {
   animation-delay: 2.7s;
 }
 
-.hero-shockfield-web {
+.hero-shield-impact-cross,
+.hero-shield-impact-bolt {
   fill: none;
-  stroke: color-mix(in srgb, #ffd3d9 26%, var(--accent-brand) 74%);
-  stroke-width: 1.9;
-  stroke-linejoin: round;
   stroke-linecap: round;
-  stroke-dasharray: none;
+  stroke-linejoin: round;
 }
 
-.hero-shockfield-web--secondary {
-  opacity: 0.78;
-  stroke: color-mix(in srgb, #ffc0c8 20%, var(--accent-brand) 80%);
+.hero-shield-impact-cross {
+  stroke: color-mix(in srgb, white 34%, var(--accent-brand) 66%);
+  stroke-width: 2.2;
+  stroke-dasharray: 26 60;
+  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--accent-brand) 52%, transparent));
 }
 
-.hero-shockfield-bolt {
-  fill: none;
+.hero-shield-impact-bolt {
   stroke: color-mix(in srgb, #ffe5e9 34%, var(--accent-brand) 66%);
-  stroke-width: 2.8;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  stroke-dasharray: 20 116;
+  stroke-width: 2.1;
+  stroke-dasharray: 16 40;
 }
 
-.hero-shockfield-node {
+.hero-shield-impact-core {
   fill: color-mix(in srgb, #ffe5e9 50%, var(--accent-brand) 50%);
+  filter: drop-shadow(0 0 8px color-mix(in srgb, var(--accent-brand) 68%, transparent));
+}
+
+.hero-shield-impact-chip {
+  fill: color-mix(in srgb, white 24%, var(--accent-brand) 76%);
 }
 
 @keyframes arrow-visibility {
   0%,
   1%,
-  82%,
+  78%,
   100% {
     opacity: 0;
   }
 
   5%,
-  77% {
+  74% {
     opacity: 1;
+  }
+
+  76% {
+    opacity: 0.42;
   }
 }
 
@@ -702,30 +781,27 @@
   }
 }
 
-@keyframes shock-burst {
+@keyframes shield-impact-mark {
   0%,
   68%,
   100% {
     opacity: 0;
-    translate: 0 0;
-    scale: 0.9;
+    stroke-dashoffset: 22;
   }
 
   72% {
     opacity: 1;
-    scale: 1;
+    stroke-dashoffset: 0;
   }
 
-  78% {
-    opacity: 0.72;
-    translate: 6px -2px;
-    scale: 1.06;
+  76% {
+    opacity: 0.76;
+    stroke-dashoffset: -8;
   }
 
   84% {
     opacity: 0;
-    translate: 12px -4px;
-    scale: 1.12;
+    stroke-dashoffset: -18;
   }
 }
 
@@ -805,8 +881,9 @@
   .hero-shield-bolt,
   .hero-shield-nodes circle,
   .hero-arrow,
+  .hero-arrow-body,
   .hero-impact,
-  .hero-shockfield,
+  .hero-shield-impact-mark,
   .hero-guardian-upper,
   .hero-held-flag,
   .hero-guardian-eyes {

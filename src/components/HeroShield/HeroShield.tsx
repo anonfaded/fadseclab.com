@@ -11,6 +11,9 @@ const baseThreats = [
   { id: 'brokers', label: 'Data brokers', lane: 132, delay: '1.35s', color: '#ff3f35', path: 'M326 100 C438 104 570 128 702 141' },
   { id: 'spyware', label: 'Spyware', lane: 182, delay: '2.7s', color: '#ff7264', path: 'M326 100 C414 154 540 202 696 163' },
 ];
+const guardianOffsetX = 30;
+const shotCycleMs = 4050;
+const impactTimeMs = 2916;
 
 const shieldPath = 'M90 4 C118 12 146 18 168 30 L160 128 C154 178 126 214 90 238 C54 214 26 178 20 128 L12 30 C34 18 62 12 90 4Z';
 const shieldInsetPath = 'M90 12 C114 19 137 25 155 34 L149 124 C144 166 119 198 90 220 C61 198 36 166 31 124 L25 34 C43 25 66 19 90 12Z';
@@ -58,11 +61,15 @@ function pathBetween(start: { x: number; y: number }, end: { x: number; y: numbe
 
 function threatsFromMuzzle(x: number, y: number) {
   return baseThreats.map((threat, index) => {
-    const end = index === 0 ? { x: 700, y: 115 } : index === 1 ? { x: 702, y: 141 } : { x: 696, y: 163 };
-    const lift = index === 0 ? -34 : index === 1 ? 18 : 70;
+    const end = index === 0
+      ? { x: 603 + guardianOffsetX, y: 124 }
+      : index === 1
+        ? { x: 594 + guardianOffsetX, y: 151 }
+        : { x: 584 + guardianOffsetX, y: 178 };
+    const lift = index === 0 ? -38 : index === 1 ? 10 : 58;
     const c1x = x + (index === 0 ? 96 : index === 1 ? 116 : 92);
     const c1y = y + lift * 0.52;
-    const c2x = end.x - (index === 0 ? 150 : index === 1 ? 132 : 164);
+    const c2x = end.x - (index === 0 ? 132 : index === 1 ? 122 : 138);
     const c2y = end.y - lift * 0.32;
 
     return {
@@ -72,19 +79,42 @@ function threatsFromMuzzle(x: number, y: number) {
   });
 }
 
-function ThreatArrow({ label, delay, color, path, id }: (typeof baseThreats)[number]) {
+type Threat = (typeof baseThreats)[number];
+
+function ThreatArrow({
+  label,
+  delay,
+  color,
+  path,
+  id,
+  repeat = true,
+}: Threat & { repeat?: boolean }) {
+  const pathId = repeat ? `threat-path-${id}` : `threat-path-${id}-${delay.replace(/[^a-z0-9]/gi, '')}`;
+
   return (
     <g className="hero-threat" style={{ '--delay': delay, '--threat': color } as CSSProperties}>
-      <path id={`threat-path-${id}`} className="hero-threat-path" d={path} />
-      <g className="hero-arrow">
-        <animateMotion dur="4.05s" begin={delay} repeatCount="indefinite" rotate="auto" keyPoints="0;0;0.78;1;1" keyTimes="0;0.035;0.66;0.72;1" calcMode="spline" keySplines="0.25 0 0.25 1;0.18 0 0.18 1;0.16 1 0.3 1;0.2 0 0.2 1">
-          <mpath href={`#threat-path-${id}`} />
+      <path id={pathId} className="hero-threat-path" d={path} />
+      <g className={`hero-arrow${repeat ? '' : ' hero-arrow--manual'}`}>
+        <animateMotion
+          dur="4.05s"
+          begin={delay}
+          repeatCount={repeat ? 'indefinite' : '1'}
+          fill={repeat ? 'remove' : 'freeze'}
+          rotate="auto"
+          keyPoints="0;0;0.78;1;1"
+          keyTimes="0;0.035;0.66;0.72;1"
+          calcMode="spline"
+          keySplines="0.25 0 0.25 1;0.18 0 0.18 1;0.16 1 0.3 1;0.2 0 0.2 1"
+        >
+          <mpath href={`#${pathId}`} />
         </animateMotion>
-        <line className="hero-arrow-trail" x1="-4" y1="0" x2="20" y2="0" />
-        <line className="hero-arrow-shaft" x1="0" y1="0" x2="42" y2="0" />
-        <path className="hero-arrow-head" d="M42 -7 58 0 42 7Z" />
-        <path className="hero-arrow-fin" d="M0 0 -12 -8 -7 0 -12 8Z" />
-        <text className="hero-arrow-label" x="12" y="-13">{label}</text>
+        <g className="hero-arrow-body">
+          <line className="hero-arrow-trail" x1="-4" y1="0" x2="20" y2="0" />
+          <line className="hero-arrow-shaft" x1="0" y1="0" x2="42" y2="0" />
+          <path className="hero-arrow-head" d="M42 -7 58 0 42 7Z" />
+          <path className="hero-arrow-fin" d="M0 0 -12 -8 -7 0 -12 8Z" />
+          <text className="hero-arrow-label" x="12" y="-13">{label}</text>
+        </g>
       </g>
     </g>
   );
@@ -124,7 +154,7 @@ function HeroAdversaryThreeScene({ onMuzzleProject }: { onMuzzleProject: (point:
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    renderer.shadowMap.type = THREE.PCFShadowMap;
     mount.appendChild(renderer.domElement);
 
     const scene = new THREE.Scene();
@@ -142,8 +172,8 @@ function HeroAdversaryThreeScene({ onMuzzleProject }: { onMuzzleProject: (point:
     scene.add(ambient, key, redFill);
 
     const root = new THREE.Group();
-    root.position.set(0.1, 0.08, 0);
-    root.scale.setScalar(0.66);
+    root.position.set(-0.22, 0.02, 0);
+    root.scale.setScalar(0.78);
     root.rotation.y = 0;
     scene.add(root);
 
@@ -255,11 +285,11 @@ function HeroAdversaryThreeScene({ onMuzzleProject }: { onMuzzleProject: (point:
     };
 
     const terrainShape = new THREE.Shape();
-    terrainShape.moveTo(-3.85, -1.25);
-    terrainShape.bezierCurveTo(-2.75, -1.6, -0.65, -1.58, 1.65, -1.12);
-    terrainShape.bezierCurveTo(1.92, -0.42, 1.86, 0.44, 1.45, 1.08);
-    terrainShape.bezierCurveTo(0.12, 1.24, -1.42, 0.68, -2.55, 0.04);
-    terrainShape.bezierCurveTo(-3.25, -0.36, -3.68, -0.78, -3.85, -1.25);
+    terrainShape.moveTo(-3.35, -1.22);
+    terrainShape.bezierCurveTo(-2.34, -1.58, -0.5, -1.66, 2.25, -1.16);
+    terrainShape.bezierCurveTo(2.56, -0.4, 2.38, 0.62, 1.78, 1.26);
+    terrainShape.bezierCurveTo(0.26, 1.46, -1.38, 0.82, -2.42, 0.08);
+    terrainShape.bezierCurveTo(-3.0, -0.34, -3.28, -0.76, -3.35, -1.22);
 
     const terrain = new THREE.Mesh(
       new THREE.ExtrudeGeometry(terrainShape, {
@@ -279,9 +309,9 @@ function HeroAdversaryThreeScene({ onMuzzleProject }: { onMuzzleProject: (point:
 
     const ridgeMat = new THREE.LineBasicMaterial({ color: 0x5b655a, transparent: true, opacity: 0.34 });
     [
-      [new THREE.Vector3(-2.65, 0.02, -0.58), new THREE.Vector3(-0.85, 0.04, -0.24), new THREE.Vector3(0.92, 0.05, 0.18)],
-      [new THREE.Vector3(-2.1, 0.03, 0.08), new THREE.Vector3(-0.58, 0.04, 0.32), new THREE.Vector3(1.15, 0.05, 0.55)],
-      [new THREE.Vector3(-3.05, 0.02, -0.9), new THREE.Vector3(-1.1, 0.03, -1.02), new THREE.Vector3(0.86, 0.04, -0.78)],
+      [new THREE.Vector3(-2.35, 0.02, -0.58), new THREE.Vector3(-0.68, 0.04, -0.24), new THREE.Vector3(1.48, 0.05, 0.18)],
+      [new THREE.Vector3(-1.95, 0.03, 0.08), new THREE.Vector3(-0.42, 0.04, 0.36), new THREE.Vector3(1.68, 0.05, 0.68)],
+      [new THREE.Vector3(-2.85, 0.02, -0.9), new THREE.Vector3(-0.92, 0.03, -1.04), new THREE.Vector3(1.56, 0.04, -0.78)],
     ].forEach((points) => {
       const curve = new THREE.CatmullRomCurve3(points);
       root.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(curve.getPoints(28)), ridgeMat));
@@ -290,24 +320,24 @@ function HeroAdversaryThreeScene({ onMuzzleProject }: { onMuzzleProject: (point:
     const signTexture = createSignTexture();
     if (signTexture) {
       const board = new THREE.Group();
-      board.position.set(1.08, 0.62, 1.02);
+      board.position.set(1.12, 0.66, 1.02);
       board.rotation.x = -0.03;
       board.rotation.y = 0;
       root.add(board);
       const boardFace = new THREE.Mesh(
-        new THREE.PlaneGeometry(1.96, 0.78),
+        new THREE.PlaneGeometry(2.28, 0.9),
         new THREE.MeshBasicMaterial({ map: signTexture, side: THREE.DoubleSide, depthTest: false }),
       );
       boardFace.position.z = 0.055;
       boardFace.castShadow = true;
       boardFace.renderOrder = 5;
       board.add(boardFace);
-      const boardBack = new THREE.Mesh(roundedBoxGeometry(2.06, 0.9, 0.06, 0.035), darkSteelMat);
+      const boardBack = new THREE.Mesh(roundedBoxGeometry(2.4, 1.02, 0.07, 0.04), darkSteelMat);
       boardBack.position.z = -0.035;
       boardBack.castShadow = true;
       board.add(boardBack);
-      board.add(tubeBetween(new THREE.Vector3(-0.58, -0.78, -0.04), new THREE.Vector3(-0.58, -0.34, -0.04), 0.02, railMat, 10));
-      board.add(tubeBetween(new THREE.Vector3(0.58, -0.78, -0.04), new THREE.Vector3(0.58, -0.34, -0.04), 0.02, railMat, 10));
+      board.add(tubeBetween(new THREE.Vector3(-0.68, -0.86, -0.04), new THREE.Vector3(-0.68, -0.39, -0.04), 0.022, railMat, 10));
+      board.add(tubeBetween(new THREE.Vector3(0.68, -0.86, -0.04), new THREE.Vector3(0.68, -0.39, -0.04), 0.022, railMat, 10));
     }
 
     const fenceTop = new THREE.CatmullRomCurve3([
@@ -624,8 +654,8 @@ function HeroAdversaryThreeScene({ onMuzzleProject }: { onMuzzleProject: (point:
       const viewportWidth = window.innerWidth;
       const compact = viewportWidth <= 520;
       const tablet = viewportWidth <= 760;
-      root.scale.setScalar(compact ? 0.48 : tablet ? 0.54 : 0.66);
-      root.position.set(compact ? 0.3 : tablet ? 0.2 : 0.1, compact ? -0.1 : tablet ? -0.02 : 0.08, 0);
+      root.scale.setScalar(compact ? 0.76 : tablet ? 0.76 : 0.78);
+      root.position.set(compact ? -0.32 : tablet ? -0.28 : -0.22, compact ? -0.08 : tablet ? -0.06 : 0.02, 0);
       renderer.setSize(Math.max(1, width), Math.max(1, height), false);
       camera.aspect = Math.max(1, width) / Math.max(1, height);
       camera.updateProjectionMatrix();
@@ -637,9 +667,19 @@ function HeroAdversaryThreeScene({ onMuzzleProject }: { onMuzzleProject: (point:
     const observer = new ResizeObserver(resize);
     observer.observe(mount);
 
-    const clock = new THREE.Clock();
-    renderer.setAnimationLoop(() => {
-      const elapsed = clock.getElapsedTime();
+    let isSceneVisible = true;
+    const visibilityObserver = new IntersectionObserver(([entry]) => {
+      isSceneVisible = entry.isIntersecting;
+    });
+    visibilityObserver.observe(mount);
+
+    let animationStart: number | null = null;
+    let lastRenderTime = 0;
+    renderer.setAnimationLoop((time) => {
+      if (!isSceneVisible || time - lastRenderTime < 33) return;
+      lastRenderTime = time;
+      animationStart ??= time;
+      const elapsed = (time - animationStart) / 1000;
       signalRings.forEach((ring) => {
         const progress = (elapsed * 0.42 + ring.userData.phase) % 1;
         const scale = 0.75 + progress * 1.55;
@@ -688,6 +728,7 @@ function HeroAdversaryThreeScene({ onMuzzleProject }: { onMuzzleProject: (point:
       renderer.setAnimationLoop(null);
       projectionTimers.forEach((timer) => window.clearTimeout(timer));
       observer.disconnect();
+      visibilityObserver.disconnect();
       disposeObject(scene);
       renderer.dispose();
       renderer.domElement.remove();
@@ -967,14 +1008,17 @@ function ThreatBorder() {
   );
 }
 
-function ShockBurst({ className, delay }: { className: string; delay: string }) {
+function ShieldImpactMark({ className, delay, x, y }: { className: string; delay: string; x: number; y: number }) {
   return (
-    <g className={className} style={{ '--delay': delay } as CSSProperties}>
-      <path className="hero-shockfield-web" d="M650 132 C662 118 686 118 700 132 C686 148 662 148 650 132Z" />
-      <path className="hero-shockfield-web hero-shockfield-web--secondary" d="M668 132 L642 118 M668 132 L644 152 M668 132 L694 110 M668 132 L704 150" />
-      <path className="hero-shockfield-bolt" d="M650 126 L668 132 L654 144 L676 136" />
-      <path className="hero-shockfield-bolt" d="M668 132 L688 124 L680 138 L706 134" />
-      <circle className="hero-shockfield-node" cx="668" cy="132" r="3" />
+    <g transform={`translate(${x} ${y})`}>
+      <g className={className} style={{ '--delay': delay } as CSSProperties}>
+        <path className="hero-shield-impact-cross" d="M-13 0 H13 M0 -13 V13" />
+        <path className="hero-shield-impact-bolt hero-shield-impact-bolt--a" d="M-3 -2 L8 -10 L4 -1 L16 -5" />
+        <path className="hero-shield-impact-bolt hero-shield-impact-bolt--b" d="M-2 2 L-15 9 L-8 1 L-20 4" />
+        <circle className="hero-shield-impact-core" r="3.2" />
+        <circle className="hero-shield-impact-chip hero-shield-impact-chip--a" cx="-18" cy="-8" r="1.8" />
+        <circle className="hero-shield-impact-chip hero-shield-impact-chip--b" cx="18" cy="7" r="1.5" />
+      </g>
     </g>
   );
 }
@@ -991,7 +1035,7 @@ const cursorSmokeConfigs = [
   { radiusX: 27, radiusY: 18, blur: 9.8, driftX: 1, driftY: 2 },
 ] as const;
 
-function HeldShield({ impactRef }: { impactRef: RefObject<SVGGElement | null> }) {
+function HeldShield({ impactRef, showImpacts }: { impactRef: RefObject<SVGGElement | null>; showImpacts: boolean }) {
   return (
     <g ref={impactRef}>
       <g transform="translate(606 78) rotate(10 92 120) scale(0.66)">
@@ -1008,6 +1052,30 @@ function HeldShield({ impactRef }: { impactRef: RefObject<SVGGElement | null> })
               <path className="hero-shield-highlight" d="M54 30 C64 18 78 12 92 12 C81 42 78 82 78 124 C78 162 82 194 88 220 C68 210 56 192 46 166 C38 142 34 110 34 84 C34 60 40 40 54 30Z" />
               <path className="hero-shield-emblem" d="M86 92 L100 116 L86 140 L72 116 Z" transform="rotate(4 86 116)" />
               <path className="hero-shield-emblem hero-shield-emblem--inner" d="M86 102 L92 116 L86 130 L80 116 Z" transform="rotate(4 86 116)" />
+              <g className="hero-shield-battle-marks">
+                <path className="hero-shield-scar hero-shield-scar--one" d="M58 58 C53 71 57 83 50 96" />
+                <path className="hero-shield-scar hero-shield-scar--two" d="M42 105 C37 118 42 130 34 144" />
+                <path className="hero-shield-scar hero-shield-scar--three" d="M48 149 C43 162 48 175 41 188" />
+                <path className="hero-shield-scar hero-shield-scar--four" d="M128 42 C122 55 127 67 119 80" />
+                <path className="hero-shield-scar hero-shield-scar--five" d="M132 152 C125 166 130 178 121 191" />
+                <path className="hero-shield-scar hero-shield-scar--six" d="M76 176 C70 188 75 199 68 211" />
+                <path className="hero-shield-scar hero-shield-scar--seven" d="M146 92 C139 105 143 118 135 130" />
+                <path className="hero-shield-scar hero-shield-scar--eight" d="M31 164 C27 176 31 188 26 199" />
+                <path className="hero-shield-gouge" d="M118 76 L132 67 M122 81 L140 75" />
+                <path className="hero-shield-gouge hero-shield-gouge--lower" d="M42 130 L55 123 M45 136 L63 131" />
+                <path className="hero-shield-gouge hero-shield-gouge--edge" d="M129 139 L144 132 M133 145 L151 141" />
+                <ellipse className="hero-shield-dent" cx="66" cy="76" rx="9" ry="4.2" transform="rotate(11 66 76)" />
+                <ellipse className="hero-shield-dent" cx="52" cy="116" rx="8" ry="3.8" transform="rotate(8 52 116)" />
+                <ellipse className="hero-shield-dent" cx="50" cy="154" rx="7.4" ry="3.4" transform="rotate(12 50 154)" />
+                <ellipse className="hero-shield-dent hero-shield-dent--soft" cx="122" cy="58" rx="8" ry="3.4" transform="rotate(-5 122 58)" />
+                <ellipse className="hero-shield-dent hero-shield-dent--soft" cx="122" cy="166" rx="9" ry="3.8" transform="rotate(-12 122 166)" />
+                <ellipse className="hero-shield-dent hero-shield-dent--soft" cx="138" cy="112" rx="7.2" ry="3.2" transform="rotate(-10 138 112)" />
+                <circle className="hero-shield-pit" cx="48" cy="88" r="2.2" />
+                <circle className="hero-shield-pit" cx="132" cy="122" r="2.5" />
+                <circle className="hero-shield-pit" cx="83" cy="184" r="2" />
+                <circle className="hero-shield-pit" cx="122" cy="92" r="1.9" />
+                <circle className="hero-shield-pit" cx="58" cy="134" r="1.7" />
+              </g>
               <circle className="hero-shield-rivet" cx="50" cy="42" r="3.5" />
               <circle className="hero-shield-rivet" cx="130" cy="42" r="3.5" />
               <circle className="hero-shield-rivet" cx="40" cy="198" r="3.5" />
@@ -1017,6 +1085,13 @@ function HeldShield({ impactRef }: { impactRef: RefObject<SVGGElement | null> })
             </g>
             <path className="hero-shield-core" d={shieldCorePath} />
             <path className="hero-shield-rim" d={shieldCorePath} />
+            {showImpacts && (
+              <>
+                <ShieldImpactMark className="hero-shield-impact-mark hero-shield-impact-mark--one" delay="0s" x={78} y={68} />
+                <ShieldImpactMark className="hero-shield-impact-mark hero-shield-impact-mark--two" delay="1.35s" x={71} y={118} />
+                <ShieldImpactMark className="hero-shield-impact-mark hero-shield-impact-mark--three" delay="2.7s" x={64} y={158} />
+              </>
+            )}
           </g>
         </g>
       </g>
@@ -1065,6 +1140,7 @@ function GuardianFace({ leftEyeRef, rightEyeRef }: { leftEyeRef: RefObject<SVGCi
 export default function HeroShield() {
   const svgRef = useRef<SVGSVGElement>(null);
   const [projectedThreats, setProjectedThreats] = useState(baseThreats);
+  const [manualThreats, setManualThreats] = useState<Threat[]>([]);
   const [isMuzzleReady, setIsMuzzleReady] = useState(false);
   const cursorGroupRef = useRef<SVGGElement>(null);
   const cursorReticleRef = useRef<SVGGElement>(null);
@@ -1085,6 +1161,9 @@ export default function HeroShield() {
   const frontUpperLegRef = useRef<SVGPathElement>(null);
   const frontLowerLegRef = useRef<SVGPathElement>(null);
   const impactFrameRef = useRef<number | null>(null);
+  const manualShotCounterRef = useRef(0);
+  const manualShotLaneRef = useRef(0);
+  const manualShotTimeoutsRef = useRef<number[]>([]);
   const eyeFrameRef = useRef<number | null>(null);
   const eyeLastTimeRef = useRef<number | null>(null);
   const cursorFrameRef = useRef<number | null>(null);
@@ -1195,6 +1274,32 @@ export default function HeroShield() {
     impactFrameRef.current = window.requestAnimationFrame(step);
   }, []);
 
+  const fireManualShot = useCallback(() => {
+    if (!isMuzzleReady || projectedThreats.length === 0) return;
+
+    const lane = manualShotLaneRef.current % projectedThreats.length;
+    manualShotLaneRef.current += 1;
+    const sourceThreat = projectedThreats[lane];
+    const shotId = `${sourceThreat.id}-manual-${manualShotCounterRef.current}`;
+    manualShotCounterRef.current += 1;
+    const shot: Threat = {
+      ...sourceThreat,
+      id: shotId,
+      delay: '0s',
+    };
+
+    setManualThreats((current) => [...current.slice(-7), shot]);
+
+    const impactTimer = window.setTimeout(() => {
+      playImpact();
+      emitHeroHit(lane);
+    }, impactTimeMs);
+    const cleanupTimer = window.setTimeout(() => {
+      setManualThreats((current) => current.filter((entry) => entry.id !== shotId));
+    }, shotCycleMs + 160);
+    manualShotTimeoutsRef.current.push(impactTimer, cleanupTimer);
+  }, [isMuzzleReady, playImpact, projectedThreats]);
+
   const updateEyeState = useCallback((clientX: number, clientY: number) => {
     const svg = svgRef.current;
     const screenCTM = svg?.getScreenCTM();
@@ -1278,6 +1383,8 @@ export default function HeroShield() {
   }, []);
 
   useEffect(() => {
+    if (!isMuzzleReady) return undefined;
+
     const impactOffsets = [2916, 4266, 5616];
     const hitIntervals: number[] = [];
     const hitTimeouts = impactOffsets.map((offset, index) =>
@@ -1298,7 +1405,27 @@ export default function HeroShield() {
       hitTimeouts.forEach((timeoutId) => window.clearTimeout(timeoutId));
       hitIntervals.forEach((intervalId) => window.clearInterval(intervalId));
     };
-  }, [playImpact]);
+  }, [isMuzzleReady, playImpact]);
+
+  useEffect(() => () => {
+    manualShotTimeoutsRef.current.forEach((timeoutId) => window.clearTimeout(timeoutId));
+    manualShotTimeoutsRef.current = [];
+  }, []);
+
+  useEffect(() => {
+    const heroSection = svgRef.current?.closest<HTMLElement>('.hero-section');
+    if (!heroSection) return undefined;
+
+    const handleHeroClickShot = (event: PointerEvent) => {
+      if (!event.isPrimary) return;
+      fireManualShot();
+    };
+
+    heroSection.addEventListener('pointerup', handleHeroClickShot);
+    return () => {
+      heroSection.removeEventListener('pointerup', handleHeroClickShot);
+    };
+  }, [fireManualShot]);
 
   useEffect(() => {
     const heroSection = svgRef.current?.closest<HTMLElement>('.hero-section');
@@ -1580,15 +1707,8 @@ export default function HeroShield() {
         <ellipse className="hero-defense-floor" cx="520" cy="254" rx="350" ry="24" />
 
         <ThreatBorder />
-        {isMuzzleReady && projectedThreats.map((threat) => (
-          <ThreatArrow key={threat.id} {...threat} />
-        ))}
 
-        <ShockBurst className="hero-shield-hit hero-shield-hit--one hero-shockfield hero-shockfield--one" delay="0s" />
-        <ShockBurst className="hero-shield-hit hero-shield-hit--two hero-shockfield hero-shockfield--two" delay="1.35s" />
-        <ShockBurst className="hero-shield-hit hero-shield-hit--three hero-shockfield hero-shockfield--three" delay="2.7s" />
-
-        <g className="hero-guardian">
+        <g className="hero-guardian" transform={`translate(${guardianOffsetX} 0)`}>
           <ellipse className="hero-guardian-shadow" cx="760" cy="260" rx="118" ry="20" />
           <g className="hero-guardian-recoil">
             <g transform="translate(-10 2)">
@@ -1604,7 +1724,7 @@ export default function HeroShield() {
                   <path ref={shieldForearmRef} className="hero-guardian-arm hero-guardian-arm--shield" d={pathBetween(guardianShieldElbowBase, guardianShieldHandBase)} />
                   <g ref={shieldHandRigRef}>
                     <path className="hero-guardian-hand hero-guardian-hand--shield" d="M694 171 C696 168 700 167 703 170 C702 175 698 176 695 174 Z" />
-                    <HeldShield impactRef={shieldImpactRef} />
+                    <HeldShield impactRef={shieldImpactRef} showImpacts={isMuzzleReady} />
                   </g>
                   <path className="hero-guardian-arm hero-guardian-arm--flag" d="M780 143 L820 142 L872 109" />
                     {/* place flag so its bottom-right aligns with palm center (872,109) */}
@@ -1617,6 +1737,17 @@ export default function HeroShield() {
             </g>
           </g>
         </g>
+
+        {isMuzzleReady && (
+          <>
+            {projectedThreats.map((threat) => (
+              <ThreatArrow key={threat.id} {...threat} />
+            ))}
+            {manualThreats.map((threat) => (
+              <ThreatArrow key={threat.id} {...threat} repeat={false} />
+            ))}
+          </>
+        )}
       </svg>
       </div>
       {createPortal(cursorOverlay, document.body)}
