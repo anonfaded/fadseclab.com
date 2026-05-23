@@ -1,14 +1,15 @@
 import flagImg from '../../assets/images/fadseclab_flag.png';
 import './HeroShield.css';
-import { useCallback, useEffect, useRef } from 'react';
+import * as THREE from 'three';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import type { CSSProperties, RefObject } from 'react';
 
-// All arrows fire from the single tower launcher muzzle (scaled tower: muzzle now at 236,71).
-const threats = [
-  { id: 'trackers', label: 'Trackers', lane: 82, delay: '0s', color: '#ff5a45', path: 'M236 71 C378 43 560 71 700 115' },
-  { id: 'brokers', label: 'Data brokers', lane: 132, delay: '1.35s', color: '#ff3f35', path: 'M236 71 C382 87 565 123 702 141' },
-  { id: 'spyware', label: 'Spyware', lane: 182, delay: '2.7s', color: '#ff7264', path: 'M236 71 C368 137 544 197 696 163' },
+// All arrows fire from the Three.js tower turret muzzle.
+const baseThreats = [
+  { id: 'trackers', label: 'Trackers', lane: 82, delay: '0s', color: '#ff5a45', path: 'M326 100 C418 68 560 78 700 115' },
+  { id: 'brokers', label: 'Data brokers', lane: 132, delay: '1.35s', color: '#ff3f35', path: 'M326 100 C438 104 570 128 702 141' },
+  { id: 'spyware', label: 'Spyware', lane: 182, delay: '2.7s', color: '#ff7264', path: 'M326 100 C414 154 540 202 696 163' },
 ];
 
 const shieldPath = 'M90 4 C118 12 146 18 168 30 L160 128 C154 178 126 214 90 238 C54 214 26 178 20 128 L12 30 C34 18 62 12 90 4Z';
@@ -55,21 +56,650 @@ function pathBetween(start: { x: number; y: number }, end: { x: number; y: numbe
   return `M${start.x.toFixed(2)} ${start.y.toFixed(2)} L${end.x.toFixed(2)} ${end.y.toFixed(2)}`;
 }
 
-function ThreatArrow({ label, delay, color, path, id }: (typeof threats)[number]) {
+function threatsFromMuzzle(x: number, y: number) {
+  return baseThreats.map((threat, index) => {
+    const end = index === 0 ? { x: 700, y: 115 } : index === 1 ? { x: 702, y: 141 } : { x: 696, y: 163 };
+    const lift = index === 0 ? -34 : index === 1 ? 18 : 70;
+    const c1x = x + (index === 0 ? 96 : index === 1 ? 116 : 92);
+    const c1y = y + lift * 0.52;
+    const c2x = end.x - (index === 0 ? 150 : index === 1 ? 132 : 164);
+    const c2y = end.y - lift * 0.32;
+
+    return {
+      ...threat,
+      path: `M${x} ${y} C${c1x.toFixed(1)} ${c1y.toFixed(1)} ${c2x.toFixed(1)} ${c2y.toFixed(1)} ${end.x} ${end.y}`,
+    };
+  });
+}
+
+function ThreatArrow({ label, delay, color, path, id }: (typeof baseThreats)[number]) {
   return (
     <g className="hero-threat" style={{ '--delay': delay, '--threat': color } as CSSProperties}>
       <path id={`threat-path-${id}`} className="hero-threat-path" d={path} />
       <g className="hero-arrow">
-        <animateMotion dur="4.05s" begin={delay} repeatCount="indefinite" rotate="auto" keyPoints="0;0;0.78;1;1;1" keyTimes="0;0.1;0.66;0.72;0.82;1" calcMode="spline" keySplines="0.2 0 0.2 1;0.2 0 0.2 1;0.16 1 0.3 1;0.16 1 0.3 1;0.2 0 0.2 1">
+        <animateMotion dur="4.05s" begin={delay} repeatCount="indefinite" rotate="auto" keyPoints="0;0;0.78;1;1" keyTimes="0;0.035;0.66;0.72;1" calcMode="spline" keySplines="0.25 0 0.25 1;0.18 0 0.18 1;0.16 1 0.3 1;0.2 0 0.2 1">
           <mpath href={`#threat-path-${id}`} />
         </animateMotion>
-        <line className="hero-arrow-trail" x1="-48" y1="0" x2="-14" y2="0" />
-        <line className="hero-arrow-shaft" x1="-16" y1="0" x2="24" y2="0" />
-        <path className="hero-arrow-head" d="M24 -7 39 0 24 7Z" />
-        <path className="hero-arrow-fin" d="M-16 0 -29 -8 -23 0 -29 8Z" />
-        <text className="hero-arrow-label" x="-12" y="-13">{label}</text>
+        <line className="hero-arrow-trail" x1="-4" y1="0" x2="20" y2="0" />
+        <line className="hero-arrow-shaft" x1="0" y1="0" x2="42" y2="0" />
+        <path className="hero-arrow-head" d="M42 -7 58 0 42 7Z" />
+        <path className="hero-arrow-fin" d="M0 0 -12 -8 -7 0 -12 8Z" />
+        <text className="hero-arrow-label" x="12" y="-13">{label}</text>
       </g>
     </g>
+  );
+}
+
+function disposeObject(object: THREE.Object3D) {
+  object.traverse((child) => {
+    if (child instanceof THREE.Mesh || child instanceof THREE.Line || child instanceof THREE.Points) {
+      child.geometry?.dispose();
+      const material = child.material;
+      if (Array.isArray(material)) {
+        material.forEach((entry) => {
+          if ('map' in entry && entry.map instanceof THREE.Texture) entry.map.dispose();
+          entry.dispose();
+        });
+      } else {
+        if (material && 'map' in material && material.map instanceof THREE.Texture) material.map.dispose();
+        material?.dispose();
+      }
+    }
+  });
+}
+
+function HeroAdversaryThreeScene({ onMuzzleProject }: { onMuzzleProject: (point: { clientX: number; clientY: number }) => void }) {
+  const mountRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const mount = mountRef.current;
+    if (!mount) return undefined;
+
+    const renderer = new THREE.WebGLRenderer({
+      alpha: true,
+      antialias: true,
+      powerPreference: 'high-performance',
+    });
+    renderer.setClearColor(0x000000, 0);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    mount.appendChild(renderer.domElement);
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(24, 1, 0.1, 100);
+    camera.position.set(0.06, 2.7, 8.35);
+    camera.lookAt(-0.5, 1.02, -0.04);
+
+    const ambient = new THREE.HemisphereLight(0x9ca8b4, 0x0a0706, 1.05);
+    const key = new THREE.DirectionalLight(0xe5ebf2, 2.0);
+    key.position.set(3.8, 5.8, 4.8);
+    key.castShadow = true;
+    key.shadow.mapSize.set(512, 512);
+    const redFill = new THREE.PointLight(0xff2f24, 1.85, 8);
+    redFill.position.set(-1.65, 1.35, 1.5);
+    scene.add(ambient, key, redFill);
+
+    const root = new THREE.Group();
+    root.position.set(0.1, 0.08, 0);
+    root.scale.setScalar(0.66);
+    root.rotation.y = 0;
+    scene.add(root);
+
+    const terrainMat = new THREE.MeshStandardMaterial({
+      color: 0x10130f,
+      roughness: 0.88,
+      metalness: 0.02,
+    });
+    const terrainSideMat = new THREE.MeshStandardMaterial({
+      color: 0x080908,
+      roughness: 0.96,
+      metalness: 0,
+    });
+    const steelMat = new THREE.MeshStandardMaterial({
+      color: 0x4c555a,
+      roughness: 0.74,
+      metalness: 0.5,
+    });
+    const darkSteelMat = new THREE.MeshStandardMaterial({
+      color: 0x111416,
+      roughness: 0.8,
+      metalness: 0.38,
+    });
+    const redMat = new THREE.MeshStandardMaterial({
+      color: 0x9d261f,
+      roughness: 0.56,
+      metalness: 0.2,
+      emissive: 0x250503,
+    });
+    const railMat = new THREE.MeshStandardMaterial({ color: 0x596267, roughness: 0.58, metalness: 0.64 });
+    const cableMat = new THREE.MeshStandardMaterial({ color: 0x7e1f19, roughness: 0.7, metalness: 0.18 });
+    const concreteMat = new THREE.MeshStandardMaterial({ color: 0x2a2926, roughness: 0.94, metalness: 0.02 });
+
+    const tubeBetween = (start: THREE.Vector3, end: THREE.Vector3, radius: number, material: THREE.Material, segments = 12) => {
+      const mesh = new THREE.Mesh(new THREE.CylinderGeometry(radius, radius, start.distanceTo(end), segments), material);
+      mesh.position.copy(start).lerp(end, 0.5);
+      mesh.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), end.clone().sub(start).normalize());
+      mesh.castShadow = true;
+      mesh.receiveShadow = true;
+      return mesh;
+    };
+
+    const roundedBoxGeometry = (width: number, height: number, depth: number, radius: number) => {
+      const shape = new THREE.Shape();
+      const x = -width / 2;
+      const y = -height / 2;
+      shape.moveTo(x + radius, y);
+      shape.lineTo(x + width - radius, y);
+      shape.quadraticCurveTo(x + width, y, x + width, y + radius);
+      shape.lineTo(x + width, y + height - radius);
+      shape.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+      shape.lineTo(x + radius, y + height);
+      shape.quadraticCurveTo(x, y + height, x, y + height - radius);
+      shape.lineTo(x, y + radius);
+      shape.quadraticCurveTo(x, y, x + radius, y);
+      const geometry = new THREE.ExtrudeGeometry(shape, {
+        depth,
+        bevelEnabled: true,
+        bevelSegments: 4,
+        bevelSize: radius * 0.32,
+        bevelThickness: radius * 0.28,
+        curveSegments: 8,
+      });
+      geometry.center();
+      return geometry;
+    };
+
+    const createSignTexture = () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = 640;
+      canvas.height = 256;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return null;
+      ctx.fillStyle = '#120f0f';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = '#8f261f';
+      ctx.fillRect(0, 0, canvas.width, 78);
+      ctx.fillStyle = '#171717';
+      for (let i = -40; i < canvas.width; i += 72) {
+        ctx.save();
+        ctx.translate(i, 0);
+        ctx.rotate(-0.22);
+        ctx.fillRect(0, -18, 34, 112);
+        ctx.restore();
+      }
+      ctx.strokeStyle = '#645b58';
+      ctx.lineWidth = 8;
+      ctx.strokeRect(18, 18, canvas.width - 36, canvas.height - 36);
+      ctx.fillStyle = '#f1e7df';
+      ctx.font = '800 64px monospace';
+      ctx.textAlign = 'center';
+      ctx.fillText('ADVERSARY', canvas.width / 2, 144);
+      ctx.fillStyle = '#ff5b45';
+      ctx.font = '800 33px monospace';
+      ctx.fillText('SURVEILLANCE ZONE', canvas.width / 2, 188);
+      ctx.fillStyle = '#868b8f';
+      [42, 598].forEach((x) => {
+        [44, 212].forEach((y) => {
+          ctx.beginPath();
+          ctx.arc(x, y, 9, 0, Math.PI * 2);
+          ctx.fill();
+        });
+      });
+      const texture = new THREE.CanvasTexture(canvas);
+      texture.colorSpace = THREE.SRGBColorSpace;
+      texture.anisotropy = 4;
+      texture.needsUpdate = true;
+      return texture;
+    };
+
+    const terrainShape = new THREE.Shape();
+    terrainShape.moveTo(-3.85, -1.25);
+    terrainShape.bezierCurveTo(-2.75, -1.6, -0.65, -1.58, 1.65, -1.12);
+    terrainShape.bezierCurveTo(1.92, -0.42, 1.86, 0.44, 1.45, 1.08);
+    terrainShape.bezierCurveTo(0.12, 1.24, -1.42, 0.68, -2.55, 0.04);
+    terrainShape.bezierCurveTo(-3.25, -0.36, -3.68, -0.78, -3.85, -1.25);
+
+    const terrain = new THREE.Mesh(
+      new THREE.ExtrudeGeometry(terrainShape, {
+        depth: 0.28,
+        bevelEnabled: true,
+        bevelSize: 0.06,
+        bevelThickness: 0.06,
+        bevelSegments: 5,
+        curveSegments: 24,
+      }),
+      [terrainMat, terrainSideMat],
+    );
+    terrain.rotation.x = -Math.PI / 2;
+    terrain.position.y = -0.14;
+    terrain.receiveShadow = true;
+    root.add(terrain);
+
+    const ridgeMat = new THREE.LineBasicMaterial({ color: 0x5b655a, transparent: true, opacity: 0.34 });
+    [
+      [new THREE.Vector3(-2.65, 0.02, -0.58), new THREE.Vector3(-0.85, 0.04, -0.24), new THREE.Vector3(0.92, 0.05, 0.18)],
+      [new THREE.Vector3(-2.1, 0.03, 0.08), new THREE.Vector3(-0.58, 0.04, 0.32), new THREE.Vector3(1.15, 0.05, 0.55)],
+      [new THREE.Vector3(-3.05, 0.02, -0.9), new THREE.Vector3(-1.1, 0.03, -1.02), new THREE.Vector3(0.86, 0.04, -0.78)],
+    ].forEach((points) => {
+      const curve = new THREE.CatmullRomCurve3(points);
+      root.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(curve.getPoints(28)), ridgeMat));
+    });
+
+    const signTexture = createSignTexture();
+    if (signTexture) {
+      const board = new THREE.Group();
+      board.position.set(1.08, 0.62, 1.02);
+      board.rotation.x = -0.03;
+      board.rotation.y = 0;
+      root.add(board);
+      const boardFace = new THREE.Mesh(
+        new THREE.PlaneGeometry(1.96, 0.78),
+        new THREE.MeshBasicMaterial({ map: signTexture, side: THREE.DoubleSide, depthTest: false }),
+      );
+      boardFace.position.z = 0.055;
+      boardFace.castShadow = true;
+      boardFace.renderOrder = 5;
+      board.add(boardFace);
+      const boardBack = new THREE.Mesh(roundedBoxGeometry(2.06, 0.9, 0.06, 0.035), darkSteelMat);
+      boardBack.position.z = -0.035;
+      boardBack.castShadow = true;
+      board.add(boardBack);
+      board.add(tubeBetween(new THREE.Vector3(-0.58, -0.78, -0.04), new THREE.Vector3(-0.58, -0.34, -0.04), 0.02, railMat, 10));
+      board.add(tubeBetween(new THREE.Vector3(0.58, -0.78, -0.04), new THREE.Vector3(0.58, -0.34, -0.04), 0.02, railMat, 10));
+    }
+
+    const fenceTop = new THREE.CatmullRomCurve3([
+      new THREE.Vector3(-2.95, 0.62, 0.42),
+      new THREE.Vector3(-2.65, 0.68, -0.48),
+      new THREE.Vector3(-1.5, 0.74, -0.94),
+      new THREE.Vector3(-0.2, 0.8, -1.02),
+      new THREE.Vector3(1.05, 0.84, -0.72),
+      new THREE.Vector3(1.55, 0.82, -0.02),
+      new THREE.Vector3(0.85, 0.72, 0.64),
+      new THREE.Vector3(-0.55, 0.62, 0.82),
+    ], false);
+    const fenceBase = fenceTop.getPoints(48).map((p) => new THREE.Vector3(p.x, 0.08, p.z));
+    const fenceTopPoints = fenceTop.getPoints(48);
+    const railTop = new THREE.Mesh(new THREE.TubeGeometry(fenceTop, 128, 0.018, 12), railMat);
+    const railMid = new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(
+      fenceTopPoints.map((p) => new THREE.Vector3(p.x, 0.48, p.z)),
+      false,
+    ), 128, 0.012, 12), railMat);
+    const railBase = new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(fenceBase, false), 128, 0.014, 12), railMat);
+    railTop.castShadow = true;
+    railMid.castShadow = true;
+    railBase.castShadow = true;
+    root.add(railTop, railMid, railBase);
+
+    const meshMat = new THREE.LineBasicMaterial({ color: 0x6f777b, transparent: true, opacity: 0.16 });
+    for (let i = 0; i < 14; i += 1) {
+      const t = i / 14;
+      const p = fenceTop.getPointAt(t);
+      const height = 0.78 + Math.sin(t * Math.PI * 2) * 0.04;
+      const post = new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.034, height, 14), darkSteelMat);
+      post.position.set(p.x, height / 2 + 0.05, p.z);
+      post.castShadow = true;
+      post.receiveShadow = true;
+      root.add(post);
+      const cap = new THREE.Mesh(new THREE.CylinderGeometry(0.052, 0.045, 0.035, 14), railMat);
+      cap.position.set(p.x, height + 0.08, p.z);
+      cap.castShadow = true;
+      root.add(cap);
+      if (i % 2 === 1) {
+        const next = fenceTop.getPointAt((i + 0.55) / 14);
+        root.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([
+          new THREE.Vector3(p.x, 0.7, p.z),
+          new THREE.Vector3(next.x, 0.18, next.z),
+        ]), meshMat));
+        root.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([
+          new THREE.Vector3(p.x, 0.22, p.z),
+          new THREE.Vector3(next.x, 0.66, next.z),
+        ]), meshMat));
+      }
+      if (i === 3 || i === 10) {
+        const fallen = tubeBetween(
+          new THREE.Vector3(p.x - 0.16, 0.16, p.z + 0.04),
+          new THREE.Vector3(p.x + 0.28, 0.42, p.z - 0.1),
+          0.014,
+          railMat,
+          10,
+        );
+        fallen.rotation.z += 0.12;
+        root.add(fallen);
+      }
+    }
+
+    const tower = new THREE.Group();
+    tower.position.set(-0.18, 0.1, -0.1);
+    root.add(tower);
+    [
+      [-0.48, -0.34],
+      [0.48, -0.34],
+      [-0.38, 0.34],
+      [0.38, 0.34],
+    ].forEach(([x, z]) => {
+      const block = new THREE.Mesh(roundedBoxGeometry(0.34, 0.13, 0.28, 0.035), concreteMat);
+      block.position.set(x, 0.04, z);
+      block.castShadow = true;
+      block.receiveShadow = true;
+      tower.add(block);
+    });
+    [
+      [-0.48, 0.08, -0.34, -0.16, 2.12, -0.08],
+      [0.48, 0.08, -0.34, 0.16, 2.12, -0.08],
+      [-0.38, 0.08, 0.34, -0.13, 2.12, 0.1],
+      [0.38, 0.08, 0.34, 0.13, 2.12, 0.1],
+    ].forEach(([x1, y1, z1, x2, y2, z2]) => {
+      const start = new THREE.Vector3(x1, y1, z1);
+      const end = new THREE.Vector3(x2, y2, z2);
+      tower.add(tubeBetween(start, end, 0.024, steelMat, 16));
+    });
+    [
+      [new THREE.Vector3(-0.48, 0.32, -0.34), new THREE.Vector3(0.36, 0.78, 0.24)],
+      [new THREE.Vector3(0.48, 0.32, -0.34), new THREE.Vector3(-0.34, 0.78, 0.24)],
+      [new THREE.Vector3(-0.34, 0.88, 0.24), new THREE.Vector3(0.24, 1.3, -0.12)],
+      [new THREE.Vector3(0.36, 0.88, 0.24), new THREE.Vector3(-0.24, 1.3, -0.12)],
+      [new THREE.Vector3(-0.24, 1.42, -0.1), new THREE.Vector3(0.16, 1.9, 0.07)],
+      [new THREE.Vector3(0.24, 1.42, -0.1), new THREE.Vector3(-0.16, 1.9, 0.07)],
+    ].forEach(([start, end]) => {
+      tower.add(tubeBetween(start, end, 0.01, steelMat, 10));
+    });
+    [0.42, 0.82, 1.24, 1.66].forEach((y) => {
+      const halfWidth = 0.46 - y * 0.08;
+      const halfDepth = 0.32 - y * 0.05;
+      [
+        [new THREE.Vector3(-halfWidth, y, -halfDepth), new THREE.Vector3(halfWidth, y, -halfDepth)],
+        [new THREE.Vector3(-halfWidth, y, halfDepth), new THREE.Vector3(halfWidth, y, halfDepth)],
+        [new THREE.Vector3(-halfWidth, y, -halfDepth), new THREE.Vector3(-halfWidth, y, halfDepth)],
+        [new THREE.Vector3(halfWidth, y, -halfDepth), new THREE.Vector3(halfWidth, y, halfDepth)],
+      ].forEach(([start, end]) => {
+        tower.add(tubeBetween(start, end, 0.012, steelMat, 10));
+      });
+    });
+    const towerDeck = new THREE.Mesh(new THREE.CylinderGeometry(0.38, 0.42, 0.08, 32), darkSteelMat);
+    towerDeck.position.y = 2.18;
+    towerDeck.scale.z = 0.55;
+    towerDeck.castShadow = true;
+    tower.add(towerDeck);
+
+    const turret = new THREE.Group();
+    turret.position.set(0, 2.42, -0.05);
+    turret.rotation.y = 0;
+    tower.add(turret);
+    const turretBody = new THREE.Mesh(roundedBoxGeometry(0.52, 0.28, 0.36, 0.045), darkSteelMat);
+    turretBody.castShadow = true;
+    turret.add(turretBody);
+    const turretLid = new THREE.Mesh(new THREE.BoxGeometry(0.58, 0.05, 0.4), redMat);
+    turretLid.position.y = 0.17;
+    turretLid.castShadow = true;
+    turret.add(turretLid);
+    const barrelGroup = new THREE.Group();
+    turret.add(barrelGroup);
+    const barrel = new THREE.Mesh(new THREE.CylinderGeometry(0.045, 0.055, 0.64, 20), steelMat);
+    barrel.rotation.z = Math.PI / 2;
+    barrel.position.x = 0.48;
+    barrel.castShadow = true;
+    barrelGroup.add(barrel);
+    const muzzle = new THREE.Mesh(new THREE.CylinderGeometry(0.075, 0.075, 0.05, 24), redMat);
+    muzzle.rotation.z = Math.PI / 2;
+    muzzle.position.x = 0.8;
+    barrelGroup.add(muzzle);
+    const launchAnchor = new THREE.Object3D();
+    launchAnchor.position.set(0.9, 0, 0);
+    turret.add(launchAnchor);
+    const sensor = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.07, 0.03, 24), redMat);
+    sensor.rotation.z = Math.PI / 2;
+    sensor.position.set(-0.27, 0.03, -0.19);
+    turret.add(sensor);
+    const antenna = new THREE.Group();
+    antenna.position.set(-0.08, 0.16, 0.02);
+    turret.add(antenna);
+    antenna.add(tubeBetween(new THREE.Vector3(0, -0.04, 0), new THREE.Vector3(0, 0.42, 0), 0.011, steelMat, 12));
+    antenna.add(tubeBetween(new THREE.Vector3(-0.07, -0.04, 0), new THREE.Vector3(0.07, -0.04, 0), 0.008, steelMat, 8));
+    antenna.add(tubeBetween(new THREE.Vector3(-0.11, 0.25, 0), new THREE.Vector3(0.11, 0.25, 0), 0.007, steelMat, 8));
+    antenna.add(tubeBetween(new THREE.Vector3(-0.08, 0.14, 0), new THREE.Vector3(0.08, 0.14, 0), 0.006, steelMat, 8));
+    const antennaTip = new THREE.Mesh(new THREE.SphereGeometry(0.025, 16, 10), redMat);
+    antennaTip.position.y = 0.45;
+    antenna.add(antennaTip);
+    const muzzleFlash = new THREE.Mesh(
+      new THREE.ConeGeometry(0.06, 0.22, 24),
+      new THREE.MeshBasicMaterial({ color: 0xff6048, transparent: true, opacity: 0 }),
+    );
+    muzzleFlash.rotation.z = -Math.PI / 2;
+    muzzleFlash.scale.set(1, 0.42, 0.42);
+    muzzleFlash.position.x = 0.9;
+    turret.add(muzzleFlash);
+
+    const generator = new THREE.Group();
+    generator.position.set(-1.62, 0.2, -0.18);
+    generator.rotation.y = 0.05;
+    root.add(generator);
+    const genBody = new THREE.Mesh(roundedBoxGeometry(1.62, 0.96, 0.74, 0.08), darkSteelMat);
+    genBody.castShadow = true;
+    genBody.receiveShadow = true;
+    generator.add(genBody);
+    const genTop = new THREE.Mesh(roundedBoxGeometry(1.68, 0.14, 0.78, 0.045), redMat);
+    genTop.position.y = 0.54;
+    genTop.castShadow = true;
+    generator.add(genTop);
+    const ventMat = new THREE.MeshStandardMaterial({ color: 0x0b0d0e, roughness: 0.85, metalness: 0.25 });
+    [-0.3, -0.18, -0.06].forEach((y, index) => {
+      const vent = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.026, 0.02), ventMat);
+      vent.position.set(-0.42, y + 0.18, 0.38);
+      vent.rotation.z = -0.08;
+      generator.add(vent);
+      const slot = new THREE.Mesh(new THREE.BoxGeometry(0.4 - index * 0.04, 0.014, 0.018), steelMat);
+      slot.position.set(-0.42, y + 0.18, 0.405);
+      generator.add(slot);
+    });
+    const core = new THREE.Mesh(new THREE.CylinderGeometry(0.13, 0.13, 0.04, 32), redMat);
+    core.rotation.z = Math.PI / 2;
+    core.position.set(0.56, 0.02, 0.405);
+    generator.add(core);
+    const coreRing = new THREE.Mesh(new THREE.TorusGeometry(0.16, 0.012, 8, 48), redMat);
+    coreRing.position.set(0.56, 0.02, 0.43);
+    coreRing.rotation.y = Math.PI / 2;
+    generator.add(coreRing);
+    const hatchMat = new THREE.MeshStandardMaterial({ color: 0x24282a, roughness: 0.78, metalness: 0.42 });
+    const leftDoor = new THREE.Mesh(roundedBoxGeometry(0.48, 0.54, 0.04, 0.035), hatchMat);
+    leftDoor.position.set(-0.72, -0.02, 0.45);
+    leftDoor.rotation.y = -0.38;
+    leftDoor.castShadow = true;
+    generator.add(leftDoor);
+    const rightDoor = new THREE.Mesh(roundedBoxGeometry(0.4, 0.42, 0.04, 0.035), hatchMat);
+    rightDoor.position.set(0.08, -0.04, 0.45);
+    rightDoor.rotation.y = 0.22;
+    rightDoor.castShadow = true;
+    generator.add(rightDoor);
+    [-0.14, -0.02, 0.1].forEach((y) => {
+      const rib = new THREE.Mesh(new THREE.BoxGeometry(1.48, 0.018, 0.018), steelMat);
+      rib.position.set(-0.02, y + 0.04, 0.46);
+      generator.add(rib);
+    });
+    [-0.64, -0.48, -0.32, -0.16].forEach((x) => {
+      const gridBar = new THREE.Mesh(new THREE.BoxGeometry(0.018, 0.48, 0.018), steelMat);
+      gridBar.position.set(x, -0.03, 0.47);
+      generator.add(gridBar);
+    });
+    [-0.48, -0.22, 0.04, 0.3].forEach((x) => {
+      const bolt = new THREE.Mesh(new THREE.CylinderGeometry(0.018, 0.018, 0.012, 12), steelMat);
+      bolt.position.set(x, 0.38, 0.47);
+      bolt.rotation.x = Math.PI / 2;
+      generator.add(bolt);
+    });
+    const exhaustStack = new THREE.Mesh(new THREE.CylinderGeometry(0.045, 0.055, 0.42, 18), darkSteelMat);
+    exhaustStack.position.set(0.86, 0.62, -0.1);
+    exhaustStack.rotation.z = -0.18;
+    exhaustStack.castShadow = true;
+    generator.add(exhaustStack);
+    const exhaustCap = new THREE.Mesh(new THREE.CylinderGeometry(0.065, 0.055, 0.06, 18), steelMat);
+    exhaustCap.position.set(0.9, 0.84, -0.1);
+    exhaustCap.rotation.z = -0.18;
+    generator.add(exhaustCap);
+
+    const smokeMat = new THREE.MeshBasicMaterial({ color: 0x8f989e, transparent: true, opacity: 0.12, depthWrite: false });
+    const smokePuffs = [0, 1, 2, 3].map((index) => {
+      const puff = new THREE.Mesh(new THREE.SphereGeometry(0.09 + index * 0.018, 18, 12), smokeMat.clone());
+      puff.position.set(-1.02 + index * 0.03, 0.78 + index * 0.12, -0.12 + index * 0.01);
+      root.add(puff);
+      puff.userData.phase = index / 4;
+      return puff;
+    });
+
+    const cablePoints = [
+      new THREE.Vector3(-1.22, 0.16, 0.12),
+      new THREE.Vector3(-0.92, 0.08, 0.02),
+      new THREE.Vector3(-0.55, 0.08, -0.14),
+      new THREE.Vector3(-0.36, 0.28, -0.27),
+      ...Array.from({ length: 18 }, (_, index) => {
+        const y = 0.34 + index * 0.105;
+        const angle = index * 0.92;
+        return new THREE.Vector3(-0.34 + Math.cos(angle) * 0.105, y, -0.24 + Math.sin(angle) * 0.08);
+      }),
+      new THREE.Vector3(-0.1, 2.18, -0.14),
+      new THREE.Vector3(-0.02, 2.36, -0.11),
+    ];
+    const cableCurve = new THREE.CatmullRomCurve3(cablePoints);
+    const cableMesh = new THREE.Mesh(new THREE.TubeGeometry(cableCurve, 120, 0.024, 14), cableMat);
+    cableMesh.castShadow = true;
+    root.add(cableMesh);
+    const electricityMat = new THREE.MeshBasicMaterial({ color: 0xff664d, transparent: true, opacity: 0.95 });
+    const electricityPulse = new THREE.Mesh(new THREE.SphereGeometry(0.045, 16, 10), electricityMat);
+    root.add(electricityPulse);
+    const sparkLine = new THREE.Line(
+      new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(), new THREE.Vector3(0.12, 0.03, 0)]),
+      new THREE.LineBasicMaterial({ color: 0xff7a58, transparent: true, opacity: 0.75 }),
+    );
+    root.add(sparkLine);
+
+    const signalRings = [0, 1].map((index) => {
+      const ring = new THREE.Mesh(
+        new THREE.TorusGeometry(0.12, 0.004, 8, 72),
+        new THREE.MeshBasicMaterial({ color: 0xff4d3d, transparent: true, opacity: 0.6 }),
+      );
+      ring.position.copy(tower.position).add(new THREE.Vector3(-0.08, 2.98, -0.08));
+      ring.rotation.x = 0;
+      ring.userData.phase = index / 2;
+      root.add(ring);
+      return ring;
+    });
+    const beaconDot = new THREE.Mesh(
+      new THREE.SphereGeometry(0.035, 16, 10),
+      new THREE.MeshBasicMaterial({ color: 0xff4d3d, transparent: true, opacity: 0.95 }),
+    );
+    beaconDot.position.copy(tower.position).add(new THREE.Vector3(-0.08, 2.98, -0.08));
+    root.add(beaconDot);
+
+    let lastProjectedMuzzle: { clientX: number; clientY: number } | null = null;
+    const projectMuzzleToSvg = () => {
+      const canvasRect = renderer.domElement.getBoundingClientRect();
+      if (canvasRect.width <= 0 || canvasRect.height <= 0) return;
+
+      const world = new THREE.Vector3();
+      launchAnchor.getWorldPosition(world);
+      world.project(camera);
+
+      const next = {
+        clientX: canvasRect.left + ((world.x + 1) / 2) * canvasRect.width,
+        clientY: canvasRect.top + ((1 - world.y) / 2) * canvasRect.height,
+      };
+
+      if (!Number.isFinite(next.clientX) || !Number.isFinite(next.clientY)) return;
+      if (
+        lastProjectedMuzzle
+        && Math.abs(lastProjectedMuzzle.clientX - next.clientX) < 0.5
+        && Math.abs(lastProjectedMuzzle.clientY - next.clientY) < 0.5
+      ) {
+        return;
+      }
+
+      lastProjectedMuzzle = next;
+      onMuzzleProject(next);
+    };
+
+    const resize = () => {
+      const { width, height } = mount.getBoundingClientRect();
+      const viewportWidth = window.innerWidth;
+      const compact = viewportWidth <= 520;
+      const tablet = viewportWidth <= 760;
+      root.scale.setScalar(compact ? 0.48 : tablet ? 0.54 : 0.66);
+      root.position.set(compact ? 0.3 : tablet ? 0.2 : 0.1, compact ? -0.1 : tablet ? -0.02 : 0.08, 0);
+      renderer.setSize(Math.max(1, width), Math.max(1, height), false);
+      camera.aspect = Math.max(1, width) / Math.max(1, height);
+      camera.updateProjectionMatrix();
+      window.requestAnimationFrame(projectMuzzleToSvg);
+    };
+    resize();
+    const projectionTimers = [120, 420, 900].map((delay) => window.setTimeout(projectMuzzleToSvg, delay));
+
+    const observer = new ResizeObserver(resize);
+    observer.observe(mount);
+
+    const clock = new THREE.Clock();
+    renderer.setAnimationLoop(() => {
+      const elapsed = clock.getElapsedTime();
+      signalRings.forEach((ring) => {
+        const progress = (elapsed * 0.42 + ring.userData.phase) % 1;
+        const scale = 0.75 + progress * 1.55;
+        ring.scale.setScalar(scale);
+        const material = ring.material;
+        if (material instanceof THREE.MeshBasicMaterial) {
+          material.opacity = Math.max(0, 0.32 * (1 - progress));
+        }
+      });
+      beaconDot.scale.setScalar(0.9 + Math.sin(elapsed * 4) * 0.18);
+      smokePuffs.forEach((puff) => {
+        const progress = (elapsed * 0.12 + puff.userData.phase) % 1;
+        puff.position.y = 0.84 + progress * 0.7;
+        puff.position.x = -1.02 + Math.sin(progress * Math.PI * 2) * 0.08;
+        puff.position.z = -0.12 + Math.cos(progress * Math.PI * 2) * 0.04;
+        puff.scale.setScalar(0.8 + progress * 1.15);
+        const material = puff.material;
+        if (material instanceof THREE.MeshBasicMaterial) {
+          material.opacity = 0.14 * (1 - progress);
+        }
+      });
+      const cableProgress = (elapsed * 0.42) % 1;
+      electricityPulse.position.copy(cableCurve.getPointAt(cableProgress));
+      electricityPulse.scale.setScalar(0.7 + Math.sin(elapsed * 14) * 0.22);
+      const sparkStart = cableCurve.getPointAt(cableProgress);
+      const sparkEnd = cableCurve.getPointAt(Math.min(0.995, cableProgress + 0.02));
+      sparkLine.geometry.setFromPoints([sparkStart, sparkEnd]);
+
+      const shotCycle = 4.05;
+      const recoil = [0, 1.35, 2.7].reduce((maxRecoil, delay) => {
+        const phase = ((elapsed - delay + shotCycle) % shotCycle);
+        const amount = phase < 0.045 ? 1 - phase / 0.045 : 0;
+        return Math.max(maxRecoil, amount);
+      }, 0);
+      barrelGroup.position.x = -recoil * 0.08;
+      muzzleFlash.scale.set(1 + recoil * 1.4, 0.42 + recoil * 0.16, 0.42 + recoil * 0.16);
+      const flashMaterial = muzzleFlash.material;
+      if (flashMaterial instanceof THREE.MeshBasicMaterial) {
+        flashMaterial.opacity = recoil * 0.42;
+      }
+      turret.rotation.y = Math.sin(elapsed * 1.5) * 0.014;
+      renderer.render(scene, camera);
+    });
+
+    return () => {
+      renderer.setAnimationLoop(null);
+      projectionTimers.forEach((timer) => window.clearTimeout(timer));
+      observer.disconnect();
+      disposeObject(scene);
+      renderer.dispose();
+      renderer.domElement.remove();
+    };
+  }, [onMuzzleProject]);
+
+  return (
+    <div className="hero-adversary-three" aria-hidden="true">
+      <div ref={mountRef} className="hero-adversary-three-canvas" />
+      <div className="hero-adversary-three-label hero-adversary-three-label--zone">Adversary grid</div>
+      <div className="hero-adversary-three-label hero-adversary-three-label--gen">Surveillance core</div>
+    </div>
   );
 }
 
@@ -127,7 +757,7 @@ function MeshTower() {
         <ellipse className="hero-ad-muzzle" cx="112" cy="62" rx="3.2" ry="5.2" />
       </g>
 
-      {threats.map((t) => (
+      {baseThreats.map((t) => (
         <ellipse key={t.id} className="hero-muzzle-flash"
           cx="112" cy="62" rx="15" ry="8"
           style={{ '--pod-delay': t.delay, '--threat': t.color } as CSSProperties}
@@ -141,27 +771,8 @@ function MeshTower() {
   );
 }
 
-// Shared fence helpers — used by both FenceUpperWall and FenceFrontWall
+// Shared fence helpers for the curved perimeter.
 type FencePost = { foot: { x: number; y: number }; top: { x: number; y: number }; w: number };
-const MESH_STEPS = [0, 0.12, 0.24, 0.36, 0.48, 0.6, 0.72, 0.84];
-const MID_HEIGHTS = [0.28, 0.56];
-
-function renderFenceMesh(posts: FencePost[]) {
-  const topStart = posts[0].top, topEnd = posts[posts.length - 1].top;
-  const bottomStart = posts[0].foot, bottomEnd = posts[posts.length - 1].foot;
-  return MESH_STEPS.map((step) => {
-    const tA = interpolatePoint(topStart, topEnd, step);
-    const bB = interpolatePoint(bottomStart, bottomEnd, Math.min(step + 0.08, 1));
-    const bA = interpolatePoint(bottomStart, bottomEnd, step);
-    const tB = interpolatePoint(topStart, topEnd, Math.min(step + 0.08, 1));
-    return (
-      <g key={`m${step}`}>
-        <line className="hero-ad-fence-mesh-line" x1={tA.x} y1={tA.y} x2={bB.x} y2={bB.y} />
-        <line className="hero-ad-fence-mesh-line hero-ad-fence-mesh-line--back" x1={bA.x} y1={bA.y} x2={tB.x} y2={tB.y} />
-      </g>
-    );
-  });
-}
 
 function renderFencePosts(posts: FencePost[]) {
   return posts.map((post) => (
@@ -174,112 +785,53 @@ function renderFencePosts(posts: FencePost[]) {
   ));
 }
 
-function renderFenceSegment(posts: FencePost[], keyPrefix: string) {
-  const rail = (sel: 'top' | 'foot') =>
-    posts.map((p, i) => `${i === 0 ? 'M' : 'L'}${p[sel].x} ${p[sel].y}`).join(' ');
-  const midRail = (h: number) =>
-    posts.map((p, i) => {
-      const m = interpolatePoint(p.top, p.foot, h);
-      return `${i === 0 ? 'M' : 'L'}${m.x.toFixed(1)} ${m.y.toFixed(1)}`;
-    }).join(' ');
-  return (
-    <>
-      {renderFenceMesh(posts)}
-      <path className="hero-ad-fence-rail hero-ad-fence-rail--top" d={rail('top')} />
-      {MID_HEIGHTS.map((h) => <path key={`${keyPrefix}-mid-${h}`} className="hero-ad-fence-rail hero-ad-fence-rail--mid" d={midRail(h)} />)}
-      <path className="hero-ad-fence-rail" d={rail('foot')} />
-      {renderFencePosts(posts)}
-    </>
-  );
-}
-
 function TerritoryFloor() {
-  // Curved compound slab: right wall turns into a back run, then closes into the front fence.
+  // Hilly adversary terrain island: raised land mass, no water, no sharp polygon enclosure.
   return (
     <g className="hero-territory-floor">
+      <ellipse className="hero-territory-floor-shadow" cx="-25" cy="285" rx="315" ry="42" />
       <path
         className="hero-territory-floor-slab"
-        d="M286 88 C198 112 82 146 -55 190 C-142 215 -220 270 -294 323 L224 295 L224 268 Z"
+        d="M286 92 C220 100 128 124 39 158 C-57 195 -151 249 -294 318 C-163 332 39 325 224 296 C226 257 231 218 243 178 C253 139 268 107 286 92Z"
       />
-      <polygon className="hero-territory-floor-front"
-        points="224,295 -350,325 -350,337 224,308"
+      <path
+        className="hero-territory-floor-front"
+        d="M-294 318 C-161 332 39 325 224 296 C220 308 204 317 176 323 C25 350 -154 350 -300 334 C-306 329 -304 323 -294 318Z"
       />
-      <path className="hero-territory-horizon-fade" d="M286 88 C198 112 82 146 -55 190 C-142 215 -220 270 -294 323 L-294 296 C-214 245 -138 205 -55 180 C78 141 197 108 286 88Z" />
+      <path className="hero-territory-floor-ridge" d="M250 117 C166 137 81 166 -10 205 M226 188 C127 222 17 249 -116 274 M205 276 C65 301 -97 310 -252 310" />
+      <path className="hero-territory-floor-rim" d="M286 92 C220 100 128 124 39 158 C-57 195 -151 249 -294 318" />
     </g>
   );
 }
 
-function FenceUpperWall() {
-  const mainPosts: FencePost[] = [
+function FencePerimeter() {
+  const posts: FencePost[] = [
     { foot: { x: 224, y: 268 }, top: { x: 224, y: 196 }, w: 8 },
     { foot: { x: 242, y: 214 }, top: { x: 242, y: 157 }, w: 7 },
     { foot: { x: 263, y: 150 }, top: { x: 263, y: 105 }, w: 6 },
     { foot: { x: 286, y: 88 }, top: { x: 286, y: 51 }, w: 5 },
-  ];
-  const returnPosts: FencePost[] = [
-    { foot: { x: 286, y: 88 }, top: { x: 286, y: 51 }, w: 5 },
-    { foot: { x: 248, y: 99 }, top: { x: 248, y: 62 }, w: 5 },
-    { foot: { x: 205, y: 112 }, top: { x: 205, y: 75 }, w: 5 },
-    { foot: { x: 155, y: 128 }, top: { x: 155, y: 91 }, w: 4 },
-    { foot: { x: 95, y: 146 }, top: { x: 95, y: 111 }, w: 4 },
-    { foot: { x: 25, y: 166 }, top: { x: 25, y: 132 }, w: 3 },
-    { foot: { x: -55, y: 190 }, top: { x: -55, y: 154 }, w: 3 },
-  ];
-  const cornerPosts: FencePost[] = [
-    { foot: { x: -55, y: 190 }, top: { x: -55, y: 154 }, w: 3 },
-    { foot: { x: -112, y: 213 }, top: { x: -112, y: 176 }, w: 3 },
-    { foot: { x: -165, y: 244 }, top: { x: -165, y: 207 }, w: 3 },
-    { foot: { x: -220, y: 283 }, top: { x: -220, y: 238 }, w: 3 },
+    { foot: { x: 206, y: 109 }, top: { x: 206, y: 72 }, w: 5 },
+    { foot: { x: 90, y: 156 }, top: { x: 90, y: 121 }, w: 4 },
+    { foot: { x: -38, y: 232 }, top: { x: -38, y: 196 }, w: 3 },
     { foot: { x: -294, y: 323 }, top: { x: -294, y: 276 }, w: 3 },
+    { foot: { x: -146, y: 323 }, top: { x: -146, y: 276 }, w: 5 },
+    { foot: { x: 0, y: 318 }, top: { x: 0, y: 271 }, w: 6 },
+    { foot: { x: 120, y: 307 }, top: { x: 120, y: 260 }, w: 7 },
+    { foot: { x: 224, y: 295 }, top: { x: 224, y: 248 }, w: 8 },
   ];
+
   return (
-    <g className="hero-ad-fence">
-      <g className="hero-ad-fence-main">
-        {renderFenceSegment(mainPosts, 'upper')}
-      </g>
-      <g className="hero-ad-fence-return">
-        {renderFenceSegment(returnPosts, 'upper-return')}
-        <path className="hero-ad-fence-return-rail" d="M286 51 C205 70 111 100 -55 154" />
-        <path className="hero-ad-fence-return-rail hero-ad-fence-return-rail--low" d="M286 88 C205 113 108 146 -55 190" />
-      </g>
-      <g className="hero-ad-fence-corner">
-        {renderFenceSegment(cornerPosts, 'upper-corner')}
-        <path className="hero-ad-fence-return-rail" d="M-55 154 C-118 174 -178 216 -294 276" />
-        <path className="hero-ad-fence-return-rail hero-ad-fence-return-rail--low" d="M-55 190 C-128 216 -202 282 -294 323" />
-      </g>
-      <path className="hero-ad-fence-vapor" d="M286 88 C198 112 82 146 -55 190 C-142 215 -220 270 -294 323" />
+    <g className="hero-ad-fence hero-ad-fence-perimeter">
+      <path className="hero-ad-fence-rail hero-ad-fence-rail--top" d="M224 196 C237 165 265 91 286 51 C218 60 131 93 38 150 C-29 190 -128 250 -294 276 C-142 280 66 267 224 248 C226 233 226 213 224 196" />
+      <path className="hero-ad-fence-rail hero-ad-fence-rail--mid" d="M224 222 C238 181 265 112 286 70 C214 83 126 117 34 171 C-35 212 -135 266 -294 299 C-139 300 67 286 224 270 C226 253 226 235 224 222" />
+      <path className="hero-ad-fence-rail" d="M224 268 C239 214 264 137 286 88 C210 105 116 135 22 171 C-99 218 -196 277 -294 323 C-139 327 71 314 224 295 C228 285 228 276 224 268" />
+      <path className="hero-ad-fence-soft-mesh" d="M260 105 C186 127 107 158 24 202 M222 154 C127 190 33 229 -88 268 M207 263 C77 281 -63 292 -224 300" />
+      {renderFencePosts(posts)}
       <g className="hero-fence-electric" aria-hidden="true">
         <path className="hero-fence-bolt hero-fence-bolt--a" d="M241 151 L247 144 L246 153 L254 148" />
         <path className="hero-fence-bolt hero-fence-bolt--b" d="M263 99 L269 92 L268 101 L276 96" />
         <path className="hero-fence-bolt hero-fence-bolt--c" d="M279 65 L285 58 L284 67 L292 62" />
       </g>
-    </g>
-  );
-}
-
-function FenceFrontWall() {
-  // Front/bottom wall — runs from corner (x=224) left to viewport edge (x≈-294)
-  // Rendered AFTER generator so it appears visually in front of it (correct isometric depth)
-  const posts: FencePost[] = [
-    { foot: { x: 224, y: 295 }, top: { x: 224, y: 248 }, w: 8 },
-    { foot: { x: 187, y: 300 }, top: { x: 187, y: 253 }, w: 8 },
-    { foot: { x: 150, y: 304 }, top: { x: 150, y: 257 }, w: 7 },
-    { foot: { x: 113, y: 307 }, top: { x: 113, y: 260 }, w: 7 },
-    { foot: { x: 76, y: 310 }, top: { x: 76, y: 263 }, w: 7 },
-    { foot: { x: 39, y: 312 }, top: { x: 39, y: 265 }, w: 6 },
-    { foot: { x: 2, y: 314 }, top: { x: 2, y: 267 }, w: 6 },
-    { foot: { x: -35, y: 316 }, top: { x: -35, y: 269 }, w: 6 },
-    { foot: { x: -72, y: 317 }, top: { x: -72, y: 270 }, w: 5 },
-    { foot: { x: -109, y: 318 }, top: { x: -109, y: 271 }, w: 5 },
-    { foot: { x: -146, y: 319 }, top: { x: -146, y: 272 }, w: 5 },
-    { foot: { x: -183, y: 320 }, top: { x: -183, y: 273 }, w: 4 },
-    { foot: { x: -220, y: 321 }, top: { x: -220, y: 274 }, w: 4 },
-    { foot: { x: -257, y: 322 }, top: { x: -257, y: 275 }, w: 4 },
-    { foot: { x: -294, y: 323 }, top: { x: -294, y: 276 }, w: 3 },
-  ];
-  return (
-    <g className="hero-ad-fence">
-      {renderFenceSegment(posts, 'front')}
     </g>
   );
 }
@@ -305,19 +857,6 @@ function PowerCables() {
       <path className="hero-power-cable-shadow" d={cable} />
       <path className="hero-power-cable hero-power-cable--tower" d={cable} />
       <path className="hero-power-pulse hero-power-pulse--tower" d={cable} />
-    </g>
-  );
-}
-
-function StageFloor() {
-  return (
-    <g className="hero-stage-floor">
-      <ellipse className="hero-fence-island-shadow" cx="260" cy="242" rx="76" ry="18" />
-      <polygon className="hero-stage-floor-slab" points="214,272 230,198 286,58 320,73 272,286" />
-      <polygon className="hero-fence-island-side" points="214,272 272,286 320,73 318,87 274,296 212,281" />
-      <path className="hero-floor-seam" d="M226 258 L244 202 L288 83 M246 278 L264 210 L305 86" />
-      <path className="hero-floor-seam hero-floor-seam--cross" d="M224 222 L306 87 M218 248 L292 145 M214 272 L274 286" />
-      <path className="hero-fence-island-fade" d="M278 73 C306 82 323 101 330 130 C315 105 300 93 278 88 Z" />
     </g>
   );
 }
@@ -411,11 +950,10 @@ function ThreatBorder() {
     <g className="hero-threat-border" aria-hidden="true">
       {/* Territory ground fills behind everything */}
       <TerritoryFloor />
-      <StageFloor />
       <TerrainIsland />
       <GeneratorIsland />
-      {/* Upper right wall renders before generator (behind it in depth) */}
-      <FenceUpperWall />
+      {/* Curved perimeter renders behind the tower/generator where depth requires it. */}
+      <FencePerimeter />
 
       <MeshTower />
       <PowerCables />
@@ -425,8 +963,6 @@ function ThreatBorder() {
       <circle className="hero-signal-ring hero-signal-ring--s3" cx="183" cy="47" r="4" />
 
       <PowerGenerator />
-      {/* Front wall renders AFTER generator — appears in front of it (correct isometric depth) */}
-      <FenceFrontWall />
     </g>
   );
 }
@@ -528,6 +1064,8 @@ function GuardianFace({ leftEyeRef, rightEyeRef }: { leftEyeRef: RefObject<SVGCi
 
 export default function HeroShield() {
   const svgRef = useRef<SVGSVGElement>(null);
+  const [projectedThreats, setProjectedThreats] = useState(baseThreats);
+  const [isMuzzleReady, setIsMuzzleReady] = useState(false);
   const cursorGroupRef = useRef<SVGGElement>(null);
   const cursorReticleRef = useRef<SVGGElement>(null);
   const cursorCentreRef = useRef<SVGCircleElement>(null);
@@ -563,6 +1101,29 @@ export default function HeroShield() {
     { ref: leftEyeRef, origin: { x: 762, y: 48 }, current: { x: 762, y: 48 }, velocity: { x: 0, y: 0 }, target: { x: 762, y: 48 } },
     { ref: rightEyeRef, origin: { x: 786, y: 48 }, current: { x: 786, y: 48 }, velocity: { x: 0, y: 0 }, target: { x: 786, y: 48 } },
   ]);
+
+  const handleMuzzleProject = useCallback((point: { clientX: number; clientY: number }) => {
+    const svg = svgRef.current;
+    const screenCTM = svg?.getScreenCTM();
+    if (!svg || !screenCTM) return;
+
+    const svgPoint = svg.createSVGPoint();
+    svgPoint.x = point.clientX;
+    svgPoint.y = point.clientY;
+    const localPoint = svgPoint.matrixTransform(screenCTM.inverse());
+    const x = Number(localPoint.x.toFixed(1));
+    const y = Number(localPoint.y.toFixed(1));
+
+    setProjectedThreats((current) => {
+      const currentStart = current[0]?.path.match(/^M([\d.-]+) ([\d.-]+)/);
+      if (currentStart && Math.abs(Number(currentStart[1]) - x) < 0.5 && Math.abs(Number(currentStart[2]) - y) < 0.5) {
+        return current;
+      }
+
+      return threatsFromMuzzle(x, y);
+    });
+    setIsMuzzleReady(true);
+  }, []);
 
   const playImpact = useCallback(() => {
     if (impactFrameRef.current) {
@@ -923,6 +1484,7 @@ export default function HeroShield() {
   return (
     <>
       <div className="hero-defense" aria-label="FadSec Lab blocks trackers, spyware, and data brokers before they reach users">
+      <HeroAdversaryThreeScene onMuzzleProject={handleMuzzleProject} />
       <svg ref={svgRef} className="hero-defense-svg" viewBox="0 0 900 300" role="img" focusable="false">
         <defs>
           <radialGradient id="hero-guardian-head" cx="34%" cy="26%" r="70%">
@@ -1018,7 +1580,7 @@ export default function HeroShield() {
         <ellipse className="hero-defense-floor" cx="520" cy="254" rx="350" ry="24" />
 
         <ThreatBorder />
-        {threats.map((threat) => (
+        {isMuzzleReady && projectedThreats.map((threat) => (
           <ThreatArrow key={threat.id} {...threat} />
         ))}
 
