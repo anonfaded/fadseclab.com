@@ -146,8 +146,19 @@ function disposeObject(object: THREE.Object3D) {
   });
 }
 
-function HeroAdversaryThreeScene({ onMuzzleProject }: { onMuzzleProject: (point: { clientX: number; clientY: number }) => void }) {
+function HeroAdversaryThreeScene({
+  onMuzzleProject,
+  manualShotPulse,
+}: {
+  onMuzzleProject: (point: { clientX: number; clientY: number }) => void;
+  manualShotPulse: number;
+}) {
   const mountRef = useRef<HTMLDivElement>(null);
+  const manualShotPulseRef = useRef(manualShotPulse);
+
+  useEffect(() => {
+    manualShotPulseRef.current = manualShotPulse;
+  }, [manualShotPulse]);
 
   useEffect(() => {
     const mount = mountRef.current;
@@ -159,7 +170,7 @@ function HeroAdversaryThreeScene({ onMuzzleProject }: { onMuzzleProject: (point:
       powerPreference: 'high-performance',
     });
     renderer.setClearColor(0x000000, 0);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFShadowMap;
@@ -170,14 +181,16 @@ function HeroAdversaryThreeScene({ onMuzzleProject }: { onMuzzleProject: (point:
     camera.position.set(0.06, 2.7, 8.35);
     camera.lookAt(-0.5, 1.02, -0.04);
 
-    const ambient = new THREE.HemisphereLight(0x9ca8b4, 0x0a0706, 1.05);
-    const key = new THREE.DirectionalLight(0xe5ebf2, 2.0);
+    const ambient = new THREE.HemisphereLight(0xb0bac6, 0x0a0706, 1.22);
+    const key = new THREE.DirectionalLight(0xecf2ff, 2.6);
     key.position.set(3.8, 5.8, 4.8);
     key.castShadow = true;
     key.shadow.mapSize.set(512, 512);
-    const redFill = new THREE.PointLight(0xff2f24, 1.85, 8);
+    const redFill = new THREE.PointLight(0xff2f24, 2.2, 9);
     redFill.position.set(-1.65, 1.35, 1.5);
-    scene.add(ambient, key, redFill);
+    const coolRim = new THREE.PointLight(0x9fc1ff, 1.15, 10);
+    coolRim.position.set(2.8, 1.7, -1.6);
+    scene.add(ambient, key, redFill, coolRim);
 
     const root = new THREE.Group();
     root.position.set(-0.22, 0.02, 0);
@@ -577,6 +590,27 @@ function HeroAdversaryThreeScene({ onMuzzleProject }: { onMuzzleProject: (point:
     exhaustCap.rotation.z = -0.18;
     generator.add(exhaustCap);
 
+    const lamp = new THREE.Group();
+    lamp.position.set(-2.02, 0.08, 0.55);
+    root.add(lamp);
+    lamp.add(tubeBetween(new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, 1.24, 0), 0.026, darkSteelMat, 14));
+    lamp.add(tubeBetween(new THREE.Vector3(0, 1.24, 0), new THREE.Vector3(0.22, 1.32, 0.06), 0.018, darkSteelMat, 10));
+    const lampHead = new THREE.Mesh(roundedBoxGeometry(0.24, 0.12, 0.16, 0.028), darkSteelMat);
+    lampHead.position.set(0.29, 1.34, 0.09);
+    lamp.add(lampHead);
+    const lampBulb = new THREE.Mesh(new THREE.SphereGeometry(0.04, 14, 10), new THREE.MeshStandardMaterial({
+      color: 0xffcc96,
+      emissive: 0xa85f22,
+      emissiveIntensity: 0.8,
+      roughness: 0.42,
+      metalness: 0.1,
+    }));
+    lampBulb.position.set(0.35, 1.3, 0.09);
+    lamp.add(lampBulb);
+    const lampGlow = new THREE.PointLight(0xffb56a, 1.3, 4.6);
+    lampGlow.position.set(0.36, 1.29, 0.1);
+    root.add(lampGlow);
+
     const smokeMat = new THREE.MeshBasicMaterial({ color: 0x8f989e, transparent: true, opacity: 0.12, depthWrite: false });
     const smokePuffs = [0, 1, 2, 3].map((index) => {
       const puff = new THREE.Mesh(new THREE.SphereGeometry(0.09 + index * 0.018, 18, 12), smokeMat.clone());
@@ -612,23 +646,17 @@ function HeroAdversaryThreeScene({ onMuzzleProject }: { onMuzzleProject: (point:
     );
     root.add(sparkLine);
 
-    const signalRings = [0, 1].map((index) => {
+    const signalRings = [0, 1, 2].map((index) => {
       const ring = new THREE.Mesh(
-        new THREE.TorusGeometry(0.12, 0.004, 8, 72),
-        new THREE.MeshBasicMaterial({ color: 0xff4d3d, transparent: true, opacity: 0.6 }),
+        new THREE.TorusGeometry(0.14, 0.006, 8, 72),
+        new THREE.MeshBasicMaterial({ color: 0xff5642, transparent: true, opacity: 0.78 }),
       );
-      ring.position.copy(tower.position).add(new THREE.Vector3(-0.08, 2.98, -0.08));
+      ring.position.copy(tower.position).add(new THREE.Vector3(-0.08, 2.97, -0.08));
       ring.rotation.x = 0;
-      ring.userData.phase = index / 2;
+      ring.userData.phase = index / 3;
       root.add(ring);
       return ring;
     });
-    const beaconDot = new THREE.Mesh(
-      new THREE.SphereGeometry(0.035, 16, 10),
-      new THREE.MeshBasicMaterial({ color: 0xff4d3d, transparent: true, opacity: 0.95 }),
-    );
-    beaconDot.position.copy(tower.position).add(new THREE.Vector3(-0.08, 2.98, -0.08));
-    root.add(beaconDot);
 
     let lastProjectedMuzzle: { clientX: number; clientY: number } | null = null;
     const projectMuzzleToSvg = () => {
@@ -662,6 +690,9 @@ function HeroAdversaryThreeScene({ onMuzzleProject }: { onMuzzleProject: (point:
       const viewportWidth = window.innerWidth;
       const compact = viewportWidth <= 520;
       const tablet = viewportWidth <= 760;
+      const pixelRatio = compact ? 1.25 : tablet ? 1.5 : 2;
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, pixelRatio));
+      key.shadow.mapSize.set(compact ? 256 : 512, compact ? 256 : 512);
       root.scale.setScalar(compact ? 0.76 : tablet ? 0.76 : 0.78);
       root.position.set(compact ? -0.32 : tablet ? -0.28 : -0.22, compact ? -0.08 : tablet ? -0.06 : 0.02, 0);
       renderer.setSize(Math.max(1, width), Math.max(1, height), false);
@@ -682,22 +713,43 @@ function HeroAdversaryThreeScene({ onMuzzleProject }: { onMuzzleProject: (point:
     visibilityObserver.observe(mount);
 
     let animationStart: number | null = null;
+    let lastConsumedManualPulse = manualShotPulseRef.current;
+    const manualRecoilMoments: number[] = [];
     let lastRenderTime = 0;
     renderer.setAnimationLoop((time) => {
-      if (!isSceneVisible || time - lastRenderTime < 33) return;
+      const viewportWidth = window.innerWidth;
+      const frameBudget = viewportWidth <= 520 ? 40 : viewportWidth <= 760 ? 33 : 24;
+      if (!isSceneVisible || time - lastRenderTime < frameBudget) return;
       lastRenderTime = time;
       animationStart ??= time;
       const elapsed = (time - animationStart) / 1000;
+      const pendingManualShots = manualShotPulseRef.current - lastConsumedManualPulse;
+      if (pendingManualShots > 0) {
+        for (let index = 0; index < pendingManualShots; index += 1) {
+          manualRecoilMoments.push(elapsed);
+        }
+        lastConsumedManualPulse = manualShotPulseRef.current;
+      }
       signalRings.forEach((ring) => {
-        const progress = (elapsed * 0.42 + ring.userData.phase) % 1;
-        const scale = 0.75 + progress * 1.55;
+        const progress = (elapsed * 0.52 + ring.userData.phase) % 1;
+        const scale = 0.72 + progress * 1.95;
         ring.scale.setScalar(scale);
         const material = ring.material;
         if (material instanceof THREE.MeshBasicMaterial) {
-          material.opacity = Math.max(0, 0.32 * (1 - progress));
+          material.opacity = Math.max(0, 0.54 * (1 - progress));
         }
       });
-      beaconDot.scale.setScalar(0.9 + Math.sin(elapsed * 4) * 0.18);
+      const antennaTipMaterial = antennaTip.material;
+      if (antennaTipMaterial instanceof THREE.MeshStandardMaterial) {
+        const blink = 0.5 + Math.sin(elapsed * 5.8) * 0.5;
+        antennaTipMaterial.emissiveIntensity = 0.42 + blink * 1.2;
+      }
+      const lampBulbMaterial = lampBulb.material;
+      if (lampBulbMaterial instanceof THREE.MeshStandardMaterial) {
+        const flicker = 0.78 + Math.sin(elapsed * 9.2) * 0.13 + Math.sin(elapsed * 23.5) * 0.04;
+        lampBulbMaterial.emissiveIntensity = flicker;
+        lampGlow.intensity = 1.22 + flicker * 0.42;
+      }
       smokePuffs.forEach((puff) => {
         const progress = (elapsed * 0.12 + puff.userData.phase) % 1;
         puff.position.y = 0.84 + progress * 0.7;
@@ -717,11 +769,22 @@ function HeroAdversaryThreeScene({ onMuzzleProject }: { onMuzzleProject: (point:
       sparkLine.geometry.setFromPoints([sparkStart, sparkEnd]);
 
       const shotCycle = 4.05;
-      const recoil = [0, 1.35, 2.7].reduce((maxRecoil, delay) => {
+      const autoRecoil = [0, 1.35, 2.7].reduce((maxRecoil, delay) => {
         const phase = ((elapsed - delay + shotCycle) % shotCycle);
         const amount = phase < 0.045 ? 1 - phase / 0.045 : 0;
         return Math.max(maxRecoil, amount);
       }, 0);
+      let manualRecoil = 0;
+      for (let index = manualRecoilMoments.length - 1; index >= 0; index -= 1) {
+        const delta = elapsed - manualRecoilMoments[index];
+        if (delta > 0.18) {
+          manualRecoilMoments.splice(index, 1);
+          continue;
+        }
+        const amount = delta < 0.055 ? 1 - delta / 0.055 : Math.max(0, 1 - (delta - 0.055) / 0.125) * 0.42;
+        manualRecoil = Math.max(manualRecoil, amount);
+      }
+      const recoil = Math.max(autoRecoil, manualRecoil);
       barrelGroup.position.x = -recoil * 0.08;
       muzzleFlash.scale.set(1 + recoil * 1.4, 0.42 + recoil * 0.16, 0.42 + recoil * 0.16);
       const flashMaterial = muzzleFlash.material;
@@ -1145,6 +1208,7 @@ export default function HeroShield() {
   const svgRef = useRef<SVGSVGElement>(null);
   const [projectedThreats, setProjectedThreats] = useState(baseThreats);
   const [manualThreats, setManualThreats] = useState<Threat[]>([]);
+  const [manualShotPulse, setManualShotPulse] = useState(0);
   const [isMuzzleReady, setIsMuzzleReady] = useState(false);
   const cursorGroupRef = useRef<SVGGElement>(null);
   const cursorReticleRef = useRef<SVGGElement>(null);
@@ -1293,6 +1357,7 @@ export default function HeroShield() {
     };
 
     setManualThreats((current) => [...current.slice(-7), shot]);
+    setManualShotPulse((current) => current + 1);
 
     const impactTimer = window.setTimeout(() => {
       playImpact();
@@ -1615,7 +1680,7 @@ export default function HeroShield() {
   return (
     <>
       <div className="hero-defense" aria-label="FadSec Lab blocks trackers, spyware, and data brokers before they reach users">
-      <HeroAdversaryThreeScene onMuzzleProject={handleMuzzleProject} />
+      <HeroAdversaryThreeScene onMuzzleProject={handleMuzzleProject} manualShotPulse={manualShotPulse} />
       <svg ref={svgRef} className="hero-defense-svg" viewBox="0 0 900 300" role="img" focusable="false">
         <defs>
           <radialGradient id="hero-guardian-head" cx="34%" cy="26%" r="70%">
