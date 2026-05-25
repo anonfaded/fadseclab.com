@@ -172,6 +172,8 @@ function HeroAdversaryThreeScene({
     renderer.setClearColor(0x000000, 0);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.outputColorSpace = THREE.SRGBColorSpace;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.14;
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFShadowMap;
     mount.appendChild(renderer.domElement);
@@ -181,16 +183,18 @@ function HeroAdversaryThreeScene({
     camera.position.set(0.06, 2.7, 8.35);
     camera.lookAt(-0.5, 1.02, -0.04);
 
-    const ambient = new THREE.HemisphereLight(0xb0bac6, 0x0a0706, 1.22);
-    const key = new THREE.DirectionalLight(0xecf2ff, 2.6);
+    const ambient = new THREE.HemisphereLight(0xc3cbd7, 0x17100d, 1.48);
+    const key = new THREE.DirectionalLight(0xf5f8ff, 3.05);
     key.position.set(3.8, 5.8, 4.8);
     key.castShadow = true;
     key.shadow.mapSize.set(512, 512);
-    const redFill = new THREE.PointLight(0xff2f24, 2.2, 9);
+    const redFill = new THREE.PointLight(0xff3b2d, 2.7, 9.5);
     redFill.position.set(-1.65, 1.35, 1.5);
-    const coolRim = new THREE.PointLight(0x9fc1ff, 1.15, 10);
-    coolRim.position.set(2.8, 1.7, -1.6);
-    scene.add(ambient, key, redFill, coolRim);
+    const warmFill = new THREE.PointLight(0xffa66c, 1.65, 8);
+    warmFill.position.set(-1.8, 1.1, 2.1);
+    const coolRim = new THREE.PointLight(0xb8d1ff, 1.55, 10);
+    coolRim.position.set(2.8, 1.9, -1.6);
+    scene.add(ambient, key, redFill, warmFill, coolRim);
 
     const root = new THREE.Group();
     root.position.set(-0.22, 0.02, 0);
@@ -264,53 +268,189 @@ function HeroAdversaryThreeScene({
 
     const createSignTexture = () => {
       const canvas = document.createElement('canvas');
-      canvas.width = 640;
-      canvas.height = 256;
+      canvas.width = 1024;
+      canvas.height = 384;
       const ctx = canvas.getContext('2d');
       if (!ctx) return null;
       ctx.fillStyle = '#120f0f';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
       ctx.fillStyle = '#8f261f';
-      ctx.fillRect(0, 0, canvas.width, 78);
+      ctx.fillRect(0, 0, canvas.width, 116);
       ctx.fillStyle = '#171717';
       for (let i = -40; i < canvas.width; i += 72) {
         ctx.save();
         ctx.translate(i, 0);
         ctx.rotate(-0.22);
-        ctx.fillRect(0, -18, 34, 112);
+        ctx.fillRect(0, -24, 46, 162);
         ctx.restore();
       }
       ctx.strokeStyle = '#645b58';
-      ctx.lineWidth = 8;
-      ctx.strokeRect(18, 18, canvas.width - 36, canvas.height - 36);
+      ctx.lineWidth = 10;
+      ctx.strokeRect(24, 24, canvas.width - 48, canvas.height - 48);
       ctx.fillStyle = '#f1e7df';
-      ctx.font = '800 64px monospace';
+      ctx.font = '800 112px monospace';
       ctx.textAlign = 'center';
-      ctx.fillText('ADVERSARY', canvas.width / 2, 144);
+      ctx.fillText('ADVERSARY', canvas.width / 2, 214);
       ctx.fillStyle = '#ff5b45';
-      ctx.font = '800 33px monospace';
-      ctx.fillText('SURVEILLANCE ZONE', canvas.width / 2, 188);
+      ctx.font = '800 56px monospace';
+      ctx.fillText('SURVEILLANCE ZONE', canvas.width / 2, 286);
       ctx.fillStyle = '#868b8f';
-      [42, 598].forEach((x) => {
-        [44, 212].forEach((y) => {
+      [64, 960].forEach((x) => {
+        [66, 318].forEach((y) => {
           ctx.beginPath();
-          ctx.arc(x, y, 9, 0, Math.PI * 2);
+          ctx.arc(x, y, 12, 0, Math.PI * 2);
           ctx.fill();
         });
       });
       const texture = new THREE.CanvasTexture(canvas);
       texture.colorSpace = THREE.SRGBColorSpace;
-      texture.anisotropy = 4;
+      texture.anisotropy = renderer.capabilities.getMaxAnisotropy();
+      texture.needsUpdate = true;
+      return texture;
+    };
+
+    const createLampWashTexture = () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = 512;
+      canvas.height = 256;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return null;
+
+      const gradient = ctx.createRadialGradient(160, 78, 8, 160, 78, 260);
+      gradient.addColorStop(0, 'rgba(255, 204, 143, 0.72)');
+      gradient.addColorStop(0.36, 'rgba(255, 147, 82, 0.3)');
+      gradient.addColorStop(1, 'rgba(255, 120, 70, 0)');
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      const texture = new THREE.CanvasTexture(canvas);
+      texture.colorSpace = THREE.SRGBColorSpace;
+      texture.anisotropy = renderer.capabilities.getMaxAnisotropy();
       texture.needsUpdate = true;
       return texture;
     };
 
     const terrainShape = new THREE.Shape();
     terrainShape.moveTo(-3.35, -1.22);
-    terrainShape.bezierCurveTo(-2.34, -1.58, -0.5, -1.66, 2.25, -1.16);
-    terrainShape.bezierCurveTo(2.56, -0.4, 2.38, 0.62, 1.78, 1.26);
-    terrainShape.bezierCurveTo(0.26, 1.46, -1.38, 0.82, -2.42, 0.08);
+    terrainShape.bezierCurveTo(-2.34, -1.58, -0.5, -1.68, 2.62, -1.18);
+    terrainShape.bezierCurveTo(3.02, -0.42, 2.84, 0.68, 2.08, 1.34);
+    terrainShape.bezierCurveTo(0.3, 1.54, -1.38, 0.84, -2.42, 0.08);
     terrainShape.bezierCurveTo(-3.0, -0.34, -3.28, -0.76, -3.35, -1.22);
+
+    const waterShape = new THREE.Shape();
+    waterShape.moveTo(-4.25, -1.9);
+    waterShape.bezierCurveTo(-3.05, -2.38, -0.48, -2.58, 3.28, -1.72);
+    waterShape.bezierCurveTo(3.86, -0.58, 3.42, 0.94, 2.46, 1.78);
+    waterShape.bezierCurveTo(0.48, 2.14, -1.84, 1.46, -3.18, 0.34);
+    waterShape.bezierCurveTo(-4.04, -0.38, -4.42, -1.18, -4.25, -1.9);
+    const waterVolumeMat = new THREE.MeshStandardMaterial({
+      color: 0x18353b,
+      emissive: 0x061a1e,
+      emissiveIntensity: 0.22,
+      transparent: true,
+      opacity: 0.46,
+      depthWrite: false,
+      roughness: 0.34,
+      metalness: 0.18,
+    });
+    const waterVolume = new THREE.Mesh(
+      new THREE.ExtrudeGeometry(waterShape, {
+        depth: 0.22,
+        bevelEnabled: true,
+        bevelSize: 0.035,
+        bevelThickness: 0.035,
+        bevelSegments: 3,
+        curveSegments: 24,
+      }),
+      waterVolumeMat,
+    );
+    waterVolume.rotation.x = -Math.PI / 2;
+    waterVolume.position.y = -0.23;
+    waterVolume.renderOrder = -3;
+    root.add(waterVolume);
+
+    const waterMat = new THREE.ShaderMaterial({
+      transparent: true,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending,
+      uniforms: {
+        uTime: { value: 0 },
+        uOpacity: { value: 0.5 },
+      },
+      vertexShader: `
+        uniform float uTime;
+        varying vec2 vUv;
+        varying float vWave;
+
+        void main() {
+          vUv = uv;
+          vec3 p = position;
+          float waveA = sin(p.x * 2.4 + uTime * 1.18) * 0.045;
+          float waveB = cos(p.y * 3.7 + uTime * 0.86) * 0.028;
+          float waveC = sin((p.x + p.y) * 2.1 + uTime * 1.55) * 0.018;
+          p.z += waveA + waveB + waveC;
+          vWave = waveA + waveB + waveC;
+          gl_Position = projectionMatrix * modelViewMatrix * vec4(p, 1.0);
+        }
+      `,
+      fragmentShader: `
+        uniform float uTime;
+        uniform float uOpacity;
+        varying vec2 vUv;
+        varying float vWave;
+
+        float lineWave(float value, float width) {
+          return 1.0 - smoothstep(0.0, width, abs(value));
+        }
+
+        void main() {
+          vec2 centered = vUv - 0.5;
+          float edgeFade = smoothstep(0.52, 0.2, length(centered * vec2(1.0, 1.45)));
+          float diagonal = lineWave(fract((vUv.x * 4.8 + vUv.y * 2.1 + uTime * 0.16)) - 0.5, 0.055);
+          float cross = lineWave(fract((vUv.x * -2.4 + vUv.y * 4.2 - uTime * 0.11)) - 0.5, 0.04);
+          float shimmer = diagonal * 0.22 + cross * 0.14 + smoothstep(0.015, 0.065, abs(vWave)) * 0.18;
+          vec3 deep = vec3(0.035, 0.16, 0.18);
+          vec3 top = vec3(0.18, 0.46, 0.5);
+          vec3 foam = vec3(0.56, 0.82, 0.84);
+          vec3 color = mix(deep, top, 0.62 + vWave * 2.2);
+          color = mix(color, foam, shimmer);
+          float alpha = (uOpacity + shimmer * 0.22) * edgeFade;
+          gl_FragColor = vec4(color, alpha);
+        }
+      `,
+    });
+    const waterGeometry = new THREE.PlaneGeometry(8.8, 4.8, 72, 36);
+    const water = new THREE.Mesh(waterGeometry, waterMat);
+    water.rotation.x = -Math.PI / 2;
+    water.position.set(-0.08, -0.09, -0.06);
+    water.renderOrder = -2;
+    root.add(water);
+
+    const waterHighlightMat = new THREE.LineBasicMaterial({
+      color: 0xb4d7da,
+      transparent: true,
+      opacity: 0.26,
+      blending: THREE.AdditiveBlending,
+    });
+    const waterHighlights = [
+      { z: -1.34, width: 2.9, x: -1.9, phase: 0, speed: 0.18 },
+      { z: -0.92, width: 2.2, x: 1.18, phase: 0.25, speed: 0.24 },
+      { z: 1.16, width: 2.72, x: -0.28, phase: 0.58, speed: 0.16 },
+      { z: 0.62, width: 1.64, x: 2.02, phase: 0.78, speed: 0.28 },
+      { z: -1.74, width: 1.45, x: 2.32, phase: 0.42, speed: 0.22 },
+    ].map(({ z, width, x, phase, speed }) => {
+      const points = Array.from({ length: 40 }, (_, index) => {
+        const t = index / 39;
+        const px = x - width / 2 + t * width;
+        return new THREE.Vector3(px, -0.065, z + Math.sin(t * Math.PI * 2) * 0.025);
+      });
+      const line = new THREE.Line(new THREE.BufferGeometry().setFromPoints(points), waterHighlightMat.clone());
+      line.userData.phase = phase;
+      line.userData.speed = speed;
+      line.userData.baseZ = z;
+      root.add(line);
+      return line;
+    });
 
     const terrain = new THREE.Mesh(
       new THREE.ExtrudeGeometry(terrainShape, {
@@ -338,27 +478,74 @@ function HeroAdversaryThreeScene({
       root.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(curve.getPoints(28)), ridgeMat));
     });
 
+    let boardFaceMaterial: THREE.MeshStandardMaterial | null = null;
+    let boardWashMaterial: THREE.MeshBasicMaterial | null = null;
     const signTexture = createSignTexture();
+    const lampWashTexture = createLampWashTexture();
     if (signTexture) {
       const board = new THREE.Group();
-      board.position.set(1.12, 0.66, 1.02);
+      board.position.set(1.12, 0.92, 1.02);
       board.rotation.x = -0.03;
       board.rotation.y = 0;
       root.add(board);
+      boardFaceMaterial = new THREE.MeshStandardMaterial({
+        map: signTexture,
+        side: THREE.DoubleSide,
+        roughness: 0.34,
+        metalness: 0.16,
+        emissive: 0x1a0704,
+        emissiveIntensity: 0.16,
+      });
       const boardFace = new THREE.Mesh(
-        new THREE.PlaneGeometry(2.28, 0.9),
-        new THREE.MeshBasicMaterial({ map: signTexture, side: THREE.DoubleSide, depthTest: false }),
+        new THREE.PlaneGeometry(2.48, 1),
+        boardFaceMaterial,
       );
-      boardFace.position.z = 0.055;
+      boardFace.position.z = 0.064;
       boardFace.castShadow = true;
       boardFace.renderOrder = 5;
       board.add(boardFace);
-      const boardBack = new THREE.Mesh(roundedBoxGeometry(2.4, 1.02, 0.07, 0.04), darkSteelMat);
+      if (lampWashTexture) {
+        boardWashMaterial = new THREE.MeshBasicMaterial({
+          map: lampWashTexture,
+          transparent: true,
+          opacity: 0.18,
+          depthWrite: false,
+          depthTest: false,
+          side: THREE.DoubleSide,
+          blending: THREE.AdditiveBlending,
+        });
+        const boardLampWash = new THREE.Mesh(new THREE.PlaneGeometry(2.48, 1), boardWashMaterial);
+        boardLampWash.position.z = 0.072;
+        boardLampWash.renderOrder = 6;
+        board.add(boardLampWash);
+      }
+      const boardBack = new THREE.Mesh(roundedBoxGeometry(2.62, 1.14, 0.08, 0.045), darkSteelMat);
       boardBack.position.z = -0.035;
       boardBack.castShadow = true;
       board.add(boardBack);
-      board.add(tubeBetween(new THREE.Vector3(-0.68, -0.86, -0.04), new THREE.Vector3(-0.68, -0.39, -0.04), 0.022, railMat, 10));
-      board.add(tubeBetween(new THREE.Vector3(0.68, -0.86, -0.04), new THREE.Vector3(0.68, -0.39, -0.04), 0.022, railMat, 10));
+      const framePieces = [
+        { size: [2.72, 0.055, 0.11], position: [0, 0.56, 0.085] },
+        { size: [2.72, 0.055, 0.11], position: [0, -0.56, 0.085] },
+        { size: [0.055, 1.18, 0.11], position: [-1.36, 0, 0.085] },
+        { size: [0.055, 1.18, 0.11], position: [1.36, 0, 0.085] },
+      ] as const;
+      framePieces.forEach(({ size, position }) => {
+        const [width, height, depth] = size;
+        const [x, y, z] = position;
+        const frame = new THREE.Mesh(new THREE.BoxGeometry(width, height, depth), railMat);
+        frame.position.set(x, y, z);
+        frame.castShadow = true;
+        board.add(frame);
+      });
+      board.add(tubeBetween(new THREE.Vector3(-0.66, -0.72, 0.12), new THREE.Vector3(-0.66, -0.56, 0.12), 0.028, railMat, 12));
+      board.add(tubeBetween(new THREE.Vector3(0.66, -0.72, 0.12), new THREE.Vector3(0.66, -0.56, 0.12), 0.028, railMat, 12));
+      [-0.66, 0.66].forEach((x) => {
+        const footBlock = new THREE.Mesh(roundedBoxGeometry(0.38, 0.14, 0.3, 0.035), concreteMat);
+        footBlock.position.set(x, -0.72, 0.12);
+        footBlock.castShadow = true;
+        footBlock.receiveShadow = true;
+        board.add(footBlock);
+      });
     }
 
     const fenceTop = new THREE.CatmullRomCurve3([
@@ -511,7 +698,14 @@ function HeroAdversaryThreeScene({
     antenna.add(tubeBetween(new THREE.Vector3(-0.07, -0.04, 0), new THREE.Vector3(0.07, -0.04, 0), 0.008, steelMat, 8));
     antenna.add(tubeBetween(new THREE.Vector3(-0.11, 0.25, 0), new THREE.Vector3(0.11, 0.25, 0), 0.007, steelMat, 8));
     antenna.add(tubeBetween(new THREE.Vector3(-0.08, 0.14, 0), new THREE.Vector3(0.08, 0.14, 0), 0.006, steelMat, 8));
-    const antennaTip = new THREE.Mesh(new THREE.SphereGeometry(0.025, 16, 10), redMat);
+    const antennaTipMaterial = new THREE.MeshStandardMaterial({
+      color: 0xff5e4d,
+      emissive: 0xff2d20,
+      emissiveIntensity: 1.05,
+      roughness: 0.36,
+      metalness: 0.18,
+    });
+    const antennaTip = new THREE.Mesh(new THREE.SphereGeometry(0.025, 16, 10), antennaTipMaterial);
     antennaTip.position.y = 0.45;
     antenna.add(antennaTip);
     const muzzleFlash = new THREE.Mesh(
@@ -591,25 +785,108 @@ function HeroAdversaryThreeScene({
     generator.add(exhaustCap);
 
     const lamp = new THREE.Group();
-    lamp.position.set(-2.02, 0.08, 0.55);
+    lamp.position.set(0.14, 0.12, 1.16);
     root.add(lamp);
-    lamp.add(tubeBetween(new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, 1.24, 0), 0.026, darkSteelMat, 14));
-    lamp.add(tubeBetween(new THREE.Vector3(0, 1.24, 0), new THREE.Vector3(0.22, 1.32, 0.06), 0.018, darkSteelMat, 10));
-    const lampHead = new THREE.Mesh(roundedBoxGeometry(0.24, 0.12, 0.16, 0.028), darkSteelMat);
-    lampHead.position.set(0.29, 1.34, 0.09);
+    lamp.add(tubeBetween(new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, 1.32, 0), 0.028, darkSteelMat, 16));
+    lamp.add(tubeBetween(new THREE.Vector3(0, 1.32, 0), new THREE.Vector3(0.32, 1.4, 0.06), 0.019, darkSteelMat, 12));
+    lamp.add(tubeBetween(new THREE.Vector3(-0.08, 0.08, 0), new THREE.Vector3(0.08, 0.08, 0.02), 0.018, railMat, 10));
+    const lampHead = new THREE.Group();
+    lampHead.position.set(0.35, 1.36, 0.1);
+    const lampShell = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.25, 0.28, 36, 1, true), darkSteelMat);
+    lampShell.scale.set(1.12, 1, 0.78);
+    lampShell.position.y = 0.01;
+    lampShell.castShadow = true;
+    lampHead.add(lampShell);
+    const lampTopShield = new THREE.Mesh(new THREE.CylinderGeometry(0.14, 0.12, 0.055, 30), darkSteelMat);
+    lampTopShield.position.y = 0.16;
+    lampTopShield.castShadow = true;
+    lampHead.add(lampTopShield);
+    const lampBack = new THREE.Mesh(new THREE.CylinderGeometry(0.09, 0.11, 0.08, 24), darkSteelMat);
+    lampBack.rotation.x = Math.PI / 2;
+    lampBack.position.set(-0.11, 0.1, -0.02);
+    lampBack.castShadow = true;
+    lampHead.add(lampBack);
+    const lampNeck = tubeBetween(new THREE.Vector3(-0.16, 0.1, -0.03), new THREE.Vector3(-0.03, 0.12, -0.02), 0.018, railMat, 10);
+    lampHead.add(lampNeck);
+    lampHead.castShadow = true;
     lamp.add(lampHead);
-    const lampBulb = new THREE.Mesh(new THREE.SphereGeometry(0.04, 14, 10), new THREE.MeshStandardMaterial({
-      color: 0xffcc96,
-      emissive: 0xa85f22,
-      emissiveIntensity: 0.8,
+    const lampRim = new THREE.Mesh(new THREE.TorusGeometry(0.2, 0.014, 8, 40), railMat);
+    lampRim.scale.set(1.2, 0.82, 1);
+    lampRim.position.set(0.35, 1.22, 0.1);
+    lampRim.rotation.x = Math.PI / 2;
+    lamp.add(lampRim);
+    const lampBulb = new THREE.Mesh(new THREE.SphereGeometry(0.052, 18, 12), new THREE.MeshStandardMaterial({
+      color: 0xffd29a,
+      emissive: 0xff9e4d,
+      emissiveIntensity: 1.1,
       roughness: 0.42,
       metalness: 0.1,
     }));
-    lampBulb.position.set(0.35, 1.3, 0.09);
+    lampBulb.position.set(0.35, 1.2, 0.1);
     lamp.add(lampBulb);
-    const lampGlow = new THREE.PointLight(0xffb56a, 1.3, 4.6);
-    lampGlow.position.set(0.36, 1.29, 0.1);
+    const bulbSocket = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.06, 0.055, 24), railMat);
+    bulbSocket.rotation.x = Math.PI / 2;
+    bulbSocket.position.set(0.35, 1.3, 0.1);
+    bulbSocket.castShadow = true;
+    lamp.add(bulbSocket);
+    const innerReflector = new THREE.Mesh(new THREE.TorusGeometry(0.108, 0.01, 8, 30), railMat);
+    innerReflector.scale.set(1.12, 0.72, 1);
+    innerReflector.rotation.x = Math.PI / 2;
+    innerReflector.position.set(0.35, 1.23, 0.1);
+    lamp.add(innerReflector);
+    const lampLensMaterial = new THREE.MeshBasicMaterial({
+      color: 0xffc986,
+      transparent: true,
+      opacity: 0.38,
+      depthWrite: false,
+      side: THREE.DoubleSide,
+      blending: THREE.AdditiveBlending,
+    });
+    const lampLens = new THREE.Mesh(new THREE.CircleGeometry(0.1, 32), lampLensMaterial);
+    lampLens.scale.set(1.02, 0.58, 1);
+    lampLens.position.set(0.35, 1.18, 0.11);
+    lamp.add(lampLens);
+    const lampBulbWorld = new THREE.Vector3(0.49, 1.32, 1.26);
+    const lampGlow = new THREE.PointLight(0xffb56a, 2.4, 4.8);
+    lampGlow.position.copy(lampBulbWorld);
+    const lampSpot = new THREE.SpotLight(0xffbf82, 4.6, 4.2, 0.48, 0.82, 1.6);
+    lampSpot.position.copy(lampBulbWorld);
+    lampSpot.target.position.set(1.16, 0.92, 1.08);
+    lampSpot.castShadow = false;
     root.add(lampGlow);
+    root.add(lampSpot, lampSpot.target);
+    const boardGroundGlowMaterial = new THREE.MeshBasicMaterial({
+      color: 0xff8f4c,
+      transparent: true,
+      opacity: 0.075,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending,
+    });
+    const boardGroundGlow = new THREE.Mesh(new THREE.CircleGeometry(0.58, 40), boardGroundGlowMaterial);
+    boardGroundGlow.position.set(1.04, 0.05, 1.12);
+    boardGroundGlow.rotation.x = -Math.PI / 2;
+    boardGroundGlow.scale.set(1.45, 0.38, 1);
+    root.add(boardGroundGlow);
+
+    const lampWireCurve = new THREE.CatmullRomCurve3([
+      new THREE.Vector3(-0.86, 0.08, 0.2),
+      new THREE.Vector3(-0.52, 0.06, 0.52),
+      new THREE.Vector3(-0.18, 0.06, 0.9),
+      new THREE.Vector3(0.02, 0.18, 1.16),
+      new THREE.Vector3(0.02, 1.22, 1.16),
+      new THREE.Vector3(0.38, 1.4, 1.2),
+    ]);
+    const lampWire = new THREE.Mesh(new THREE.TubeGeometry(lampWireCurve, 72, 0.012, 10), cableMat);
+    lampWire.castShadow = true;
+    root.add(lampWire);
+    const lampWirePulseMaterial = new THREE.MeshBasicMaterial({ color: 0xffc08c, transparent: true, opacity: 0.9 });
+    const lampWirePulse = new THREE.Mesh(new THREE.SphereGeometry(0.032, 14, 10), lampWirePulseMaterial);
+    root.add(lampWirePulse);
+    const lampWireSpark = new THREE.Line(
+      new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(), new THREE.Vector3(0.08, 0.02, 0)]),
+      new THREE.LineBasicMaterial({ color: 0xffd5a6, transparent: true, opacity: 0.75 }),
+    );
+    root.add(lampWireSpark);
 
     const smokeMat = new THREE.MeshBasicMaterial({ color: 0x8f989e, transparent: true, opacity: 0.12, depthWrite: false });
     const smokePuffs = [0, 1, 2, 3].map((index) => {
@@ -686,15 +963,20 @@ function HeroAdversaryThreeScene({
     };
 
     const resize = () => {
-      const { width, height } = mount.getBoundingClientRect();
+      const rect = mount.getBoundingClientRect();
+      const width = Math.round(rect.width);
+      const height = Math.round(rect.height);
       const viewportWidth = window.innerWidth;
       const compact = viewportWidth <= 520;
-      const tablet = viewportWidth <= 760;
-      const pixelRatio = compact ? 1.25 : tablet ? 1.5 : 2;
+      const tablet = viewportWidth <= 780;
+      const mid = viewportWidth <= 1120;
+      const pixelRatio = compact ? 1.55 : tablet ? 1.75 : mid ? 2 : 2.25;
       renderer.setPixelRatio(Math.min(window.devicePixelRatio, pixelRatio));
-      key.shadow.mapSize.set(compact ? 256 : 512, compact ? 256 : 512);
-      root.scale.setScalar(compact ? 0.76 : tablet ? 0.76 : 0.78);
-      root.position.set(compact ? -0.32 : tablet ? -0.28 : -0.22, compact ? -0.08 : tablet ? -0.06 : 0.02, 0);
+      renderer.shadowMap.enabled = !compact;
+      key.castShadow = !compact;
+      key.shadow.mapSize.set(tablet ? 256 : mid ? 384 : 512, tablet ? 256 : mid ? 384 : 512);
+      root.scale.setScalar(compact ? 0.8 : tablet ? 0.8 : mid ? 0.76 : 0.78);
+      root.position.set(compact ? -0.22 : tablet ? -0.36 : mid ? -0.28 : -0.22, compact ? -0.1 : tablet ? -0.08 : mid ? -0.02 : 0.02, 0);
       renderer.setSize(Math.max(1, width), Math.max(1, height), false);
       camera.aspect = Math.max(1, width) / Math.max(1, height);
       camera.updateProjectionMatrix();
@@ -744,11 +1026,48 @@ function HeroAdversaryThreeScene({
         const blink = 0.5 + Math.sin(elapsed * 5.8) * 0.5;
         antennaTipMaterial.emissiveIntensity = 0.42 + blink * 1.2;
       }
+      water.position.x = -0.08 + Math.sin(elapsed * 0.28) * 0.018;
+      water.position.z = -0.06 + Math.cos(elapsed * 0.23) * 0.012;
+      waterVolume.position.x = water.position.x * 0.45;
+      waterVolume.position.z = water.position.z * 0.45;
+      waterMat.uniforms.uTime.value = elapsed;
+      waterMat.uniforms.uOpacity.value = 0.48 + Math.sin(elapsed * 0.52) * 0.05;
+      waterVolumeMat.opacity = 0.4 + Math.sin(elapsed * 0.44) * 0.045;
+      waterHighlights.forEach((line) => {
+        const progress = (elapsed * line.userData.speed + line.userData.phase) % 1;
+        line.position.x = Math.sin(elapsed * 0.52 + line.userData.phase * Math.PI) * 0.09;
+        line.position.z = Math.sin(elapsed * 0.36 + line.userData.baseZ) * 0.035;
+        line.scale.x = 0.92 + Math.sin(elapsed * 0.48 + line.userData.phase) * 0.08;
+        const material = line.material;
+        if (material instanceof THREE.LineBasicMaterial) {
+          material.opacity = 0.08 + Math.sin(progress * Math.PI) * 0.34;
+        }
+      });
       const lampBulbMaterial = lampBulb.material;
       if (lampBulbMaterial instanceof THREE.MeshStandardMaterial) {
-        const flicker = 0.78 + Math.sin(elapsed * 9.2) * 0.13 + Math.sin(elapsed * 23.5) * 0.04;
-        lampBulbMaterial.emissiveIntensity = flicker;
-        lampGlow.intensity = 1.22 + flicker * 0.42;
+        const flutter = Math.max(0, Math.sin(elapsed * 9.2 + Math.sin(elapsed * 1.4) * 0.9));
+        const outagePhase = elapsed % 4.9;
+        const hardOutage = outagePhase > 2.45 && outagePhase < 2.9;
+        const preOutageStutter = outagePhase > 2.05 && outagePhase <= 2.45
+          ? 0.28 + Math.max(0, Math.sin(elapsed * 12)) * 0.72
+          : 1;
+        const restartStutter = outagePhase >= 2.9 && outagePhase < 3.45
+          ? 0.32 + Math.max(0, Math.sin(elapsed * 14)) * 0.68
+          : 1;
+        const outage = hardOutage ? 0.08 : Math.min(preOutageStutter, restartStutter);
+        const oldBulbDip = Math.pow(flutter, 5) * 0.22;
+        const flicker = Math.max(0.05, (0.94 + Math.sin(elapsed * 2.7) * 0.07 + Math.sin(elapsed * 6.4) * 0.035 - oldBulbDip) * outage);
+        lampBulbMaterial.emissiveIntensity = flicker * 2.18;
+        lampGlow.intensity = 0.12 + flicker * 2.9;
+        lampSpot.intensity = 0.18 + flicker * 4.7;
+        lampLensMaterial.opacity = 0.08 + flicker * 0.72;
+        boardGroundGlowMaterial.opacity = flicker * 0.09;
+        if (boardFaceMaterial) {
+          boardFaceMaterial.emissiveIntensity = 0.04 + flicker * 0.27;
+        }
+        if (boardWashMaterial) {
+          boardWashMaterial.opacity = flicker * 0.3;
+        }
       }
       smokePuffs.forEach((puff) => {
         const progress = (elapsed * 0.12 + puff.userData.phase) % 1;
@@ -767,6 +1086,16 @@ function HeroAdversaryThreeScene({
       const sparkStart = cableCurve.getPointAt(cableProgress);
       const sparkEnd = cableCurve.getPointAt(Math.min(0.995, cableProgress + 0.02));
       sparkLine.geometry.setFromPoints([sparkStart, sparkEnd]);
+      const lampCableProgress = (elapsed * 0.62) % 1;
+      const lampPulseStart = lampWireCurve.getPointAt(lampCableProgress);
+      const lampPulseEnd = lampWireCurve.getPointAt(Math.min(0.995, lampCableProgress + 0.025));
+      lampWirePulse.position.copy(lampPulseStart);
+      lampWirePulse.scale.setScalar(0.72 + Math.sin(elapsed * 18) * 0.18);
+      lampWireSpark.geometry.setFromPoints([lampPulseStart, lampPulseEnd]);
+      const lampWireSparkMaterial = lampWireSpark.material;
+      if (lampWireSparkMaterial instanceof THREE.LineBasicMaterial) {
+        lampWireSparkMaterial.opacity = 0.35 + Math.sin(elapsed * 16) * 0.28;
+      }
 
       const shotCycle = 4.05;
       const autoRecoil = [0, 1.35, 2.7].reduce((maxRecoil, delay) => {
