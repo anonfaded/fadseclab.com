@@ -548,17 +548,18 @@ function HeroAdversaryThreeScene({
       });
     }
 
+    const fenceGroundY = 0.15;
     const fenceTop = new THREE.CatmullRomCurve3([
-      new THREE.Vector3(-2.95, 0.62, 0.42),
-      new THREE.Vector3(-2.65, 0.68, -0.48),
-      new THREE.Vector3(-1.5, 0.74, -0.94),
-      new THREE.Vector3(-0.2, 0.8, -1.02),
-      new THREE.Vector3(1.05, 0.84, -0.72),
-      new THREE.Vector3(1.55, 0.82, -0.02),
-      new THREE.Vector3(0.85, 0.72, 0.64),
-      new THREE.Vector3(-0.55, 0.62, 0.82),
+      new THREE.Vector3(-3.0, 0.7, 0.48),
+      new THREE.Vector3(-2.42, 0.78, -0.58),
+      new THREE.Vector3(-1.18, 0.82, -1.05),
+      new THREE.Vector3(0.35, 0.84, -1.0),
+      new THREE.Vector3(1.52, 0.8, -0.42),
+      new THREE.Vector3(1.38, 0.74, 0.42),
+      new THREE.Vector3(0.18, 0.66, 0.88),
+      new THREE.Vector3(-1.38, 0.64, 0.84),
     ], false);
-    const fenceBase = fenceTop.getPoints(48).map((p) => new THREE.Vector3(p.x, 0.08, p.z));
+    const fenceBase = fenceTop.getPoints(48).map((p) => new THREE.Vector3(p.x, fenceGroundY, p.z));
     const fenceTopPoints = fenceTop.getPoints(48);
     const railTop = new THREE.Mesh(new THREE.TubeGeometry(fenceTop, 128, 0.018, 12), railMat);
     const railMid = new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(
@@ -571,41 +572,35 @@ function HeroAdversaryThreeScene({
     railBase.castShadow = true;
     root.add(railTop, railMid, railBase);
 
-    const meshMat = new THREE.LineBasicMaterial({ color: 0x6f777b, transparent: true, opacity: 0.16 });
-    for (let i = 0; i < 14; i += 1) {
-      const t = i / 14;
+    const meshMat = new THREE.LineBasicMaterial({ color: 0x8a979b, transparent: true, opacity: 0.22 });
+    for (let i = 0; i < 10; i += 1) {
+      const t = i / 10;
       const p = fenceTop.getPointAt(t);
       const height = 0.78 + Math.sin(t * Math.PI * 2) * 0.04;
       const post = new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.034, height, 14), darkSteelMat);
-      post.position.set(p.x, height / 2 + 0.05, p.z);
+      post.position.set(p.x, fenceGroundY + height / 2, p.z);
       post.castShadow = true;
       post.receiveShadow = true;
       root.add(post);
+      const baseBlock = new THREE.Mesh(roundedBoxGeometry(0.16, 0.06, 0.14, 0.018), concreteMat);
+      baseBlock.position.set(p.x, fenceGroundY - 0.04, p.z);
+      baseBlock.castShadow = true;
+      baseBlock.receiveShadow = true;
+      root.add(baseBlock);
       const cap = new THREE.Mesh(new THREE.CylinderGeometry(0.052, 0.045, 0.035, 14), railMat);
-      cap.position.set(p.x, height + 0.08, p.z);
+      cap.position.set(p.x, fenceGroundY + height + 0.02, p.z);
       cap.castShadow = true;
       root.add(cap);
-      if (i % 2 === 1) {
-        const next = fenceTop.getPointAt((i + 0.55) / 14);
+      if (i < 9) {
+        const next = fenceTop.getPointAt((i + 1) / 10);
         root.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([
-          new THREE.Vector3(p.x, 0.7, p.z),
-          new THREE.Vector3(next.x, 0.18, next.z),
+          new THREE.Vector3(p.x, fenceGroundY + 0.56, p.z),
+          new THREE.Vector3(next.x, fenceGroundY + 0.08, next.z),
         ]), meshMat));
         root.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([
-          new THREE.Vector3(p.x, 0.22, p.z),
-          new THREE.Vector3(next.x, 0.66, next.z),
+          new THREE.Vector3(p.x, fenceGroundY + 0.12, p.z),
+          new THREE.Vector3(next.x, fenceGroundY + 0.52, next.z),
         ]), meshMat));
-      }
-      if (i === 3 || i === 10) {
-        const fallen = tubeBetween(
-          new THREE.Vector3(p.x - 0.16, 0.16, p.z + 0.04),
-          new THREE.Vector3(p.x + 0.28, 0.42, p.z - 0.1),
-          0.014,
-          railMat,
-          10,
-        );
-        fallen.rotation.z += 0.12;
-        root.add(fallen);
       }
     }
 
@@ -718,71 +713,129 @@ function HeroAdversaryThreeScene({
     turret.add(muzzleFlash);
 
     const generator = new THREE.Group();
-    generator.position.set(-1.62, 0.2, -0.18);
+    generator.position.set(-1.62, 0.5, -0.18);
     generator.rotation.y = 0.05;
     root.add(generator);
-    const genBody = new THREE.Mesh(roundedBoxGeometry(1.62, 0.96, 0.74, 0.08), darkSteelMat);
+    const genBody = new THREE.Mesh(roundedBoxGeometry(1.78, 1.08, 0.82, 0.085), darkSteelMat);
+    genBody.position.y = 0.06;
     genBody.castShadow = true;
     genBody.receiveShadow = true;
     generator.add(genBody);
-    const genTop = new THREE.Mesh(roundedBoxGeometry(1.68, 0.14, 0.78, 0.045), redMat);
-    genTop.position.y = 0.54;
+    const genTop = new THREE.Mesh(roundedBoxGeometry(1.86, 0.16, 0.86, 0.05), redMat);
+    genTop.position.y = 0.68;
     genTop.castShadow = true;
     generator.add(genTop);
+    const genTopLip = new THREE.Mesh(new THREE.BoxGeometry(1.94, 0.045, 0.93), darkSteelMat);
+    genTopLip.position.y = 0.78;
+    genTopLip.castShadow = true;
+    generator.add(genTopLip);
+    const genSkidMat = new THREE.MeshStandardMaterial({ color: 0x1b1e1f, roughness: 0.68, metalness: 0.55 });
+    [-0.48, 0.48].forEach((x) => {
+      const skid = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.08, 0.92), genSkidMat);
+      skid.position.set(x, -0.56, 0);
+      skid.castShadow = true;
+      generator.add(skid);
+    });
     const ventMat = new THREE.MeshStandardMaterial({ color: 0x0b0d0e, roughness: 0.85, metalness: 0.25 });
-    [-0.3, -0.18, -0.06].forEach((y, index) => {
-      const vent = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.026, 0.02), ventMat);
-      vent.position.set(-0.42, y + 0.18, 0.38);
+    [-0.25, -0.12, 0.01, 0.14].forEach((y, index) => {
+      const vent = new THREE.Mesh(new THREE.BoxGeometry(0.56, 0.026, 0.025), ventMat);
+      vent.position.set(-0.46, y + 0.18, 0.43);
       vent.rotation.z = -0.08;
       generator.add(vent);
-      const slot = new THREE.Mesh(new THREE.BoxGeometry(0.4 - index * 0.04, 0.014, 0.018), steelMat);
-      slot.position.set(-0.42, y + 0.18, 0.405);
+      const slot = new THREE.Mesh(new THREE.BoxGeometry(0.46 - index * 0.035, 0.014, 0.02), steelMat);
+      slot.position.set(-0.46, y + 0.18, 0.46);
       generator.add(slot);
     });
-    const core = new THREE.Mesh(new THREE.CylinderGeometry(0.13, 0.13, 0.04, 32), redMat);
+    const core = new THREE.Mesh(new THREE.CylinderGeometry(0.13, 0.13, 0.045, 32), redMat);
     core.rotation.z = Math.PI / 2;
-    core.position.set(0.56, 0.02, 0.405);
+    core.position.set(0.62, 0.06, 0.46);
     generator.add(core);
     const coreRing = new THREE.Mesh(new THREE.TorusGeometry(0.16, 0.012, 8, 48), redMat);
-    coreRing.position.set(0.56, 0.02, 0.43);
+    coreRing.position.set(0.62, 0.06, 0.49);
     coreRing.rotation.y = Math.PI / 2;
     generator.add(coreRing);
+    const ledOnMat = new THREE.MeshStandardMaterial({
+      color: 0x88ffb6,
+      emissive: 0x27ff72,
+      emissiveIntensity: 1.6,
+      roughness: 0.3,
+      metalness: 0.1,
+    });
+    const ignitionLed = new THREE.Mesh(new THREE.SphereGeometry(0.035, 16, 10), ledOnMat);
+    ignitionLed.position.set(0.76, 0.3, 0.48);
+    generator.add(ignitionLed);
     const hatchMat = new THREE.MeshStandardMaterial({ color: 0x24282a, roughness: 0.78, metalness: 0.42 });
-    const leftDoor = new THREE.Mesh(roundedBoxGeometry(0.48, 0.54, 0.04, 0.035), hatchMat);
-    leftDoor.position.set(-0.72, -0.02, 0.45);
-    leftDoor.rotation.y = -0.38;
+    const leftDoor = new THREE.Mesh(roundedBoxGeometry(0.44, 0.46, 0.04, 0.032), hatchMat);
+    leftDoor.position.set(-0.82, 0.1, 0.53);
+    leftDoor.rotation.y = -0.56;
+    leftDoor.rotation.z = 0.03;
     leftDoor.castShadow = true;
     generator.add(leftDoor);
-    const rightDoor = new THREE.Mesh(roundedBoxGeometry(0.4, 0.42, 0.04, 0.035), hatchMat);
-    rightDoor.position.set(0.08, -0.04, 0.45);
-    rightDoor.rotation.y = 0.22;
+    const rightDoor = new THREE.Mesh(roundedBoxGeometry(0.38, 0.42, 0.04, 0.032), hatchMat);
+    rightDoor.position.set(-0.2, 0.1, 0.54);
+    rightDoor.rotation.y = 0.42;
+    rightDoor.rotation.z = -0.03;
     rightDoor.castShadow = true;
     generator.add(rightDoor);
-    [-0.14, -0.02, 0.1].forEach((y) => {
-      const rib = new THREE.Mesh(new THREE.BoxGeometry(1.48, 0.018, 0.018), steelMat);
-      rib.position.set(-0.02, y + 0.04, 0.46);
+    const radiatorFrame = new THREE.Mesh(roundedBoxGeometry(0.58, 0.36, 0.035, 0.024), ventMat);
+    radiatorFrame.position.set(-0.5, 0.18, 0.525);
+    generator.add(radiatorFrame);
+    [-0.1, 0, 0.1].forEach((y) => {
+      const rib = new THREE.Mesh(new THREE.BoxGeometry(0.48, 0.014, 0.018), steelMat);
+      rib.position.set(-0.5, y + 0.18, 0.55);
       generator.add(rib);
     });
-    [-0.64, -0.48, -0.32, -0.16].forEach((x) => {
-      const gridBar = new THREE.Mesh(new THREE.BoxGeometry(0.018, 0.48, 0.018), steelMat);
-      gridBar.position.set(x, -0.03, 0.47);
+    [-0.68, -0.56, -0.44, -0.32].forEach((x) => {
+      const gridBar = new THREE.Mesh(new THREE.BoxGeometry(0.014, 0.28, 0.018), steelMat);
+      gridBar.position.set(x, 0.18, 0.555);
       generator.add(gridBar);
     });
-    [-0.48, -0.22, 0.04, 0.3].forEach((x) => {
+    const boltShape = new THREE.Shape();
+    boltShape.moveTo(0.01, 0.15);
+    boltShape.lineTo(-0.12, -0.02);
+    boltShape.lineTo(-0.02, -0.02);
+    boltShape.lineTo(-0.08, -0.16);
+    boltShape.lineTo(0.13, 0.04);
+    boltShape.lineTo(0.03, 0.04);
+    boltShape.lineTo(0.01, 0.15);
+    const boltLogo = new THREE.Mesh(new THREE.ShapeGeometry(boltShape), redMat);
+    boltLogo.position.set(0.62, 0.06, 0.53);
+    generator.add(boltLogo);
+    [-0.58, -0.22, 0.18, 0.52].forEach((x) => {
       const bolt = new THREE.Mesh(new THREE.CylinderGeometry(0.018, 0.018, 0.012, 12), steelMat);
-      bolt.position.set(x, 0.38, 0.47);
+      bolt.position.set(x, 0.48, 0.51);
       bolt.rotation.x = Math.PI / 2;
       generator.add(bolt);
     });
-    const exhaustStack = new THREE.Mesh(new THREE.CylinderGeometry(0.045, 0.055, 0.42, 18), darkSteelMat);
-    exhaustStack.position.set(0.86, 0.62, -0.1);
-    exhaustStack.rotation.z = -0.18;
-    exhaustStack.castShadow = true;
+    const socketPlate = new THREE.Mesh(roundedBoxGeometry(0.38, 0.24, 0.035, 0.02), ventMat);
+    socketPlate.position.set(0.86, -0.08, 0.525);
+    generator.add(socketPlate);
+    const towerSocket = new THREE.Mesh(new THREE.TorusGeometry(0.055, 0.011, 8, 24), railMat);
+    towerSocket.position.set(0.78, -0.08, 0.55);
+    generator.add(towerSocket);
+    const lampSocket = new THREE.Mesh(new THREE.TorusGeometry(0.045, 0.01, 8, 24), railMat);
+    lampSocket.position.set(0.94, -0.08, 0.55);
+    generator.add(lampSocket);
+    const muffler = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.07, 0.36, 20), darkSteelMat);
+    muffler.rotation.z = Math.PI / 2;
+    muffler.position.set(-1.02, 0.58, -0.08);
+    muffler.castShadow = true;
+    generator.add(muffler);
+    const exhaustStack = tubeBetween(
+      new THREE.Vector3(-0.72, 0.42, -0.08),
+      new THREE.Vector3(-0.9, 0.58, -0.08),
+      0.04,
+      darkSteelMat,
+      18,
+    );
     generator.add(exhaustStack);
-    const exhaustCap = new THREE.Mesh(new THREE.CylinderGeometry(0.065, 0.055, 0.06, 18), steelMat);
-    exhaustCap.position.set(0.9, 0.84, -0.1);
-    exhaustCap.rotation.z = -0.18;
-    generator.add(exhaustCap);
+    const exhaustTip = new THREE.Mesh(new THREE.CylinderGeometry(0.052, 0.064, 0.055, 18), steelMat);
+    exhaustTip.rotation.z = Math.PI / 2;
+    exhaustTip.position.set(-1.23, 0.58, -0.08);
+    generator.add(exhaustTip);
+    const towerSocketWorld = generator.localToWorld(new THREE.Vector3(0.78, -0.08, 0.57));
+    const lampSocketWorld = generator.localToWorld(new THREE.Vector3(0.94, -0.08, 0.57));
+    const smokeOrigin = generator.localToWorld(new THREE.Vector3(-1.27, 0.58, -0.08));
 
     const lamp = new THREE.Group();
     lamp.position.set(0.14, 0.12, 1.16);
@@ -869,39 +922,56 @@ function HeroAdversaryThreeScene({
     root.add(boardGroundGlow);
 
     const lampWireCurve = new THREE.CatmullRomCurve3([
-      new THREE.Vector3(-0.86, 0.08, 0.2),
-      new THREE.Vector3(-0.52, 0.06, 0.52),
-      new THREE.Vector3(-0.18, 0.06, 0.9),
-      new THREE.Vector3(0.02, 0.18, 1.16),
-      new THREE.Vector3(0.02, 1.22, 1.16),
+      lampSocketWorld.clone(),
+      new THREE.Vector3(-0.42, 0.34, 0.62),
+      new THREE.Vector3(-0.08, 0.3, 0.92),
+      new THREE.Vector3(0.1, 0.32, 1.15),
+      new THREE.Vector3(0.11, 0.72, 1.17),
+      new THREE.Vector3(0.12, 1.12, 1.18),
       new THREE.Vector3(0.38, 1.4, 1.2),
     ]);
     const lampWire = new THREE.Mesh(new THREE.TubeGeometry(lampWireCurve, 72, 0.012, 10), cableMat);
     lampWire.castShadow = true;
     root.add(lampWire);
-    const lampWirePulseMaterial = new THREE.MeshBasicMaterial({ color: 0xffc08c, transparent: true, opacity: 0.9 });
+    [
+      [0.12, 0.5, 1.17],
+      [0.12, 0.82, 1.18],
+      [0.15, 1.14, 1.18],
+    ].forEach(([x, y, z]) => {
+      const strap = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.022, 0.035), railMat);
+      strap.position.set(x, y, z);
+      strap.rotation.z = 0.18;
+      strap.castShadow = true;
+      root.add(strap);
+    });
+    const lampWirePulseMaterial = new THREE.MeshBasicMaterial({
+      color: 0xff6f42,
+      transparent: true,
+      opacity: 0.82,
+      blending: THREE.AdditiveBlending,
+    });
     const lampWirePulse = new THREE.Mesh(new THREE.SphereGeometry(0.032, 14, 10), lampWirePulseMaterial);
     root.add(lampWirePulse);
     const lampWireSpark = new THREE.Line(
       new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(), new THREE.Vector3(0.08, 0.02, 0)]),
-      new THREE.LineBasicMaterial({ color: 0xffd5a6, transparent: true, opacity: 0.75 }),
+      new THREE.LineBasicMaterial({ color: 0xff9b62, transparent: true, opacity: 0.72 }),
     );
     root.add(lampWireSpark);
 
-    const smokeMat = new THREE.MeshBasicMaterial({ color: 0x8f989e, transparent: true, opacity: 0.12, depthWrite: false });
-    const smokePuffs = [0, 1, 2, 3].map((index) => {
-      const puff = new THREE.Mesh(new THREE.SphereGeometry(0.09 + index * 0.018, 18, 12), smokeMat.clone());
-      puff.position.set(-1.02 + index * 0.03, 0.78 + index * 0.12, -0.12 + index * 0.01);
+    const smokeMat = new THREE.MeshBasicMaterial({ color: 0xa4adb0, transparent: true, opacity: 0.14, depthWrite: false });
+    const smokePuffs = [0, 1, 2, 3, 4].map((index) => {
+      const puff = new THREE.Mesh(new THREE.SphereGeometry(0.08 + index * 0.016, 18, 12), smokeMat.clone());
+      puff.position.copy(smokeOrigin).add(new THREE.Vector3(index * 0.035, index * 0.075, index * 0.008));
       root.add(puff);
-      puff.userData.phase = index / 4;
+      puff.userData.phase = index / 5;
       return puff;
     });
 
     const cablePoints = [
-      new THREE.Vector3(-1.22, 0.16, 0.12),
-      new THREE.Vector3(-0.92, 0.08, 0.02),
-      new THREE.Vector3(-0.55, 0.08, -0.14),
-      new THREE.Vector3(-0.36, 0.28, -0.27),
+      towerSocketWorld.clone(),
+      new THREE.Vector3(-0.72, 0.36, 0.18),
+      new THREE.Vector3(-0.55, 0.3, -0.14),
+      new THREE.Vector3(-0.36, 0.34, -0.27),
       ...Array.from({ length: 18 }, (_, index) => {
         const y = 0.34 + index * 0.105;
         const angle = index * 0.92;
@@ -914,12 +984,17 @@ function HeroAdversaryThreeScene({
     const cableMesh = new THREE.Mesh(new THREE.TubeGeometry(cableCurve, 120, 0.024, 14), cableMat);
     cableMesh.castShadow = true;
     root.add(cableMesh);
-    const electricityMat = new THREE.MeshBasicMaterial({ color: 0xff664d, transparent: true, opacity: 0.95 });
+    const electricityMat = new THREE.MeshBasicMaterial({
+      color: 0xff4d2d,
+      transparent: true,
+      opacity: 0.84,
+      blending: THREE.AdditiveBlending,
+    });
     const electricityPulse = new THREE.Mesh(new THREE.SphereGeometry(0.045, 16, 10), electricityMat);
     root.add(electricityPulse);
     const sparkLine = new THREE.Line(
       new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(), new THREE.Vector3(0.12, 0.03, 0)]),
-      new THREE.LineBasicMaterial({ color: 0xff7a58, transparent: true, opacity: 0.75 }),
+      new THREE.LineBasicMaterial({ color: 0xff7850, transparent: true, opacity: 0.68 }),
     );
     root.add(sparkLine);
 
@@ -1069,32 +1144,39 @@ function HeroAdversaryThreeScene({
           boardWashMaterial.opacity = flicker * 0.3;
         }
       }
+      ledOnMat.emissiveIntensity = 1.25 + Math.max(0, Math.sin(elapsed * 4.2)) * 0.5;
       smokePuffs.forEach((puff) => {
-        const progress = (elapsed * 0.12 + puff.userData.phase) % 1;
-        puff.position.y = 0.84 + progress * 0.7;
-        puff.position.x = -1.02 + Math.sin(progress * Math.PI * 2) * 0.08;
-        puff.position.z = -0.12 + Math.cos(progress * Math.PI * 2) * 0.04;
-        puff.scale.setScalar(0.8 + progress * 1.15);
+        const progress = (elapsed * 0.16 + puff.userData.phase) % 1;
+        puff.position.y = smokeOrigin.y + progress * 0.76;
+        puff.position.x = smokeOrigin.x + progress * 0.18 + Math.sin(progress * Math.PI * 2) * 0.07;
+        puff.position.z = smokeOrigin.z + Math.cos(progress * Math.PI * 2) * 0.035;
+        puff.scale.setScalar(0.72 + progress * 1.28);
         const material = puff.material;
         if (material instanceof THREE.MeshBasicMaterial) {
-          material.opacity = 0.14 * (1 - progress);
+          material.opacity = 0.17 * (1 - progress);
         }
       });
       const cableProgress = (elapsed * 0.42) % 1;
       electricityPulse.position.copy(cableCurve.getPointAt(cableProgress));
-      electricityPulse.scale.setScalar(0.7 + Math.sin(elapsed * 14) * 0.22);
+      electricityPulse.scale.setScalar(0.64 + Math.max(0, Math.sin(elapsed * 11)) * 0.36);
+      electricityMat.opacity = 0.45 + Math.max(0, Math.sin(elapsed * 8.5)) * 0.34;
       const sparkStart = cableCurve.getPointAt(cableProgress);
       const sparkEnd = cableCurve.getPointAt(Math.min(0.995, cableProgress + 0.02));
       sparkLine.geometry.setFromPoints([sparkStart, sparkEnd]);
+      const sparkLineMaterial = sparkLine.material;
+      if (sparkLineMaterial instanceof THREE.LineBasicMaterial) {
+        sparkLineMaterial.opacity = 0.26 + Math.max(0, Math.sin(elapsed * 9.4 + 0.5)) * 0.45;
+      }
       const lampCableProgress = (elapsed * 0.62) % 1;
       const lampPulseStart = lampWireCurve.getPointAt(lampCableProgress);
       const lampPulseEnd = lampWireCurve.getPointAt(Math.min(0.995, lampCableProgress + 0.025));
       lampWirePulse.position.copy(lampPulseStart);
-      lampWirePulse.scale.setScalar(0.72 + Math.sin(elapsed * 18) * 0.18);
+      lampWirePulse.scale.setScalar(0.66 + Math.max(0, Math.sin(elapsed * 13.5)) * 0.3);
+      lampWirePulseMaterial.opacity = 0.38 + Math.max(0, Math.sin(elapsed * 10.5 + 0.7)) * 0.38;
       lampWireSpark.geometry.setFromPoints([lampPulseStart, lampPulseEnd]);
       const lampWireSparkMaterial = lampWireSpark.material;
       if (lampWireSparkMaterial instanceof THREE.LineBasicMaterial) {
-        lampWireSparkMaterial.opacity = 0.35 + Math.sin(elapsed * 16) * 0.28;
+        lampWireSparkMaterial.opacity = 0.24 + Math.max(0, Math.sin(elapsed * 12.5)) * 0.4;
       }
 
       const shotCycle = 4.05;
