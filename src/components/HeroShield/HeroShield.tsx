@@ -331,11 +331,11 @@ function HeroAdversaryThreeScene({
     };
 
     const terrainShape = new THREE.Shape();
-    terrainShape.moveTo(-3.35, -1.22);
-    terrainShape.bezierCurveTo(-2.34, -1.58, -0.5, -1.68, 2.62, -1.18);
-    terrainShape.bezierCurveTo(3.02, -0.42, 2.84, 0.68, 2.08, 1.34);
-    terrainShape.bezierCurveTo(0.3, 1.54, -1.38, 0.84, -2.42, 0.08);
-    terrainShape.bezierCurveTo(-3.0, -0.34, -3.28, -0.76, -3.35, -1.22);
+    terrainShape.moveTo(-3.42, -1.22);
+    terrainShape.bezierCurveTo(-2.34, -1.58, -0.42, -1.7, 2.9, -1.22);
+    terrainShape.bezierCurveTo(3.28, -0.36, 3.08, 0.88, 2.42, 1.58);
+    terrainShape.bezierCurveTo(0.28, 1.72, -1.42, 0.88, -2.48, 0.08);
+    terrainShape.bezierCurveTo(-3.08, -0.34, -3.36, -0.76, -3.42, -1.22);
 
     const waterShape = new THREE.Shape();
     waterShape.moveTo(-4.25, -1.9);
@@ -550,29 +550,28 @@ function HeroAdversaryThreeScene({
 
     const fenceGroundY = 0.15;
     const fenceTop = new THREE.CatmullRomCurve3([
-      new THREE.Vector3(-3.0, 0.7, 0.48),
-      new THREE.Vector3(-2.42, 0.78, -0.58),
-      new THREE.Vector3(-1.18, 0.82, -1.05),
-      new THREE.Vector3(0.35, 0.84, -1.0),
-      new THREE.Vector3(1.52, 0.8, -0.42),
-      new THREE.Vector3(1.38, 0.74, 0.42),
-      new THREE.Vector3(0.18, 0.66, 0.88),
-      new THREE.Vector3(-1.38, 0.64, 0.84),
-    ], false);
+      new THREE.Vector3(-3.0, 0.7, 0.42),
+      new THREE.Vector3(-2.5, 0.78, -0.66),
+      new THREE.Vector3(-1.18, 0.82, -1.08),
+      new THREE.Vector3(0.35, 0.84, -1.02),
+      new THREE.Vector3(1.48, 0.8, -0.36),
+      new THREE.Vector3(1.18, 0.74, 0.38),
+      new THREE.Vector3(0.02, 0.66, 0.72),
+      new THREE.Vector3(-1.42, 0.64, 0.72),
+    ], true);
     const fenceBase = fenceTop.getPoints(48).map((p) => new THREE.Vector3(p.x, fenceGroundY, p.z));
     const fenceTopPoints = fenceTop.getPoints(48);
     const railTop = new THREE.Mesh(new THREE.TubeGeometry(fenceTop, 128, 0.018, 12), railMat);
     const railMid = new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(
       fenceTopPoints.map((p) => new THREE.Vector3(p.x, 0.48, p.z)),
-      false,
+      true,
     ), 128, 0.012, 12), railMat);
-    const railBase = new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(fenceBase, false), 128, 0.014, 12), railMat);
+    const railBase = new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(fenceBase, true), 128, 0.014, 12), railMat);
     railTop.castShadow = true;
     railMid.castShadow = true;
     railBase.castShadow = true;
     root.add(railTop, railMid, railBase);
 
-    const meshMat = new THREE.LineBasicMaterial({ color: 0x8a979b, transparent: true, opacity: 0.22 });
     for (let i = 0; i < 10; i += 1) {
       const t = i / 10;
       const p = fenceTop.getPointAt(t);
@@ -591,17 +590,6 @@ function HeroAdversaryThreeScene({
       cap.position.set(p.x, fenceGroundY + height + 0.02, p.z);
       cap.castShadow = true;
       root.add(cap);
-      if (i < 9) {
-        const next = fenceTop.getPointAt((i + 1) / 10);
-        root.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([
-          new THREE.Vector3(p.x, fenceGroundY + 0.56, p.z),
-          new THREE.Vector3(next.x, fenceGroundY + 0.08, next.z),
-        ]), meshMat));
-        root.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([
-          new THREE.Vector3(p.x, fenceGroundY + 0.12, p.z),
-          new THREE.Vector3(next.x, fenceGroundY + 0.52, next.z),
-        ]), meshMat));
-      }
     }
 
     const tower = new THREE.Group();
@@ -716,7 +704,14 @@ function HeroAdversaryThreeScene({
     generator.position.set(-1.62, 0.5, -0.18);
     generator.rotation.y = 0.05;
     root.add(generator);
-    const genBody = new THREE.Mesh(roundedBoxGeometry(1.78, 1.08, 0.82, 0.085), darkSteelMat);
+    const generatorBodyMat = new THREE.MeshStandardMaterial({
+      color: 0x241f1c,
+      emissive: 0x050404,
+      emissiveIntensity: 0.08,
+      roughness: 0.6,
+      metalness: 0.42,
+    });
+    const genBody = new THREE.Mesh(roundedBoxGeometry(1.78, 1.08, 0.82, 0.085), generatorBodyMat);
     genBody.position.y = 0.06;
     genBody.castShadow = true;
     genBody.receiveShadow = true;
@@ -725,6 +720,19 @@ function HeroAdversaryThreeScene({
     genTop.position.y = 0.68;
     genTop.castShadow = true;
     generator.add(genTop);
+    const stripeMat = new THREE.MeshBasicMaterial({ color: 0x080707, side: THREE.DoubleSide });
+    [-0.82, -0.6, -0.38, -0.16, 0.06, 0.28, 0.5, 0.72].forEach((x) => {
+      const stripeShape = new THREE.Shape();
+      stripeShape.moveTo(x - 0.04, 0.59);
+      stripeShape.lineTo(x + 0.04, 0.59);
+      stripeShape.lineTo(x + 0.1, 0.77);
+      stripeShape.lineTo(x + 0.02, 0.77);
+      stripeShape.lineTo(x - 0.04, 0.59);
+      const dangerStripe = new THREE.Mesh(new THREE.ShapeGeometry(stripeShape), stripeMat);
+      dangerStripe.position.z = 0.462;
+      dangerStripe.renderOrder = 3;
+      generator.add(dangerStripe);
+    });
     const genTopLip = new THREE.Mesh(new THREE.BoxGeometry(1.94, 0.045, 0.93), darkSteelMat);
     genTopLip.position.y = 0.78;
     genTopLip.castShadow = true;
@@ -765,15 +773,15 @@ function HeroAdversaryThreeScene({
     ignitionLed.position.set(0.76, 0.3, 0.48);
     generator.add(ignitionLed);
     const hatchMat = new THREE.MeshStandardMaterial({ color: 0x24282a, roughness: 0.78, metalness: 0.42 });
-    const leftDoor = new THREE.Mesh(roundedBoxGeometry(0.44, 0.46, 0.04, 0.032), hatchMat);
-    leftDoor.position.set(-0.82, 0.1, 0.53);
-    leftDoor.rotation.y = -0.56;
-    leftDoor.rotation.z = 0.03;
+    const leftDoor = new THREE.Mesh(roundedBoxGeometry(0.4, 0.42, 0.04, 0.032), hatchMat);
+    leftDoor.position.set(-0.68, 0.12, 0.525);
+    leftDoor.rotation.y = -0.34;
+    leftDoor.rotation.z = 0.02;
     leftDoor.castShadow = true;
     generator.add(leftDoor);
-    const rightDoor = new THREE.Mesh(roundedBoxGeometry(0.38, 0.42, 0.04, 0.032), hatchMat);
-    rightDoor.position.set(-0.2, 0.1, 0.54);
-    rightDoor.rotation.y = 0.42;
+    const rightDoor = new THREE.Mesh(roundedBoxGeometry(0.34, 0.38, 0.04, 0.032), hatchMat);
+    rightDoor.position.set(-0.18, 0.12, 0.53);
+    rightDoor.rotation.y = 0.26;
     rightDoor.rotation.z = -0.03;
     rightDoor.castShadow = true;
     generator.add(rightDoor);
@@ -818,12 +826,12 @@ function HeroAdversaryThreeScene({
     generator.add(lampSocket);
     const muffler = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.07, 0.36, 20), darkSteelMat);
     muffler.rotation.z = Math.PI / 2;
-    muffler.position.set(-1.02, 0.58, -0.08);
+    muffler.position.set(-1.02, 0.16, 0.38);
     muffler.castShadow = true;
     generator.add(muffler);
     const exhaustStack = tubeBetween(
-      new THREE.Vector3(-0.72, 0.42, -0.08),
-      new THREE.Vector3(-0.9, 0.58, -0.08),
+      new THREE.Vector3(-0.72, 0.12, 0.38),
+      new THREE.Vector3(-0.9, 0.16, 0.38),
       0.04,
       darkSteelMat,
       18,
@@ -831,11 +839,11 @@ function HeroAdversaryThreeScene({
     generator.add(exhaustStack);
     const exhaustTip = new THREE.Mesh(new THREE.CylinderGeometry(0.052, 0.064, 0.055, 18), steelMat);
     exhaustTip.rotation.z = Math.PI / 2;
-    exhaustTip.position.set(-1.23, 0.58, -0.08);
+    exhaustTip.position.set(-1.23, 0.16, 0.38);
     generator.add(exhaustTip);
     const towerSocketWorld = generator.localToWorld(new THREE.Vector3(0.78, -0.08, 0.57));
     const lampSocketWorld = generator.localToWorld(new THREE.Vector3(0.94, -0.08, 0.57));
-    const smokeOrigin = generator.localToWorld(new THREE.Vector3(-1.27, 0.58, -0.08));
+    const smokeOrigin = generator.localToWorld(new THREE.Vector3(-1.29, 0.16, 0.38));
 
     const lamp = new THREE.Group();
     lamp.position.set(0.14, 0.12, 1.16);
@@ -1147,9 +1155,9 @@ function HeroAdversaryThreeScene({
       ledOnMat.emissiveIntensity = 1.25 + Math.max(0, Math.sin(elapsed * 4.2)) * 0.5;
       smokePuffs.forEach((puff) => {
         const progress = (elapsed * 0.16 + puff.userData.phase) % 1;
-        puff.position.y = smokeOrigin.y + progress * 0.76;
-        puff.position.x = smokeOrigin.x + progress * 0.18 + Math.sin(progress * Math.PI * 2) * 0.07;
-        puff.position.z = smokeOrigin.z + Math.cos(progress * Math.PI * 2) * 0.035;
+        puff.position.y = smokeOrigin.y + progress * 0.5;
+        puff.position.x = smokeOrigin.x - progress * 0.26 + Math.sin(progress * Math.PI * 2) * 0.05;
+        puff.position.z = smokeOrigin.z + Math.cos(progress * Math.PI * 2) * 0.025;
         puff.scale.setScalar(0.72 + progress * 1.28);
         const material = puff.material;
         if (material instanceof THREE.MeshBasicMaterial) {
