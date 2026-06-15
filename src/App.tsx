@@ -69,8 +69,6 @@ const cnnUrl = 'https://edition.cnn.com/2026/04/12/middleeast/us-iran-war-propel
 
 const metrics: Metric[] = [
   { value: 150, suffix: 'K+', label: 'Users trust us', note: 'privacy-first products used globally', progress: 92, trend: 'Community adoption', chart: 'area', data: [18, 28, 42, 57, 74, 96, 122, 150] },
-  { value: 51, suffix: '+', label: 'Countries', note: 'active international footprint', progress: 72, trend: 'Global usage', chart: 'bars', data: [8, 15, 21, 28, 36, 44, 51] },
-  { value: 23, suffix: '+', label: 'Open-source projects', note: 'public repos and release history', progress: 68, trend: 'Transparent work', chart: 'gauge', data: [23] },
   { value: 0, suffix: '', label: 'Hidden trackers', note: 'no surveillance by default', progress: 100, trend: 'Privacy baseline', chart: 'zero', data: [0, 0, 0, 0, 0, 0] },
 ];
 
@@ -147,7 +145,7 @@ function StatChart({ metric }: { metric: Metric }) {
   const points = metric.data
     .map((value, index) => {
       const x = (index / Math.max(metric.data.length - 1, 1)) * 100;
-      const y = 92 - (value / max) * 76;
+      const y = 72 - (value / max) * 64;
       return `${x},${y}`;
     })
     .join(' ');
@@ -183,19 +181,31 @@ function StatChart({ metric }: { metric: Metric }) {
     );
   }
 
+  const lastIdx = metric.data.length - 1;
+  const firstPt = { y: 72 - (metric.data[0] / max) * 64 };
+  const lastPt = { y: 72 - (metric.data[lastIdx] / max) * 64 };
+
   return (
-    <ChartContainer className="stat-chart stat-chart--area">
-      <svg viewBox="0 0 100 100" preserveAspectRatio="none" role="img" aria-label={`${metric.label} trend`}>
-        <defs>
-          <linearGradient id="stat-area-fill" x1="0" x2="0" y1="0" y2="1">
-            <stop offset="0%" stopColor="var(--accent-brand)" stopOpacity="0.36" />
-            <stop offset="100%" stopColor="var(--accent-brand)" stopOpacity="0" />
-          </linearGradient>
-        </defs>
-        <polygon points={`0,100 ${points} 100,100`} />
-        <polyline points={points} />
-      </svg>
-    </ChartContainer>
+    <div className="stat-chart stat-chart--area">
+      <div className="stat-chart-graph">
+        <svg viewBox="0 0 100 80" preserveAspectRatio="none" role="img" aria-label={`${metric.label} trend`}>
+          <defs>
+            <linearGradient id="stat-area-fill" x1="0" x2="0" y1="0" y2="1">
+              <stop offset="0%" stopColor="var(--accent-brand)" stopOpacity="0.36" />
+              <stop offset="100%" stopColor="var(--accent-brand)" stopOpacity="0" />
+            </linearGradient>
+          </defs>
+          <polygon points={`0,80 ${points} 100,80`} />
+          <polyline points={points} />
+        </svg>
+        <div className="stat-chart-dot stat-chart-dot--start" style={{ left: '0%', top: `${(firstPt.y / 80) * 100}%` }} />
+        <div className="stat-chart-dot stat-chart-dot--end" style={{ left: '100%', top: `${(lastPt.y / 80) * 100}%` }} />
+      </div>
+      <div className="stat-chart-axis">
+        <span>2024</span>
+        <span>2026</span>
+      </div>
+    </div>
   );
 }
 
@@ -225,7 +235,7 @@ const App: React.FC = () => {
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [transitionTarget, setTransitionTarget] = useState('');
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [activeCountry, setActiveCountry] = useState('Hover a marker');
+  const [activeCountry, setActiveCountry] = useState('');
 
   useEffect(() => {
     document.documentElement.dataset.theme = theme;
@@ -367,6 +377,8 @@ const App: React.FC = () => {
           </div>
         </section>
 
+        <div className="content-wrap">
+
         <section className="proof-section reveal" aria-label="Company proof">
           <div className="metric-band">
             {metrics.map((metric) => (
@@ -374,11 +386,23 @@ const App: React.FC = () => {
             ))}
           </div>
           <div className="mini-map-card">
-            <div>
+            <div className="mini-map-text">
               <Badge variant="secondary"><Globe2 /> Global reach</Badge>
-              <h2>Used across 51+ countries.</h2>
+              <div className="map-stat-value">
+                <span className="map-stat-number">51</span>
+                <span className="map-stat-suffix">+</span>
+              </div>
+              <span className="map-stat-label">Countries</span>
+              <div className="map-bars">
+                <span style={{ height: '22%' }} />
+                <span style={{ height: '34%' }} />
+                <span style={{ height: '46%' }} />
+                <span style={{ height: '58%' }} />
+                <span style={{ height: '70%' }} />
+                <span style={{ height: '82%' }} />
+                <span style={{ height: '100%' }} />
+              </div>
               <p>Open-source products reach users without growth hacks, surveillance funnels, or locked-in cloud accounts.</p>
-              <span className="country-readout">{activeCountry}</span>
             </div>
             <div className="world-map-container" aria-label="Interactive FadSec Lab userbase map">
               <ComposableMap projection="geoNaturalEarth1" projectionConfig={{ scale: 130, center: [20, 8] }}>
@@ -406,12 +430,17 @@ const App: React.FC = () => {
                       strokeWidth={1.4}
                       className="map-dot"
                       onMouseEnter={() => setActiveCountry(name)}
+                      onMouseLeave={() => setActiveCountry('')}
                       onFocus={() => setActiveCountry(name)}
+                      onBlur={() => setActiveCountry('')}
                       tabIndex={0}
-                    >
-                      <title>{name}</title>
-                    </circle>
+                    />
                     <circle r={12} fill="var(--accent-brand)" opacity={0.14} className="map-dot-ring" />
+                    {activeCountry === name && (
+                      <foreignObject x={-40} y={-28} width={80} height={22} style={{ overflow: 'visible', pointerEvents: 'none' }}>
+                        <span className="map-tooltip">{name}</span>
+                      </foreignObject>
+                    )}
                   </Marker>
                 ))}
               </ComposableMap>
@@ -489,6 +518,9 @@ const App: React.FC = () => {
             })}
           </div>
         </section>
+
+        </div>
+
       </main>
 
       <Dialog open={activeDialog === 'privacy'} onOpenChange={(open) => { if (!open) setActiveDialog(null); }}>

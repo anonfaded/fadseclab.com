@@ -158,8 +158,8 @@ body::after {
 }
 
 ::selection {
-  background: var(--accent-soft);
-  color: var(--text);
+  background: rgba(232, 51, 74, 0.45);
+  color: #fff;
 }
 
 a {
