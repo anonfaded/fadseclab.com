@@ -118,29 +118,32 @@ function HeroSignalBackdrop() {
   );
 }
 
-function AnimatedNumber({ value, suffix }: { value: number; suffix: string }) {
+function AnimatedNumber({ value, suffix, start }: { value: number; suffix: string; start: boolean }) {
   const [display, setDisplay] = useState(0);
 
   useEffect(() => {
-    const duration = 900;
-    const start = performance.now();
+    if (!start) return;
+
+    const duration = 1200;
+    const startTs = performance.now();
     let frame = 0;
 
     const tick = (now: number) => {
-      const progress = Math.min((now - start) / duration, 1);
-      const eased = 1 - Math.pow(1 - progress, 3);
+      const progress = Math.min((now - startTs) / duration, 1);
+      /* easeOutExpo for snappy count-up */
+      const eased = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
       setDisplay(Math.round(value * eased));
       if (progress < 1) frame = requestAnimationFrame(tick);
     };
 
     frame = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(frame);
-  }, [value]);
+  }, [value, start]);
 
   return <>{display}{suffix}</>;
 }
 
-function StatChart({ metric }: { metric: Metric }) {
+function StatChart({ metric, isVisible }: { metric: Metric; isVisible: boolean }) {
   const max = Math.max(...metric.data, 1);
   const points = metric.data
     .map((value, index) => {
@@ -174,7 +177,7 @@ function StatChart({ metric }: { metric: Metric }) {
 
   if (metric.chart === 'zero') {
     return (
-      <ChartContainer className="stat-chart stat-chart--zero">
+      <ChartContainer className={`stat-chart stat-chart--zero${isVisible ? ' is-visible' : ''}`}>
         <div className="zero-line" />
         <span>no telemetry</span>
       </ChartContainer>
@@ -186,7 +189,7 @@ function StatChart({ metric }: { metric: Metric }) {
   const lastPt = { y: 72 - (metric.data[lastIdx] / max) * 64 };
 
   return (
-    <div className="stat-chart stat-chart--area">
+    <div className={`stat-chart stat-chart--area${isVisible ? ' is-visible' : ''}`}>
       <div className="stat-chart-graph">
         <svg viewBox="0 0 100 80" preserveAspectRatio="none" role="img" aria-label={`${metric.label} trend`}>
           <defs>
@@ -210,18 +213,32 @@ function StatChart({ metric }: { metric: Metric }) {
 }
 
 function StatSignal({ metric }: { metric: Metric }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) { setVisible(true); observer.disconnect(); } },
+      { threshold: 0.35 },
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
   return (
-    <div className="stat-signal">
+    <div className="stat-signal" ref={ref}>
       <div className="stat-signal-header">
         <span>{metric.label}</span>
       </div>
       <div className="stat-signal-body">
         <ChartValue>
-          <AnimatedNumber value={metric.value} suffix={metric.suffix} />
+          <AnimatedNumber value={metric.value} suffix={metric.suffix} start={visible} />
         </ChartValue>
         <p>{metric.note}</p>
       </div>
-      <StatChart metric={metric} />
+      <StatChart metric={metric} isVisible={visible} />
       <Badge variant="outline" className="stat-trend">{metric.trend}</Badge>
     </div>
   );
@@ -296,8 +313,8 @@ const App: React.FC = () => {
     <div className="site-shell" ref={rootRef}>
       <header className="site-header">
         <a className="brand-lockup" href="#home" aria-label="FadSec Lab home">
-          <img src={flagImg} alt="" />
           <span>FadSec Lab</span>
+          <img src={flagImg} alt="" />
         </a>
 
         <nav className="site-nav" aria-label="Primary navigation">
@@ -388,21 +405,25 @@ const App: React.FC = () => {
           <div className="mini-map-card">
             <div className="mini-map-text">
               <Badge variant="secondary"><Globe2 /> Global reach</Badge>
-              <div className="map-stat-value">
-                <span className="map-stat-number">51</span>
-                <span className="map-stat-suffix">+</span>
+              <div className="map-stat-row">
+                <div className="map-stat-left">
+                  <div className="map-stat-value">
+                    <span className="map-stat-number">51</span>
+                    <span className="map-stat-suffix">+</span>
+                  </div>
+                  <span className="map-stat-label">Countries</span>
+                </div>
+                <div className="map-bars">
+                  <span style={{ height: '22%' }} />
+                  <span style={{ height: '34%' }} />
+                  <span style={{ height: '46%' }} />
+                  <span style={{ height: '58%' }} />
+                  <span style={{ height: '70%' }} />
+                  <span style={{ height: '82%' }} />
+                  <span style={{ height: '100%' }} />
+                </div>
               </div>
-              <span className="map-stat-label">Countries</span>
-              <div className="map-bars">
-                <span style={{ height: '22%' }} />
-                <span style={{ height: '34%' }} />
-                <span style={{ height: '46%' }} />
-                <span style={{ height: '58%' }} />
-                <span style={{ height: '70%' }} />
-                <span style={{ height: '82%' }} />
-                <span style={{ height: '100%' }} />
-              </div>
-              <p>Open-source products reach users without growth hacks, surveillance funnels, or locked-in cloud accounts.</p>
+              <p>Open-source tools that reach users without growth hacks, surveillance funnels, or locked-in accounts.</p>
             </div>
             <div className="world-map-container" aria-label="Interactive FadSec Lab userbase map">
               <ComposableMap projection="geoNaturalEarth1" projectionConfig={{ scale: 130, center: [20, 8] }}>

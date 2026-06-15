@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
 
 @import "tailwindcss";
 
@@ -33,9 +33,26 @@
   --success: #86efac;
   --shadow: 0 28px 90px rgba(0, 0, 0, 0.52);
   --shadow-sm: 0 6px 20px rgba(0, 0, 0, 0.32);
-  --font-display: 'Syne', system-ui, sans-serif;
-  --font-body: 'Outfit', system-ui, sans-serif;
-  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
+
+  /* ── Type scale ── */
+  --text-xs: 0.75rem;
+  --text-sm: 0.8125rem;
+  --text-base: 1rem;
+  --text-lg: clamp(1rem, 1.2vw, 1.125rem);
+  --text-xl: clamp(1.125rem, 1.6vw, 1.375rem);
+  --text-2xl: clamp(1.375rem, 2.2vw, 1.75rem);
+  --text-3xl: clamp(1.75rem, 3vw, 2.25rem);
+  --text-4xl: clamp(2.25rem, 4vw, 3rem);
+  --text-5xl: clamp(3rem, 5.5vw, 4.5rem);
+  --text-hero: clamp(2.4rem, 6vw, 4.5rem);
+  --leading-tight: 0.92;
+  --leading-snug: 1.1;
+  --leading-normal: 1.5;
+  --leading-relaxed: 1.6;
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --weight-bold: 700;
 
   /* ── shadcn / Tailwind CSS vars (dark defaults) ── */
   --background: #06060a;
@@ -123,7 +140,7 @@ body {
   min-height: 100vh;
   color: var(--text);
   background: var(--bg);
-  font-family: var(--font-body);
+  font-family: var(--font-sans);
   font-size: 16px;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
@@ -131,6 +148,8 @@ body {
   text-rendering: optimizeLegibility;
   overflow-x: hidden;
 }
+
+h1, h2, h3, h4, h5, h6 {
 
 /* Grain noise texture */
 body::before,
@@ -158,7 +177,7 @@ body::after {
 }
 
 ::selection {
-  background: rgba(232, 51, 74, 0.45);
+  background: var(--accent-brand);
   color: #fff;
 }
 
@@ -218,9 +237,8 @@ a:focus-visible {
 }
 
 @theme inline {
-  --font-display: var(--font-display);
-  --font-body: var(--font-body);
-  --font-mono: var(--font-mono);
+  --font-sans: 'Manrope', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
