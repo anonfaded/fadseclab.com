@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500;600;700;800&family=Bricolage+Grotesque:opsz,wght@12..96,300;12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
 
 @import "tailwindcss";
 
@@ -18,7 +18,7 @@
   --surface-hover: rgba(255, 255, 255, 0.068);
   --surface-muted: rgba(255, 255, 255, 0.042);
   --text: #f0f0f5;
-  --text-soft: #b2b2c4;
+  --text-soft: #c2c2d2;
   --faint: #48485c;
   --border-strong: rgba(255, 255, 255, 0.155);
   --accent-brand: #e8334a;
@@ -29,8 +29,6 @@
   --hero-bg: #06060a;
   --hero-surface: rgba(10, 10, 16, 0.74);
   --hero-glow: rgba(232, 51, 74, 0.18);
-  --cyan: #7dd3fc;
-  --success: #86efac;
   --shadow: 0 28px 90px rgba(0, 0, 0, 0.52);
   --shadow-sm: 0 6px 20px rgba(0, 0, 0, 0.32);
 
@@ -89,7 +87,7 @@
   --surface-hover: rgba(10, 10, 18, 0.068);
   --surface-muted: rgba(10, 10, 18, 0.042);
   --text: #08080e;
-  --text-soft: #5a5a6e;
+  --text-soft: #42425a;
   --faint: #8a8a9c;
   --border-strong: rgba(10, 10, 18, 0.15);
   --accent-brand: #d42b40;
@@ -100,8 +98,6 @@
   --hero-bg: #f4f4f8;
   --hero-surface: rgba(255, 255, 255, 0.76);
   --hero-glow: rgba(212, 43, 64, 0.12);
-  --cyan: #0369a1;
-  --success: #047857;
   --shadow: 0 20px 70px rgba(10, 10, 18, 0.1);
   --shadow-sm: 0 6px 20px rgba(10, 10, 18, 0.07);
 
@@ -150,6 +146,7 @@ body {
 }
 
 h1, h2, h3, h4, h5, h6 {
+}
 
 /* Grain noise texture */
 body::before,
@@ -236,8 +233,14 @@ a:focus-visible {
   outline-offset: 3px;
 }
 
+@media (prefers-contrast: more) {
+  :root { --text-soft: #dadae8; }
+  :root[data-theme='light'] { --text-soft: #1c1c2e; }
+}
+
 @theme inline {
-  --font-sans: 'Manrope', system-ui, sans-serif;
+  --font-sans: 'Inter Tight', system-ui, sans-serif;
+  --font-display: 'Bricolage Grotesque', 'Inter Tight', system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
   --color-background: var(--background);
   --color-foreground: var(--foreground);

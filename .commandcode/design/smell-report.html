@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>FadSec Lab - Smell Report</title>
+	<script src="https://cdn.tailwindcss.com"></script>
+	<style>
+		body { font-family: Inter, ui-sans-serif, system-ui, sans-serif; }
+		.mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+		.report-section { border: 1px solid #222226; background: #0a0a0b; position: relative; }
+		.corner-box { position: absolute; width: 20px; height: 20px; border: 1px solid #222226; background: #000; }
+	</style>
+</head>
+<body class="bg-black text-[#fafafa]">
+	<main class="mx-auto w-full max-w-6xl px-5 py-8 md:px-10 md:py-12">
+		<header class="report-section mb-8 p-6 md:p-8">
+			<div class="corner-box left-0 top-0 -translate-x-1/2 -translate-y-1/2"></div>
+			<div class="corner-box right-0 top-0 translate-x-1/2 -translate-y-1/2"></div>
+			<div class="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+				<div>
+					<div class="mono mb-2 text-xs tracking-widest text-[#666]">// SMELL</div>
+					<h1 class="text-4xl font-bold tracking-tight md:text-6xl">FadSec Lab</h1>
+					<p class="mt-3 text-sm text-[#a0a0a0]">fadseclab.com — marketing landing</p>
+				</div>
+				<div class="mono text-left text-xs text-[#666] md:text-right">
+					<div>COMMANDCODE REPORT</div>
+					<div class="text-[#444]">2026-06-16</div>
+				</div>
+			</div>
+		</header>
+
+		<section class="report-section mb-8 p-6 md:p-8">
+			<div class="corner-box left-0 top-0 -translate-x-1/2 -translate-y-1/2"></div>
+			<div class="corner-box right-0 top-0 translate-x-1/2 -translate-y-1/2"></div>
+			<div class="grid gap-8 md:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)]">
+				<div>
+					<div class="mono mb-2 text-xs tracking-widest text-[#666]">// OVERALL</div>
+					<div class="text-6xl font-bold tracking-tight md:text-7xl">4</div>
+					<div class="mt-1 text-lg text-[#666]">/ 10</div>
+					<div class="mt-4 inline-flex border border-[#fbbf24]/30 bg-[#fbbf24]/10 px-3 py-1 text-sm text-[#fbbf24]">STRONG — IDENTITY DRIFT</div>
+				</div>
+				<div>
+					<div class="mono mb-3 text-xs tracking-widest text-[#666]">// TL;DR</div>
+					<p class="text-sm leading-6 text-[#a0a0a0]">Brand red + shield-under-attack is a real lane. The supporting systems drift: default type (Manrope), icon-topper service grid, centered stack everywhere, stat monument before proof, and a 2018-era hover wordmark trick in the footer.</p>
+					<p class="mt-4 text-sm leading-6 text-[#fbbf24]">Run /design typeset + /design relayout + /design voice to remove the SaaS-template reflexes while keeping the red and the shield.</p>
+				</div>
+			</div>
+		</section>
+
+		<section class="report-section mb-8 p-6 md:p-8">
+			<div class="mono mb-6 text-xs tracking-widest text-[#666]">// HEURISTIC SCORES</div>
+			<div class="overflow-x-auto">
+				<table class="w-full min-w-[720px] border-collapse text-sm">
+					<thead>
+						<tr class="border-b border-[#222226] text-left mono text-xs text-[#666]">
+							<th class="py-3 pr-4 font-normal">#</th>
+							<th class="py-3 pr-4 font-normal">HEURISTIC</th>
+							<th class="py-3 pr-4 font-normal">SCORE</th>
+							<th class="py-3 font-normal">KEY FINDING</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr class="border-b border-[#1a1a1e]">
+							<td class="py-4 pr-4 text-[#555]">1</td>
+							<td class="py-4 pr-4 text-[#fafafa]">Tech gradient (indigo / cyan / purple-teal)</td>
+							<td class="py-4 pr-4 text-[#34d399]">1 — absent</td>
+							<td class="py-4 text-[#a0a0a0]">Brand red is the only saturated hue. No indigo, no teal, no purple-pink gradient.</td>
+						</tr>
+						<tr class="border-b border-[#1a1a1e]">
+							<td class="py-4 pr-4 text-[#555]">2</td>
+							<td class="py-4 pr-4 text-[#fafafa]">Generic tech hue (blue-purple primary)</td>
+							<td class="py-4 pr-4 text-[#34d399]">1 — absent</td>
+							<td class="py-4 text-[#a0a0a0]">Primary is a saturated red, not blue. Security-company-blue reflex is avoided.</td>
+						</tr>
+						<tr class="border-b border-[#1a1a1e]">
+							<td class="py-4 pr-4 text-[#555]">3</td>
+							<td class="py-4 pr-4 text-[#fafafa]">Feature tile grid</td>
+							<td class="py-4 pr-4 text-[#ef4444]">0 — detected</td>
+							<td class="py-4 text-[#a0a0a0]">.service-grid renders three identical icon + h3 + paragraph cards. Nothing is prioritized.</td>
+						</tr>
+						<tr class="border-b border-[#1a1a1e]">
+							<td class="py-4 pr-4 text-[#555]">4</td>
+							<td class="py-4 pr-4 text-[#fafafa]">Accent rail</td>
+							<td class="py-4 pr-4 text-[#34d399]">1 — absent</td>
+							<td class="py-4 text-[#a0a0a0]">No side rails. Decoration is gradient washes on cards, not stripes simulating structure.</td>
+						</tr>
+						<tr class="border-b border-[#1a1a1e]">
+							<td class="py-4 pr-4 text-[#555]">5</td>
+							<td class="py-4 pr-4 text-[#fafafa]">Unearned blur (frosted glass without depth)</td>
+							<td class="py-4 pr-4 text-[#ef4444]">0 — detected</td>
+							<td class="py-4 text-[#a0a0a0]">Header pill and mobile menu use backdrop-filter blur(22-24px) over flat surfaces. No 3-plane depth system earns it.</td>
+						</tr>
+						<tr class="border-b border-[#1a1a1e]">
+							<td class="py-4 pr-4 text-[#555]">6</td>
+							<td class="py-4 pr-4 text-[#fafafa]">Stat monument</td>
+							<td class="py-4 pr-4 text-[#ef4444]">0 — detected</td>
+							<td class="py-4 text-[#a0a0a0]">First thing after hero is "150K+ users trust us" 4xl stat. Real proof (CNN, public source) sits below.</td>
+						</tr>
+						<tr class="border-b border-[#1a1a1e]">
+							<td class="py-4 pr-4 text-[#555]">7</td>
+							<td class="py-4 pr-4 text-[#fafafa]">Icon topper on every section</td>
+							<td class="py-4 pr-4 text-[#ef4444]">0 — detected</td>
+							<td class="py-4 text-[#a0a0a0]">Lucide icons lead the services grid, mini-map card, and product feature. Icons stand in for the real artifact.</td>
+						</tr>
+						<tr class="border-b border-[#1a1a1e]">
+							<td class="py-4 pr-4 text-[#555]">8</td>
+							<td class="py-4 pr-4 text-[#fafafa]">Bounce everywhere (elastic easing)</td>
+							<td class="py-4 pr-4 text-[#34d399]">1 — absent</td>
+							<td class="py-4 text-[#a0a0a0]">Easing is power3.out, cubic-bezier(0.23, 1, 0.32, 1), easeOutExpo. No springs.</td>
+						</tr>
+						<tr class="border-b border-[#1a1a1e]">
+							<td class="py-4 pr-4 text-[#555]">9</td>
+							<td class="py-4 pr-4 text-[#fafafa]">Default type with no voice</td>
+							<td class="py-4 pr-4 text-[#ef4444]">0 — detected</td>
+							<td class="py-4 text-[#a0a0a0]">Manrope (the 2026 Inter replacement) + JetBrains Mono (the 2026 default mono). Both are defaults, not choices.</td>
+						</tr>
+						<tr>
+							<td class="py-4 pr-4 text-[#555]">10</td>
+							<td class="py-4 pr-4 text-[#fafafa]">Center stack (everything aligned to the safe middle)</td>
+							<td class="py-4 pr-4 text-[#ef4444]">0 — detected</td>
+							<td class="py-4 text-[#a0a0a0]">Hero, proof band, footer wordmark all centered. Composition looks the same section-to-section.</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</section>
+
+		<section class="report-section mb-8 p-6 md:p-8">
+			<div class="mono mb-6 text-xs tracking-widest text-[#666]">// WHAT'S WORKING</div>
+			<div class="grid gap-4 md:grid-cols-3">
+				<article class="border border-[#1f1f24] p-4">
+					<h2 class="mb-2 text-sm font-semibold">Refusal of blue-violet</h2>
+					<p class="text-sm leading-6 text-[#a0a0a0]">Brand red #e8334a is the only saturated hue. Separates FadSec Lab from the median developer/security landing page.</p>
+				</article>
+				<article class="border border-[#1f1f24] p-4">
+					<h2 class="mb-2 text-sm font-semibold">Shield-under-attack hero</h2>
+					<p class="text-sm leading-6 text-[#a0a0a0]">SVG shield with flag texture, hit by named threat arrows. Project-specific proof object, not a generic dashboard screenshot.</p>
+				</article>
+				<article class="border border-[#1f1f24] p-4">
+					<h2 class="mb-2 text-sm font-semibold">Mono eyebrows and axis labels</h2>
+					<p class="text-sm leading-6 text-[#a0a0a0]">JetBrains Mono for "// SERVICES" and "2024 → 2026" reads as engineer-correct, not marketing-decorated.</p>
+				</article>
+				<article class="border border-[#1f1f24] p-4">
+					<h2 class="mb-2 text-sm font-semibold">Light-mode parity</h2>
+					<p class="text-sm leading-6 text-[#a0a0a0]">Full light theme with its own red, map land colors, and shadow stack. Not a dark-only design with a color-scheme afterthought.</p>
+				</article>
+				<article class="border border-[#1f1f24] p-4">
+					<h2 class="mb-2 text-sm font-semibold">External-nav confirmation</h2>
+					<p class="text-sm leading-6 text-[#a0a0a0]">Open-in-new-tab confirm dialog + transition overlay. Real interaction decision, not a template reflex.</p>
+				</article>
+				<article class="border border-[#1f1f24] p-4">
+					<h2 class="mb-2 text-sm font-semibold">Zero-telemetry chart</h2>
+					<p class="text-sm leading-6 text-[#a0a0a0]">A flat dashed line labeled "no telemetry" is a memorable, on-brand way to say "there is no chart here."</p>
+				</article>
+			</div>
+		</section>
+
+		<section class="report-section mb-8 p-6 md:p-8">
+			<div class="mono mb-6 text-xs tracking-widest text-[#666]">// PRIORITY ISSUES</div>
+			<div class="space-y-5">
+				<article class="border border-[#2a1d22] bg-[#110b0d] p-5">
+					<div class="mono mb-2 text-xs text-[#f43f5e]">P0</div>
+					<h2 class="mb-2 text-lg font-semibold">Default type with no voice</h2>
+					<p class="mb-4 text-sm leading-6 text-[#a0a0a0]">Manrope + JetBrains Mono are both 2024–2026 defaults. Manrope is the new Inter — every Vercel-deployed landing ships it. For a privacy-first FOSS company, the type needs a voice that signals "we engineer for a living." Visible at index.css import + @theme inline block.</p>
+					<div class="border-l border-[#fbbf24] pl-4 text-sm leading-6 text-[#fbbf24]">FIX: /design typeset — pick a type pair that earns its place. Consider a sharper workhorse (Söhne, Switzer, GT America) or a serif-led brand (Fraunces / PP Editorial New on the hero) paired with a single mono for axis labels.</div>
+				</article>
+
+				<article class="border border-[#2a1d22] bg-[#110b0d] p-5">
+					<div class="mono mb-2 text-xs text-[#f43f5e]">P0</div>
+					<h2 class="mb-2 text-lg font-semibold">Feature tile grid in services</h2>
+					<p class="mb-4 text-sm leading-6 text-[#a0a0a0]">.service-grid renders three identical cards: Lucide icon, h3, paragraph. None prioritized. The three cards are interchangeable. This is the canonical agency-services layout.</p>
+					<div class="border-l border-[#fbbf24] pl-4 text-sm leading-6 text-[#fbbf24]">FIX: /design relayout — demote the grid. Make Native Android the lead service in detail; collapse the other two into a single column row or a process-step list.</div>
+				</article>
+
+				<article class="border border-[#2a1d22] bg-[#110b0d] p-5">
+					<div class="mono mb-2 text-xs text-[#f43f5e]">P1</div>
+					<h2 class="mb-2 text-lg font-semibold">Stat monument before proof</h2>
+					<p class="mb-4 text-sm leading-6 text-[#a0a0a0]">First thing after hero is "150K+ users trust us" 4xl. The interesting parts (zero trackers, public source, CNN press) sit below the stat band. The 150K+ number is the least-interesting part of the privacy-first FOSS story.</p>
+					<div class="border-l border-[#fbbf24] pl-4 text-sm leading-6 text-[#fbbf24]">FIX: /design relayout — lead proof, not stats. Add a press-credible artifact (As featured in, GitHub stars, single quote attribution) above the metrics; demote the 150K+ to a footer line.</div>
+				</article>
+
+				<article class="border border-[#2a1d22] bg-[#110b0d] p-5">
+					<div class="mono mb-2 text-xs text-[#f43f5e]">P1</div>
+					<h2 class="mb-2 text-lg font-semibold">Unearned blur on floating header</h2>
+					<p class="mb-4 text-sm leading-6 text-[#a0a0a0]">.site-header uses backdrop-filter: blur(22px) on a 90%-transparent pill. The page has not established a 3-plane depth system (background / content / attention). The blur is decoration, not architecture. Mobile menu repeats the trick at 24px.</p>
+					<div class="border-l border-[#fbbf24] pl-4 text-sm leading-6 text-[#fbbf24]">FIX: /design interaction — commit to a depth system or drop the blur. Either a real overlay plane across the site, or a solid header pill that matches the rest of the surface language.</div>
+				</article>
+
+				<article class="border border-[#2a1d22] bg-[#110b0d] p-5">
+					<div class="mono mb-2 text-xs text-[#f43f5e]">P2</div>
+					<h2 class="mb-2 text-lg font-semibold">Center stack across the page</h2>
+					<p class="mb-4 text-sm leading-6 text-[#a0a0a0]">Hero is centered (correct — Decide surface). But proof band, product section, services section, and footer wordmark all default to centered layouts. The page looks the same section-to-section.</p>
+					<div class="border-l border-[#fbbf24] pl-4 text-sm leading-6 text-[#fbbf24]">FIX: /design relayout — keep hero centered, give every other section a composition that matches its work-pattern. Proof wants compare (asymmetric). Products wants operate (flagship card + catalog strip). Services wants decide (single lead paragraph + one-line roster).</div>
+				</article>
+
+				<article class="border border-[#2a1d22] bg-[#110b0d] p-5">
+					<div class="mono mb-2 text-xs text-[#f43f5e]">P2</div>
+					<h2 class="mb-2 text-lg font-semibold">Footer wordmark hover-reveal</h2>
+					<p class="mb-4 text-sm leading-6 text-[#a0a0a0]">.footer-wordmark uses CSS-only translateY hover swap: gray "FadSec" slides up, red "Lab" slides in. A 2018-era brand-site trick, now standard issue on Vercel/Linear-style landings.</p>
+					<div class="border-l border-[#fbbf24] pl-4 text-sm leading-6 text-[#fbbf24]">FIX: /design voice or /design refine — replace the hover reveal with a single, intentional footer wordmark: pressed-stamp, mono transcript of repo count, flagged shield silhouette at footer scale.</div>
+				</article>
+			</div>
+		</section>
+
+		<section class="report-section mb-8 p-6 md:p-8">
+			<div class="mono mb-6 text-xs tracking-widest text-[#666]">// NEXT MODES</div>
+			<div class="flex flex-wrap gap-2">
+				<span class="border border-[#333] px-3 py-1 text-sm text-[#a0a0a0]">/design typeset</span>
+				<span class="border border-[#333] px-3 py-1 text-sm text-[#a0a0a0]">/design relayout</span>
+				<span class="border border-[#333] px-3 py-1 text-sm text-[#a0a0a0]">/design voice</span>
+				<span class="border border-[#333] px-3 py-1 text-sm text-[#a0a0a0]">/design interaction</span>
+			</div>
+		</section>
+
+		<footer class="mono py-8 text-center text-xs tracking-widest text-[#444]">
+			Generated with CommandCode - 2026-06-16
+		</footer>
+	</main>
+</body>
+</html>

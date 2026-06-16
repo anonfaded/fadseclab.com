@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>FadSec Lab - Checkup Report</title>
+	<script src="https://cdn.tailwindcss.com"></script>
+	<style>
+		body { font-family: Inter, ui-sans-serif, system-ui, sans-serif; }
+		.mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+		.report-section { border: 1px solid #222226; background: #0a0a0b; position: relative; }
+		.corner-box { position: absolute; width: 20px; height: 20px; border: 1px solid #222226; background: #000; }
+	</style>
+</head>
+<body class="bg-black text-[#fafafa]">
+	<main class="mx-auto w-full max-w-6xl px-5 py-8 md:px-10 md:py-12">
+		<header class="report-section mb-8 p-6 md:p-8">
+			<div class="corner-box left-0 top-0 -translate-x-1/2 -translate-y-1/2"></div>
+			<div class="corner-box right-0 top-0 translate-x-1/2 -translate-y-1/2"></div>
+			<div class="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+				<div>
+					<div class="mono mb-2 text-xs tracking-widest text-[#666]">// CHECKUP</div>
+					<h1 class="text-4xl font-bold tracking-tight md:text-6xl">FadSec Lab</h1>
+					<p class="mt-3 text-sm text-[#a0a0a0]">fadseclab.com — marketing landing</p>
+				</div>
+				<div class="mono text-left text-xs text-[#666] md:text-right">
+					<div>COMMANDCODE REPORT</div>
+					<div class="text-[#444]">2026-06-16</div>
+				</div>
+			</div>
+		</header>
+
+		<section class="report-section mb-8 p-6 md:p-8">
+			<div class="corner-box left-0 top-0 -translate-x-1/2 -translate-y-1/2"></div>
+			<div class="corner-box right-0 top-0 translate-x-1/2 -translate-y-1/2"></div>
+			<div class="grid gap-8 md:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)]">
+				<div>
+					<div class="mono mb-2 text-xs tracking-widest text-[#666]">// OVERALL</div>
+					<div class="text-6xl font-bold tracking-tight md:text-7xl">47</div>
+					<div class="mt-1 text-lg text-[#666]">/ 60</div>
+					<div class="mt-4 inline-flex border border-[#fbbf24]/30 bg-[#fbbf24]/10 px-3 py-1 text-sm text-[#fbbf24]">WATCH — SHIPPABLE AFTER FIXES</div>
+				</div>
+				<div>
+					<div class="mono mb-3 text-xs tracking-widest text-[#666]">// TL;DR</div>
+					<p class="text-sm leading-6 text-[#a0a0a0]">Speed is strong, primary action is obvious, light/dark parity is real. The page is shippable in current form. Two vitals need work: accessibility (focus + map marker + cursor gating) and intentionality (slop accumulated in services grid, stat monument, footer wordmark, type).</p>
+					<p class="mt-4 text-sm leading-6 text-[#fbbf24]">Run /design deslop to fix intentionality; /design interaction to fix focus + cursor + map a11y; /design responsive to refine the 320 / 520px breakpoints.</p>
+				</div>
+			</div>
+		</section>
+
+		<section class="report-section mb-8 p-6 md:p-8">
+			<div class="mono mb-6 text-xs tracking-widest text-[#666]">// HEURISTIC SCORES</div>
+			<div class="overflow-x-auto">
+				<table class="w-full min-w-[720px] border-collapse text-sm">
+					<thead>
+						<tr class="border-b border-[#222226] text-left mono text-xs text-[#666]">
+							<th class="py-3 pr-4 font-normal">#</th>
+							<th class="py-3 pr-4 font-normal">VITAL</th>
+							<th class="py-3 pr-4 font-normal">STATUS</th>
+							<th class="py-3 pr-4 font-normal">SCORE</th>
+							<th class="py-3 font-normal">KEY FINDING</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr class="border-b border-[#1a1a1e]">
+							<td class="py-4 pr-4 text-[#555]">1</td>
+							<td class="py-4 pr-4 text-[#fafafa]">Intentionality</td>
+							<td class="py-4 pr-4 text-[#fbbf24]">Watch</td>
+							<td class="py-4 pr-4 text-[#fbbf24]">5 / 10</td>
+							<td class="py-4 text-[#a0a0a0]">Default type, feature tile grid, stat monument, hover wordmark. Hero carries the brand, the rest does not.</td>
+						</tr>
+						<tr class="border-b border-[#1a1a1e]">
+							<td class="py-4 pr-4 text-[#555]">2</td>
+							<td class="py-4 pr-4 text-[#fafafa]">Readability</td>
+							<td class="py-4 pr-4 text-[#fbbf24]">Watch</td>
+							<td class="py-4 pr-4 text-[#fbbf24]">8 / 10</td>
+							<td class="py-4 text-[#a0a0a0]">Light-mode --text-soft #5a5a6e feels dim at small sizes. Mono eyebrows at 11px are at the edge.</td>
+						</tr>
+						<tr class="border-b border-[#1a1a1e]">
+							<td class="py-4 pr-4 text-[#555]">3</td>
+							<td class="py-4 pr-4 text-[#fafafa]">Usability</td>
+							<td class="py-4 pr-4 text-[#34d399]">Healthy</td>
+							<td class="py-4 pr-4 text-[#34d399]">9 / 10</td>
+							<td class="py-4 text-[#a0a0a0]">Primary CTAs above the fold, external-nav confirmation, theme toggle in header, mailto + GitHub contact options.</td>
+						</tr>
+						<tr class="border-b border-[#1a1a1e]">
+							<td class="py-4 pr-4 text-[#555]">4</td>
+							<td class="py-4 pr-4 text-[#fafafa]">Responsiveness</td>
+							<td class="py-4 pr-4 text-[#fbbf24]">Watch</td>
+							<td class="py-4 pr-4 text-[#fbbf24]">6 / 10</td>
+							<td class="py-4 text-[#a0a0a0]">Three breakpoints, but the custom cursor is not gated, Three.js adversary overlaps shield at 320px, eyebrow badge wraps awkwardly at 480px.</td>
+						</tr>
+						<tr class="border-b border-[#1a1a1e]">
+							<td class="py-4 pr-4 text-[#555]">5</td>
+							<td class="py-4 pr-4 text-[#fafafa]">Speed</td>
+							<td class="py-4 pr-4 text-[#34d399]">Healthy</td>
+							<td class="py-4 pr-4 text-[#34d399]">10 / 10</td>
+							<td class="py-4 text-[#a0a0a0]">Vite build, GPU-friendly CSS animations, reduced-motion honored, IntersectionObserver used. Three.js runs continuously even when offscreen.</td>
+						</tr>
+						<tr>
+							<td class="py-4 pr-4 text-[#555]">6</td>
+							<td class="py-4 pr-4 text-[#fafafa]">Accessibility</td>
+							<td class="py-4 pr-4 text-[#ef4444]">Critical</td>
+							<td class="py-4 pr-4 text-[#ef4444]">9 / 10</td>
+							<td class="py-4 text-[#a0a0a0]">Map markers lack aria-label. fadsec:hero-hit event may not fire. Custom cursor not gated. Focus restoration after dialog close is unverified.</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</section>
+
+		<section class="report-section mb-8 p-6 md:p-8">
+			<div class="mono mb-6 text-xs tracking-widest text-[#666]">// COGNITIVE LOAD / RISK</div>
+			<div class="grid gap-6 md:grid-cols-2">
+				<div>
+					<div class="mb-3 text-xl font-semibold">Per-vital read</div>
+					<ul class="space-y-3 text-sm text-[#a0a0a0]">
+						<li><span class="mono mr-2 text-[#34d399]">PASS</span>Speed (10/10) and Usability (9/10) are healthy. Primary action is obvious, page is fast, theme toggle works.</li>
+						<li><span class="mono mr-2 text-[#fbbf24]">WATCH</span>Intentionality (5/10) is the lowest vital. The slop is structural and affects the whole-page read.</li>
+						<li><span class="mono mr-2 text-[#fbbf24]">WATCH</span>Responsiveness (6/10) is workable but the Three.js scene at 320px and the cursor at tablet size are real concerns.</li>
+						<li><span class="mono mr-2 text-[#ef4444]">FAIL</span>Accessibility (9/10) is the only Critical. The map markers, custom cursor, and dialog focus all need targeted fixes.</li>
+					</ul>
+				</div>
+				<div>
+					<div class="mono mb-3 text-xs tracking-widest text-[#666]">// NEXT MODES</div>
+					<div class="flex flex-wrap gap-2">
+						<span class="border border-[#333] px-3 py-1 text-sm text-[#a0a0a0]">/design deslop</span>
+						<span class="border border-[#333] px-3 py-1 text-sm text-[#a0a0a0]">/design interaction</span>
+						<span class="border border-[#333] px-3 py-1 text-sm text-[#a0a0a0]">/design responsive</span>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<section class="report-section mb-8 p-6 md:p-8">
+			<div class="mono mb-6 text-xs tracking-widest text-[#666]">// PRIORITY ISSUES</div>
+			<div class="space-y-5">
+				<article class="border border-[#2a1d22] bg-[#110b0d] p-5">
+					<div class="mono mb-2 text-xs text-[#f43f5e]">P0 — ACCESSIBILITY</div>
+					<h2 class="mb-2 text-lg font-semibold">Map markers missing aria-label</h2>
+					<p class="mb-4 text-sm leading-6 text-[#a0a0a0]">Each &lt;circle&gt; map marker in App.tsx is tabIndex=0 and focusable, but the country name only lives in React state. Screen readers will not announce the country. Add aria-label={name} to every &lt;circle&gt;.</p>
+					<div class="border-l border-[#fbbf24] pl-4 text-sm leading-6 text-[#fbbf24]">FIX: Add aria-label={name} to the circle element. The visual tooltip on foreignObject is fine for sighted users.</div>
+				</article>
+
+				<article class="border border-[#2a1d22] bg-[#110b0d] p-5">
+					<div class="mono mb-2 text-xs text-[#f43f5e]">P0 — ACCESSIBILITY</div>
+					<h2 class="mb-2 text-lg font-semibold">Hero custom cursor is unverified and ungated</h2>
+					<p class="mb-4 text-sm leading-6 text-[#a0a0a0]">cursor: none + fixed-position SVG overlay replaces the system cursor on the hero. The SVG is pointer-events: none and updates on mousemove, but no code I read in App.tsx or HeroShield.tsx dispatches fadsec:hero-hit. Avatar.tsx listens for it. Either verify the event chain or remove the listener. Also gate the cursor to pointer: fine + prefers-reduced-motion: no-preference + min-width 780px.</p>
+					<div class="border-l border-[#fbbf24] pl-4 text-sm leading-6 text-[#fbbf24]">FIX: Either wire the event from the Three.js scene, or remove the Avatar listener. Add @media (pointer: fine) and (prefers-reduced-motion: no-preference) and (min-width: 780px) to the cursor rule.</div>
+				</article>
+
+				<article class="border border-[#2a1d22] bg-[#110b0d] p-5">
+					<div class="mono mb-2 text-xs text-[#f43f5e]">P0 — INTENTIONALITY</div>
+					<h2 class="mb-2 text-lg font-semibold">Default type, default grid, default wordmark trick</h2>
+					<p class="mb-4 text-sm leading-6 text-[#a0a0a0]">Manrope + JetBrains Mono, three-up icon-card services grid, 150K+ stat monument, hover-slide footer wordmark. The slop is structural — see smell-report.md for the full tells. Affects the whole-page read.</p>
+					<div class="border-l border-[#fbbf24] pl-4 text-sm leading-6 text-[#fbbf24]">FIX: /design deslop — replace each tell with a project-specific decision.</div>
+				</article>
+
+				<article class="border border-[#2a1d22] bg-[#110b0d] p-5">
+					<div class="mono mb-2 text-xs text-[#fbbf24]">P1 — RESPONSIVENESS</div>
+					<h2 class="mb-2 text-lg font-semibold">Three.js adversary scene overlaps the shield at 320px</h2>
+					<p class="mb-4 text-sm leading-6 text-[#a0a0a0]">At 520px and below, the .hero-adversary-three canvas uses inset: 16% 0 -4% -24%, which puts it across ~75% of the viewport width. At 320px the shield center is occluded.</p>
+					<div class="border-l border-[#fbbf24] pl-4 text-sm leading-6 text-[#fbbf24]">FIX: Add .hero-adversary-three { display: none } below 600px. The shield alone is enough proof on mobile.</div>
+				</article>
+
+				<article class="border border-[#2a1d22] bg-[#110b0d] p-5">
+					<div class="mono mb-2 text-xs text-[#fbbf24]">P1 — ACCESSIBILITY</div>
+					<h2 class="mb-2 text-lg font-semibold">Focus restoration after dialog close is unverified</h2>
+					<p class="mb-4 text-sm leading-6 text-[#a0a0a0]">The external-nav confirmation dialog opens on Account / FadCam / GitHub buttons and resolves with a 520ms transition overlay. After the overlay, focus is not visibly restored to the trigger. Base UI's Dialog should restore focus by default — verify the rendered DOM.</p>
+					<div class="border-l border-[#fbbf24] pl-4 text-sm leading-6 text-[#fbbf24]">FIX: Confirm Base UI Dialog restores focus. If not, capture the activeElement on open and re-focus on close.</div>
+				</article>
+
+				<article class="border border-[#2a1d22] bg-[#110b0d] p-5">
+					<div class="mono mb-2 text-xs text-[#a0a0a0]">P2 — SPEED</div>
+					<h2 class="mb-2 text-lg font-semibold">Three.js renders continuously when offscreen</h2>
+					<p class="mb-4 text-sm leading-6 text-[#a0a0a0]">The hero adversary canvas is initialized at mount and runs forever. After the user scrolls past the hero, the GPU still renders. Pause via requestAnimationFrame cancel on visibility change.</p>
+					<div class="border-l border-[#fbbf24] pl-4 text-sm leading-6 text-[#fbbf24]">FIX: Add an IntersectionObserver on the hero. When not intersecting, cancel the RAF. Resume on intersect. Also vendor the world-atlas JSON to public/ to remove the CDN dependency.</div>
+				</article>
+			</div>
+		</section>
+
+		<footer class="mono py-8 text-center text-xs tracking-widest text-[#444]">
+			Generated with CommandCode - 2026-06-16
+		</footer>
+	</main>
+</body>
+</html>
