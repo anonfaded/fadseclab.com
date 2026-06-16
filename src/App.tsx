@@ -119,29 +119,14 @@ const footerGroups = [
   },
 ];
 
-function BrandMark() {
+function BrandWordmark() {
   return (
-    <svg
-      className="brand-mark"
-      viewBox="0 0 24 24"
-      fill="none"
-      aria-hidden="true"
-    >
-      <path
-        d="M12 2.5 L20.5 5.5 V12 C20.5 16.5 17 20.2 12 21.5 C7 20.2 3.5 16.5 3.5 12 V5.5 Z"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinejoin="round"
-        fill="none"
-      />
-      <path
-        d="M12 7 V17 M8.5 10 L15.5 14 M15.5 10 L8.5 14"
-        stroke="currentColor"
-        strokeWidth="1.2"
-        strokeLinecap="round"
-        opacity="0.7"
-      />
-    </svg>
+    <span className="brand-wordmark">
+      <span className="brand-wordmark-sigil" aria-hidden="true">//</span>
+      <span className="brand-wordmark-fadsec">FadSec</span>
+      <span className="brand-wordmark-spacer" aria-hidden="true" />
+      <span className="brand-wordmark-lab">Lab</span>
+    </span>
   );
 }
 
@@ -199,6 +184,7 @@ const App: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeCountry, setActiveCountry] = useState('');
   const [activeSection, setActiveSection] = useState<string>('home');
+  const [hasScrolled, setHasScrolled] = useState<boolean>(false);
 
   const { ref: trustRef, inView: trustInView } = useInView<HTMLDivElement>(0.2);
   const { ref: productRef, inView: productInView } = useInView<HTMLDivElement>(0.2);
@@ -210,7 +196,16 @@ const App: React.FC = () => {
     document.documentElement.classList.toggle('light', theme === 'light');
   }, [theme]);
 
-  // Scroll-spy for nav active state
+  // Scroll-spy for nav active state + scroll-triggered header
+  useEffect(() => {
+    const onScroll = () => {
+      setHasScrolled(window.scrollY > 40);
+    };
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
   useEffect(() => {
     const sectionIds = ['products', 'services', 'open-source', 'mission'];
     const sections = sectionIds
@@ -226,6 +221,11 @@ const App: React.FC = () => {
           .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
         if (visible[0]) {
           setActiveSection(visible[0].target.id);
+        } else {
+          const firstTop = sections[0].getBoundingClientRect().top;
+          if (firstTop > window.innerHeight * 0.5) {
+            setActiveSection('home');
+          }
         }
       },
       { rootMargin: '-30% 0px -50% 0px', threshold: [0, 0.25, 0.5, 0.75, 1] },
@@ -323,13 +323,9 @@ const App: React.FC = () => {
 
   return (
     <div className="site-shell" ref={rootRef}>
-      <header className="site-header" data-scrolled={activeSection !== 'home' ? 'true' : 'false'}>
+      <header className="site-header" data-scrolled={hasScrolled ? 'true' : 'false'}>
         <a className="brand-lockup" href="#home" aria-label="FadSec Lab home" onClick={(e) => handleNavClick(e, '#home')}>
-          <BrandMark />
-          <span className="brand-wordmark">
-            <span className="brand-wordmark-fadsec">FadSec</span>
-            <span className="brand-wordmark-lab">Lab</span>
-          </span>
+          <BrandWordmark />
         </a>
 
         <nav className="site-nav" aria-label="Primary navigation">
@@ -892,7 +888,6 @@ const App: React.FC = () => {
           </div>
           <div className="footer-bottom">
             <div className="footer-brand">
-              <BrandMark />
               <span>Privacy today, tomorrow, forever.</span>
             </div>
             <div className="footer-meta">

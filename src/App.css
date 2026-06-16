@@ -16,9 +16,10 @@
   --map-land: #202129;
   --map-land-hover: #322127;
   --map-border: #353743;
-  --header-bg: rgba(8, 8, 12, 0.78);
-  --header-border: rgba(255, 255, 255, 0.08);
-  --header-border-scrolled: rgba(255, 255, 255, 0.14);
+  --header-bg: rgba(8, 8, 12, 0.72);
+  --header-bg-solid: rgba(6, 6, 10, 0.92);
+  --header-border: rgba(255, 255, 255, 0.1);
+  --header-border-soft: rgba(255, 255, 255, 0.04);
   --nav-text: rgba(240, 240, 245, 0.66);
   --nav-text-hover: rgba(240, 240, 245, 1);
   --nav-underline: var(--accent-brand);
@@ -39,9 +40,10 @@
   --map-land: #dfe5ed;
   --map-land-hover: #f1dce0;
   --map-border: #c3cbd6;
-  --header-bg: rgba(255, 255, 255, 0.82);
+  --header-bg: rgba(244, 244, 248, 0.82);
+  --header-bg-solid: rgba(244, 244, 248, 0.96);
   --header-border: rgba(10, 10, 18, 0.08);
-  --header-border-scrolled: rgba(10, 10, 18, 0.16);
+  --header-border-soft: rgba(10, 10, 18, 0.04);
   --nav-text: rgba(8, 8, 14, 0.62);
   --nav-text-hover: rgba(8, 8, 14, 1);
 }
@@ -87,88 +89,124 @@ main {
 }
 
 /* ====================================================
-   HEADER (modern floating pill with animated underline)
+   HEADER (macOS-style floating dock)
    ==================================================== */
 .site-header {
-  position: sticky;
-  top: 16px;
+  position: fixed;
+  top: 14px;
+  left: 50%;
   z-index: 80;
-  width: min(1180px, calc(100vw - 36px));
-  min-height: 64px;
-  margin: 0 auto;
+  width: min(1180px, calc(100vw - 32px));
+  min-height: 68px;
   display: grid;
   grid-template-columns: auto 1fr auto;
   align-items: center;
-  gap: 18px;
-  padding: 8px 10px 8px 14px;
+  gap: 16px;
+  padding: 10px 12px 10px 14px;
   border: 1px solid var(--header-border);
   border-radius: 18px;
   background: var(--header-bg);
-  backdrop-filter: blur(20px) saturate(1.2);
-  -webkit-backdrop-filter: blur(20px) saturate(1.2);
+  backdrop-filter: blur(22px) saturate(1.4);
+  -webkit-backdrop-filter: blur(22px) saturate(1.4);
   box-shadow:
     0 1px 0 rgba(255, 255, 255, 0.04) inset,
-    0 12px 30px rgba(0, 0, 0, 0.18);
-  transition: border-color 240ms ease, box-shadow 240ms ease;
+    0 14px 38px rgba(0, 0, 0, 0.22),
+    0 2px 6px rgba(0, 0, 0, 0.12);
+  transform: translateX(-50%);
+  transition:
+    top 320ms cubic-bezier(0.5, 0, 0.2, 1),
+    min-height 320ms cubic-bezier(0.5, 0, 0.2, 1),
+    padding 320ms cubic-bezier(0.5, 0, 0.2, 1),
+    background-color 240ms ease,
+    border-color 240ms ease,
+    box-shadow 240ms ease;
 }
 
 .site-header[data-scrolled='true'] {
-  border-color: var(--header-border-scrolled);
+  top: 10px;
+  min-height: 58px;
+  padding: 6px 10px 6px 12px;
+  background: var(--header-bg-solid);
+  border-color: var(--header-border);
   box-shadow:
     0 1px 0 rgba(255, 255, 255, 0.04) inset,
-    0 16px 40px rgba(0, 0, 0, 0.28);
+    0 18px 50px rgba(0, 0, 0, 0.32),
+    0 2px 6px rgba(0, 0, 0, 0.14);
+}
+
+[data-theme='light'] .site-header,
+[data-theme='light'] .site-header[data-scrolled='true'] {
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.5) inset,
+    0 10px 24px rgba(10, 10, 18, 0.06),
+    0 2px 6px rgba(10, 10, 18, 0.04);
 }
 
 @media (pointer: coarse) {
-  .site-header {
+  .site-header,
+  .site-header[data-scrolled='true'] {
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
-    background: var(--surface-strong);
   }
+  .site-header { background: var(--surface-2); }
+  .site-header[data-scrolled='true'] { background: var(--surface-strong); }
 }
 
-/* --- Brand lockup (new: SVG mark + display wordmark) --- */
+/* --- Brand lockup: hover swaps text for flag (matches footer) --- */
 .brand-lockup {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
-  padding: 0 8px;
-  color: var(--text);
   text-decoration: none;
-}
-
-.brand-mark {
-  width: 26px;
-  height: 26px;
-  color: var(--accent-brand);
+  color: var(--text);
   flex: 0 0 auto;
-  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--accent-brand) 28%, transparent));
-  transition: transform 240ms cubic-bezier(0.5, 0, 0.2, 1), filter 240ms ease;
-}
-
-.brand-lockup:hover .brand-mark {
-  transform: rotate(-4deg) scale(1.05);
-  filter: drop-shadow(0 0 10px color-mix(in srgb, var(--accent-brand) 50%, transparent));
+  padding: 4px 10px 4px 4px;
+  border-radius: 12px;
 }
 
 .brand-wordmark {
   display: inline-flex;
   align-items: baseline;
-  gap: 0.18em;
   font-family: var(--font-display);
-  font-size: 17px;
+  font-size: 18px;
   font-weight: 700;
   line-height: 1;
-  letter-spacing: -0.025em;
+  letter-spacing: -0.02em;
   color: var(--text);
+  white-space: nowrap;
+  text-transform: uppercase;
+  transition: font-size 320ms cubic-bezier(0.5, 0, 0.2, 1);
+}
+
+.brand-wordmark-sigil {
+  color: var(--accent-brand);
+  font-family: var(--font-mono);
+  font-size: 1em;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  margin-right: 6px;
 }
 
 .brand-wordmark-fadsec {
   color: var(--text);
+  font-weight: 700;
+}
+
+.brand-wordmark-spacer {
+  display: inline-block;
+  width: 6px;
 }
 
 .brand-wordmark-lab {
   color: var(--accent-brand);
+  font-weight: 700;
+}
+
+.site-header[data-scrolled='true'] .brand-wordmark {
+  font-size: 16px;
+}
+
+.site-header[data-scrolled='true'] .brand-wordmark-sigil {
+  font-size: 1em;
 }
 
 /* --- Nav with animated underline + active state --- */
@@ -211,17 +249,18 @@ main {
 }
 
 .nav-sigil {
-  color: var(--accent-brand);
+  color: var(--text-faint);
   font-family: var(--font-mono);
-  font-size: 10.5px;
+  font-size: 11px;
   font-weight: 800;
   letter-spacing: 0.06em;
-  opacity: 0.6;
-  transition: opacity 200ms ease, transform 200ms cubic-bezier(0.5, 0, 0.2, 1);
+  opacity: 0.7;
+  transition: opacity 200ms ease, transform 200ms cubic-bezier(0.5, 0, 0.2, 1), color 200ms ease;
 }
 
 .nav-link:hover .nav-sigil {
   opacity: 1;
+  color: var(--accent-brand);
   transform: translateX(1px);
 }
 
@@ -260,12 +299,7 @@ main {
 }
 
 .nav-link--cta {
-  color: var(--accent-brand);
-  font-weight: 600;
-}
-
-.nav-link--cta:hover {
-  background: color-mix(in srgb, var(--accent-brand) 12%, transparent);
+  /* Same neutral treatment as the other nav links */
 }
 
 /* --- Header actions --- */
@@ -278,21 +312,6 @@ main {
 
 .theme-toggle {
   position: relative;
-}
-
-.theme-toggle::after {
-  content: '';
-  position: absolute;
-  inset: 6px;
-  border-radius: 50%;
-  border: 1px solid transparent;
-  transition: border-color 200ms ease, inset 200ms ease;
-  pointer-events: none;
-}
-
-.theme-toggle:hover::after {
-  border-color: color-mix(in srgb, var(--accent-brand) 36%, transparent);
-  inset: 4px;
 }
 
 .menu-button {
@@ -349,7 +368,6 @@ main {
 .header-account:focus-visible {
   border-color: color-mix(in srgb, var(--accent-brand) 55%, var(--border-strong));
   background: var(--surface-hover);
-  transform: translateY(-1px);
 }
 
 .header-account-dot {
@@ -481,6 +499,7 @@ main {
 .nav-item .nav-sigil {
   font-size: 14px;
   opacity: 1;
+  color: var(--text-faint);
 }
 
 .nav-item--cta {
@@ -500,7 +519,7 @@ main {
   min-height: 620px;
   display: grid;
   place-items: center;
-  padding: clamp(60px, 10vh, 100px) 0 32px;
+  padding: clamp(110px, 14vh, 150px) 0 32px;
   text-align: center;
   overflow: hidden;
   border-radius: 0;
@@ -576,9 +595,8 @@ main {
   font-family: var(--font-display);
   font-size: var(--text-hero);
   font-weight: 700;
-  line-height: 0.96;
-  letter-spacing: -0.045em;
-  font-feature-settings: "ss01", "cv11";
+  line-height: 0.98;
+  letter-spacing: -0.04em;
 }
 
 .hero-section h1 span {
@@ -1926,8 +1944,8 @@ main {
 }
 
 @media (max-width: 480px) {
-  .brand-wordmark {
-    display: none;
+  .brand-wordmark-name {
+    font-size: 15px;
   }
 
   .hero-lede {

@@ -79,10 +79,10 @@
 - The user prefers the previous footer design over the redesigned dossier/table-style footer. Revert to the prior footer treatment rather than keeping the new one. Confidence: 0.75
 
 # Header and Nav
-- The user prefers the previous "floating type" navbar design over the redesigned thin bar with `//` sigils. Revert to the prior header treatment. Confidence: 0.75
-- Account button is too plain when it's just a text "Account" label. Give it a more deliberate visual treatment (icon, frame, or branded affordance). Confidence: 0.70
-- Nav links must scroll correctly to their target sections. Verify anchor IDs match on every nav link, including mobile menu. Confidence: 0.80
-- Nav links should use the same `//` mono-sigil labeling pattern as other section headings for consistency. Do not strip `//` from the nav while keeping it on body section heads — pick one labeling system and apply it everywhere. Confidence: 0.70
+See [header-and-nav/taste.md](header-and-nav/taste.md)
+# Typography
+- Treat font choice as a first-class decision for this security/SaaS-feeling project. Research and propose proper font combinations (cyber-security / SaaS / Swiss style) instead of iterating on the existing stack. Pair a strong display sans for headings with a mono for labels and a clean sans for body. Confidence: 0.80
+- The brand wordmark name should be set in a unique, distinctive display font — not the same body/heading face. The wordmark is a brand asset, not just text. Use the same distinctive font family as the account button (e.g. FADSEC ID label), not the body/UI sans. The wordmark should NOT be set in plain body sans — it reads as weak/odd. The "Lab" suffix in brand red works well; keep that treatment. Confidence: 0.85
 
 # Hero
 - Remove the `// LIVE THREAT GRAPH` label above the hero shield. It reads as forced/awkward. If no fitting label exists, leave the shield unlabeled. Confidence: 0.70
