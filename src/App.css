@@ -350,6 +350,7 @@ main {
 
 /* --- Account button --- */
 .header-account {
+  position: relative;
   display: inline-flex;
   align-items: center;
   gap: 10px;
@@ -407,6 +408,31 @@ main {
   font-size: 13px;
   font-weight: 600;
   letter-spacing: -0.01em;
+}
+
+.header-account-beta {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  height: 14px !important;
+  padding: 0 5px !important;
+  font-size: 8px !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.06em !important;
+  line-height: 1 !important;
+  border-radius: 4px !important;
+  border: none !important;
+  color: #22c55e !important;
+  background: color-mix(in srgb, #22c55e 14%, transparent) !important;
+  backdrop-filter: blur(4px) !important;
+  -webkit-backdrop-filter: blur(4px) !important;
+  pointer-events: none;
+  transition: color 200ms ease, background 200ms ease;
+}
+
+.header-account:hover .header-account-beta {
+  color: var(--accent-brand) !important;
+  background: color-mix(in srgb, var(--accent-brand) 14%, transparent) !important;
 }
 
 .header-account svg {
@@ -599,9 +625,37 @@ main {
   letter-spacing: -0.04em;
 }
 
-.hero-section h1 span {
+.hero-headline {
+  display: block;
+}
+
+.hero-headline-accent {
   color: var(--accent-brand);
 }
+
+/* --- Word-by-word reveal (GSAP) --- */
+.reveal-word-wrap {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: bottom;
+}
+
+.reveal-word {
+  display: inline-block;
+  will-change: transform, filter, opacity;
+}
+
+/* --- Tubelight reveal: each word flickers on like a fluorescent tube starting up --- */
+.tubelight-word-wrap {
+  display: inline-block;
+}
+
+.tubelight-word {
+  display: inline-block;
+  will-change: opacity, filter;
+}
+
+/* hero-headline-accent is applied per-word via WordReveal's wordClassName */
 
 .hero-lede {
   max-width: 680px;

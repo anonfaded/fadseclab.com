@@ -7,6 +7,7 @@
 
 # UI/UX Direction
 - Keep the landing page minimal and clean. Reject cluttered backgrounds, "junk" decorative layers, grid patterns in the hero, and full-bleed red glow washes. Confidence: 0.85
+- For beta/WIP badges on buttons, position them as a small top-right overlay badge (not inline inside the button text). Use green for beta status indicators. Confidence: 0.70
 - Hero must be full-width (no nested rounded card on top of the page background). Section backgrounds are owned by each section, not the body. Confidence: 0.85
 - Use the brand red as the primary accent color across the site (hero, CTAs, stats, badges, etc.). Avoid blue/violet accents. Confidence: 0.80
 - Prefer lighter, performance-friendly implementations over heavy 3D/WebGL on the hero. Three.js-style scenes are not desired for this project. Confidence: 0.75
@@ -67,6 +68,7 @@
 
 # Motion
 - Animations must start promptly when in view and stay visible long enough to register. Watch for late-start / early-end animation bugs on smaller screens and fix by adjusting thresholds and duration. Confidence: 0.70
+- Hero heading should use a SaaS-style word-by-word slide-up + unblur reveal animation. Other headings should match the military-dossier aesthetic with a "blinking" / typed-on type treatment so the two patterns feel cohesive. Confidence: 0.70
 
 # Typography
 - Treat font choice as a first-class decision for this security/SaaS-feeling project. Pair a strong display sans for headings with a mono for labels and a clean sans for body. The current token set is not the final answer — iterate the font combination rather than defaulting to the existing stack. Confidence: 0.70
@@ -86,6 +88,9 @@ See [header-and-nav/taste.md](header-and-nav/taste.md)
 
 # Hero
 - Remove the `// LIVE THREAT GRAPH` label above the hero shield. It reads as forced/awkward. If no fitting label exists, leave the shield unlabeled. Confidence: 0.70
+
+# CSS Selector Specificity
+- Avoid broad descendant selectors (e.g. `.hero-section h1 span`) that override component-level class styling like `wordClassName`. Use targeted class selectors scoped to the specific element, not blanket tag selectors that leak across all children. Confidence: 0.70
 
 # Capabilities / Trust Section
 - The "capabilities" framing as 01/02 Native platforms + Reach was wrong. This section is the "users trust us" / social-proof section. Lead with a world map or per-country markers showing where users are, and a short copy line about why they trust the product. Confidence: 0.80

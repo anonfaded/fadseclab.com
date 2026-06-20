@@ -174,6 +174,87 @@ function useInView<T extends HTMLElement>(threshold = 0.25) {
   return { ref, inView };
 }
 
+// Tubelight reveal: each word flickers like a fluorescent tube starting up, then stabilises.
+// Each word gets rapid on/off cycles (simulating tube ignition), then settles to full clarity.
+// Words stagger in sequence for a wave effect — suited to the military-dossier aesthetic.
+function TubelightReveal({ text, start, className, staggerDelay = 0.07 }: { text: string; start: boolean; className?: string; staggerDelay?: number }) {
+  const ref = useRef<HTMLSpanElement>(null);
+  const words = text.split(' ');
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || !start) return;
+    const targets = el.querySelectorAll<HTMLElement>('.tubelight-word');
+    if (targets.length === 0) return;
+
+    // Fluorescent tube startup: rapid flickers progressing to steady illumination.
+    gsap.fromTo(targets,
+      { opacity: 0, filter: 'brightness(0.35) saturate(0.4)' },
+      {
+        keyframes: [
+          { opacity: 0.85, filter: 'brightness(0.6) saturate(0.65)', duration: 0.03 },
+          { opacity: 0,    filter: 'brightness(0.35) saturate(0.4)', duration: 0.05 },
+          { opacity: 1,    filter: 'brightness(0.75) saturate(0.8)', duration: 0.025 },
+          { opacity: 0,    filter: 'brightness(0.4) saturate(0.45)', duration: 0.07 },
+          { opacity: 0.5,  filter: 'brightness(0.5) saturate(0.55)', duration: 0.035 },
+          { opacity: 1,    filter: 'brightness(0.85) saturate(0.9)', duration: 0.04 },
+          { opacity: 0.3,  filter: 'brightness(0.45) saturate(0.5)', duration: 0.05 },
+          { opacity: 1,    filter: 'brightness(1) saturate(1)',      duration: 0.7, ease: 'power2.out' },
+        ],
+        stagger: staggerDelay,
+        ease: 'none',
+      },
+    );
+  }, [start, staggerDelay]);
+
+  return (
+    <span ref={ref} className={className}>
+      {words.map((word, i) => (
+        <span key={i} className="tubelight-word-wrap">
+          <span className="tubelight-word">{word}</span>
+          {i < words.length - 1 ? '\u00A0' : null}
+        </span>
+      ))}
+    </span>
+  );
+}
+
+// Word-by-word slide-up + unblur. Renders each word in a span, animates in stagger when inView.
+function WordReveal({ text, start, className, wordClassName, delay = 0 }: { text: string; start: boolean; className?: string; wordClassName?: string; delay?: number }) {
+  const ref = useRef<HTMLSpanElement>(null);
+  const words = text.split(' ');
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || !start) return;
+    const targets = el.querySelectorAll<HTMLElement>('.reveal-word');
+    gsap.fromTo(
+      targets,
+      { yPercent: 110, filter: 'blur(8px)', opacity: 0 },
+      {
+        yPercent: 0,
+        filter: 'blur(0px)',
+        opacity: 1,
+        duration: 1.6,
+        ease: 'expo.out',
+        stagger: 0.2,
+        delay,
+      },
+    );
+  }, [start, delay]);
+
+  return (
+    <span ref={ref} className={className}>
+      {words.map((word, i) => (
+        <span key={i} className="reveal-word-wrap">
+          <span className={cn('reveal-word', wordClassName)}>{word}</span>
+          {i < words.length - 1 ? '\u00A0' : null}
+        </span>
+      ))}
+    </span>
+  );
+}
+
 const App: React.FC = () => {
   const rootRef = useRef<HTMLDivElement>(null);
   const [theme, setTheme] = useState<Theme>('dark');
@@ -375,6 +456,7 @@ const App: React.FC = () => {
               <span className="header-account-label">Account</span>
             </span>
             <ArrowUpRight />
+            <Badge variant="outline" className="header-account-beta">BETA</Badge>
           </button>
           <Button
             type="button"
@@ -429,6 +511,7 @@ const App: React.FC = () => {
                 <span className="header-account-label">Account</span>
               </span>
               <ArrowUpRight />
+              <Badge variant="outline" className="header-account-beta">BETA</Badge>
             </button>
           </div>
         </div>
@@ -442,9 +525,12 @@ const App: React.FC = () => {
               <ShieldCheck />
               Privacy-first FOSS software company
             </Badge>
-            <h1 className="hero-reveal">
-              Privacy today,<br />
-              tomorrow, <span>forever.</span>
+            <h1 className="hero-headline">
+              <WordReveal text="Privacy today," start={true} delay={0.2} />
+              <br />
+              <WordReveal text="tomorrow," start={true} delay={0.42} />
+              {' '}
+              <WordReveal text="forever." start={true} delay={0.42} wordClassName="hero-headline-accent" />
             </h1>
             <p className="hero-reveal hero-lede">
               Open-source Android, iOS, Flutter, and desktop software. Public source, zero hidden tracking, production-grade engineering.
@@ -468,8 +554,10 @@ const App: React.FC = () => {
         <section className="trust-section reveal" aria-label="Users trust us" id="trust" ref={trustRef}>
           <div className="trust-grid">
             <div className="trust-copy">
-              <span className="eyebrow"><span className="eyebrow-sigil">//</span>Users trust us</span>
-              <h2 className="trust-headline">A privacy-first company with a global footprint.</h2>
+              <span className="eyebrow"><span className="eyebrow-sigil">//</span><TubelightReveal text="Users trust us" start={trustInView} /></span>
+              <h2 className="trust-headline">
+                <TubelightReveal text="A privacy-first company with a global footprint." start={trustInView} />
+              </h2>
               <p className="trust-body">
                 FadSec Lab products are used by individuals, journalists, security researchers, and small teams across every inhabited continent. They install our software because the source is public, the defaults hold up under audit, and no one is paying us to look the other way.
               </p>
@@ -555,8 +643,10 @@ const App: React.FC = () => {
 
         <section className="product-section reveal" id="products" ref={productRef}>
           <div className="product-head reveal">
-            <span className="eyebrow"><span className="eyebrow-sigil">//</span>Products</span>
-            <h2 className="product-section-title">Privacy-first software, shipped in the open.</h2>
+            <span className="eyebrow"><span className="eyebrow-sigil">//</span><TubelightReveal text="Products" start={productInView} /></span>
+            <h2 className="product-section-title">
+              <TubelightReveal text="Privacy-first software, shipped in the open." start={productInView} />
+            </h2>
             <p className="product-section-lede">
               A focused catalog of native and cross-platform apps, built for people who want full control over what runs on their devices.
             </p>
@@ -599,7 +689,7 @@ const App: React.FC = () => {
             </article>
 
             <aside className="product-rest reveal">
-              <span className="eyebrow"><span className="eyebrow-sigil">//</span>The rest of the catalog</span>
+              <span className="eyebrow"><span className="eyebrow-sigil">//</span><TubelightReveal text="The rest of the catalog" start={productInView} /></span>
               <h3 className="product-rest-title">Android apps, desktop tools, and more.</h3>
               <p className="product-rest-body">
                 We build a lot more than FadCam. Privacy utilities, secure notes, file tools, a small library of small-but-loved apps. They all live on GitHub under the same banner.
@@ -625,8 +715,10 @@ const App: React.FC = () => {
         <section className="services-section reveal" id="services">
           <div className="services-grid">
             <div className="services-copy">
-              <span className="eyebrow"><span className="eyebrow-sigil">//</span>Services</span>
-              <h2>Need a privacy-first app shipped? We do that.</h2>
+              <span className="eyebrow"><span className="eyebrow-sigil">//</span><TubelightReveal text="Services" start={true} /></span>
+              <h2>
+                <TubelightReveal text="Need a privacy-first app shipped? We do that." start={true} />
+              </h2>
               <p>
                 We work with founders, security teams, and open-source projects who care about what runs on their users' devices. Every engagement is a working partnership: clean architecture, real engineering review, and code you'll be proud to publish.
               </p>
@@ -697,8 +789,10 @@ const App: React.FC = () => {
         <section className="open-source-section reveal" id="open-source">
           <div className="open-source-grid">
             <div className="open-source-stance">
-              <span className="eyebrow"><span className="eyebrow-sigil">//</span>Open source</span>
-              <h2>We work in public, on principle.</h2>
+              <span className="eyebrow"><span className="eyebrow-sigil">//</span><TubelightReveal text="Open source" start={true} /></span>
+              <h2>
+                <TubelightReveal text="We work in public, on principle." start={true} />
+              </h2>
               <p>
                 Privacy is a claim, not a feature. It is only credible when the code is open and the history is visible. Every FadSec Lab project ships with a public repo, public releases, and a public issue tracker. We do not lock downloads behind a marketing site. We do not gate changelogs behind an account. The work has to stand on its own.
               </p>
@@ -733,8 +827,10 @@ const App: React.FC = () => {
         <section className="mission-section reveal" id="mission" ref={missionRef}>
           <div className={cn('mission-grid', missionInView && 'is-visible')}>
             <div className="mission-stance">
-              <span className="eyebrow"><span className="eyebrow-sigil">//</span>Mission</span>
-              <h2 className="mission-headline">Surveillance-free technology is a fundamental right.</h2>
+              <span className="eyebrow"><span className="eyebrow-sigil">//</span><TubelightReveal text="Mission" start={missionInView} /></span>
+              <h2 className="mission-headline">
+                <TubelightReveal text="Surveillance-free technology is a fundamental right." start={missionInView} />
+              </h2>
               <p className="mission-lede">
                 FadSec Lab was founded with one goal: to give users, and ourselves, full control over the software we run. The base condition for that is Shariah compliance, which we treat as a hard line. We do not track anyone. We do not collect any data. We do not show ads, and we do not earn from ads, surveillance, or privacy invasion of any kind.
               </p>
@@ -747,7 +843,7 @@ const App: React.FC = () => {
             </div>
 
             <aside className="mission-donate">
-              <span className="eyebrow"><span className="eyebrow-sigil">//</span>Support the mission</span>
+              <span className="eyebrow"><span className="eyebrow-sigil">//</span><TubelightReveal text="Support the mission" start={missionInView} /></span>
               <h3 className="mission-donate-title">We work in public. Help us keep going.</h3>
               <p className="mission-donate-body">
                 FadSec Lab does not run on ads, surveillance, or investor money. We run on the people who believe in the mission and want a private, ethical alternative to the mainstream stack. If our work has earned your support, you can back us on Patreon, or reach out directly for crypto donations.
