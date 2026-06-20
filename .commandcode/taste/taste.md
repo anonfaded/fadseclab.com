@@ -68,7 +68,7 @@
 
 # Motion
 - Animations must start promptly when in view and stay visible long enough to register. Watch for late-start / early-end animation bugs on smaller screens and fix by adjusting thresholds and duration. Confidence: 0.70
-- Hero heading should use a SaaS-style word-by-word slide-up + unblur reveal animation. Other headings should match the military-dossier aesthetic with a "blinking" / typed-on type treatment so the two patterns feel cohesive. Confidence: 0.70
+- Hero heading should use a SaaS-style word-by-word slide-up + unblur reveal animation. This motion pattern is the gold-standard reference for other animated elements on the site (e.g. brand wordmark hover). Other headings should match the military-dossier aesthetic with a "blinking" / typed-on type treatment so the two patterns feel cohesive. Confidence: 0.80
 
 # Typography
 - Treat font choice as a first-class decision for this security/SaaS-feeling project. Pair a strong display sans for headings with a mono for labels and a clean sans for body. The current token set is not the final answer — iterate the font combination rather than defaulting to the existing stack. Confidence: 0.70

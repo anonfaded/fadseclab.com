@@ -164,31 +164,27 @@ main {
 }
 
 .brand-hover-reveal {
-  position: relative;
-  display: inline-grid;
-  grid-template-columns: auto 1fr;
+  display: inline-flex;
   align-items: center;
+  gap: 6px;
 }
 
 .brand-wordmark-sigil {
-  grid-column: 1;
-  grid-row: 1;
   color: var(--accent-brand);
   font-family: var(--font-mono);
   font-size: 1em;
   font-weight: 800;
   letter-spacing: 0.04em;
-  margin-right: 6px;
-  transition: transform 800ms cubic-bezier(0.08, 1, 0.25, 1);
 }
 
-.brand-lockup:hover .brand-wordmark-sigil {
-  transform: translateX(132px);
+.brand-swap-area {
+  position: relative;
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: bottom;
 }
 
 .brand-wordmark {
-  grid-column: 2;
-  grid-row: 1;
   display: inline-flex;
   align-items: baseline;
   font-family: var(--font-display);
@@ -199,7 +195,6 @@ main {
   color: var(--text);
   white-space: nowrap;
   text-transform: uppercase;
-  transition: font-size 320ms cubic-bezier(0.5, 0, 0.2, 1), opacity 280ms ease, filter 280ms ease;
 }
 
 .brand-wordmark-fadsec {
@@ -217,17 +212,14 @@ main {
   font-weight: 700;
 }
 
-/* --- Hover target: origin stamp --- */
 .brand-hover-target {
-  grid-column: 2;
-  grid-row: 1;
+  position: absolute;
+  inset: 0;
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  opacity: 0;
-  white-space: nowrap;
-  transition: opacity 280ms ease;
   pointer-events: none;
+  white-space: nowrap;
   font-family: var(--font-display);
   font-size: 18px;
   font-weight: 700;
@@ -249,21 +241,8 @@ main {
   color: #22c55e;
 }
 
-.brand-lockup:hover .brand-wordmark {
-  opacity: 0;
-  filter: blur(6px);
-}
-
-.brand-lockup:hover .brand-hover-target {
-  opacity: 1;
-}
-
 .site-header[data-scrolled='true'] .brand-wordmark {
   font-size: 16px;
-}
-
-.site-header[data-scrolled='true'] .brand-wordmark-sigil {
-  font-size: 1em;
 }
 
 /* --- Nav with animated underline + active state --- */

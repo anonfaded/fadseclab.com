@@ -121,17 +121,66 @@ const footerGroups = [
 ];
 
 function BrandWordmark() {
+  const swapRef = useRef<HTMLSpanElement>(null);
+  const targetRef = useRef<HTMLSpanElement>(null);
+  const sigilRef = useRef<HTMLSpanElement>(null);
+  const [hovered, setHovered] = useState(false);
+
+  // Track hover via the parent brand-lockup
+  useEffect(() => {
+    const el = swapRef.current?.closest('.brand-lockup');
+    if (!el) return;
+    const onEnter = () => setHovered(true);
+    const onLeave = () => setHovered(false);
+    el.addEventListener('mouseenter', onEnter);
+    el.addEventListener('mouseleave', onLeave);
+    return () => {
+      el.removeEventListener('mouseenter', onEnter);
+      el.removeEventListener('mouseleave', onLeave);
+    };
+  }, []);
+
+  // Set initial hidden state (instant, no animation)
+  useEffect(() => {
+    const el = targetRef.current;
+    if (!el) return;
+    gsap.set(el, { yPercent: 110, filter: 'blur(8px)', opacity: 0 });
+  }, []);
+
+  // GSAP: sync sigil + wordmark + target on hover enter/leave
+  useEffect(() => {
+    const sigil = sigilRef.current;
+    const target = targetRef.current;
+    const wordmark = swapRef.current?.querySelector<HTMLElement>('.brand-wordmark') ?? null;
+    const els = [sigil, target, wordmark].filter((t): t is HTMLElement => t !== null);
+    if (els.length === 0) return;
+
+    gsap.killTweensOf(els);
+
+    if (hovered) {
+      if (sigil) gsap.to(sigil, { x: 140, duration: 0.5, ease: 'expo.out', overwrite: 'auto' });
+      if (wordmark) gsap.to(wordmark, { opacity: 0, filter: 'blur(4px)', duration: 0.35, ease: 'power3.out', overwrite: 'auto' });
+      gsap.to(target!, { yPercent: 0, filter: 'blur(0px)', opacity: 1, duration: 0.45, ease: 'expo.out', overwrite: 'auto' });
+    } else {
+      if (sigil) gsap.to(sigil, { x: 0, duration: 0.25, ease: 'power3.in', overwrite: 'auto' });
+      if (wordmark) gsap.to(wordmark, { opacity: 1, filter: 'blur(0px)', duration: 0.2, ease: 'power3.in', overwrite: 'auto' });
+      gsap.to(target!, { yPercent: 110, filter: 'blur(8px)', opacity: 0, duration: 0.25, ease: 'power3.in', overwrite: 'auto' });
+    }
+  }, [hovered]);
+
   return (
     <span className="brand-hover-reveal">
-      <span className="brand-wordmark-sigil" aria-hidden="true">//</span>
-      <span className="brand-wordmark">
-        <span className="brand-wordmark-fadsec">FadSec</span>
-        <span className="brand-wordmark-spacer" aria-hidden="true" />
-        <span className="brand-wordmark-lab">Lab</span>
-      </span>
-      <span className="brand-hover-target">
-        <MapPin size={14} className="brand-pin-icon" />
-        <span className="brand-pakistan"><span className="brand-pak">PAK</span><span className="brand-istan">ISTAN</span></span>
+      <span ref={sigilRef} className="brand-wordmark-sigil" aria-hidden="true">//</span>
+      <span ref={swapRef} className="brand-swap-area">
+        <span className="brand-wordmark">
+          <span className="brand-wordmark-fadsec">FadSec</span>
+          <span className="brand-wordmark-spacer" aria-hidden="true" />
+          <span className="brand-wordmark-lab">Lab</span>
+        </span>
+        <span ref={targetRef} className="brand-hover-target">
+          <MapPin size={14} className="brand-pin-icon" />
+          <span className="brand-pakistan"><span className="brand-pak">PAK</span><span className="brand-istan">ISTAN</span></span>
+        </span>
       </span>
     </span>
   );
