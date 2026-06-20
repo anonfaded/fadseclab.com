@@ -7,6 +7,7 @@ import {
   ExternalLink,
   HandCoins,
   Mail,
+  MapPin,
   Moon,
   ShieldCheck,
   Sparkles,
@@ -121,11 +122,17 @@ const footerGroups = [
 
 function BrandWordmark() {
   return (
-    <span className="brand-wordmark">
+    <span className="brand-hover-reveal">
       <span className="brand-wordmark-sigil" aria-hidden="true">//</span>
-      <span className="brand-wordmark-fadsec">FadSec</span>
-      <span className="brand-wordmark-spacer" aria-hidden="true" />
-      <span className="brand-wordmark-lab">Lab</span>
+      <span className="brand-wordmark">
+        <span className="brand-wordmark-fadsec">FadSec</span>
+        <span className="brand-wordmark-spacer" aria-hidden="true" />
+        <span className="brand-wordmark-lab">Lab</span>
+      </span>
+      <span className="brand-hover-target">
+        <MapPin size={14} className="brand-pin-icon" />
+        <span className="brand-pakistan"><span className="brand-pak">PAK</span><span className="brand-istan">ISTAN</span></span>
+      </span>
     </span>
   );
 }
