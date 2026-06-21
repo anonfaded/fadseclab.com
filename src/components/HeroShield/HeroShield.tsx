@@ -165,18 +165,25 @@ function HeroAdversaryThreeScene({
     const mount = mountRef.current;
     if (!mount) return undefined;
 
+    const viewportWidth = window.innerWidth;
+    const isMobile = viewportWidth <= 760;
+    const isTablet = viewportWidth <= 1120;
+
     const renderer = new THREE.WebGLRenderer({
       alpha: true,
-      antialias: true,
+      antialias: !isMobile,
       powerPreference: 'high-performance',
+      powerPreference: isMobile ? 'low-power' : 'high-performance',
     });
     renderer.setClearColor(0x000000, 0);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setPixelRatio(isMobile ? 1.2 : Math.min(window.devicePixelRatio, 2));
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 1.14;
-    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.enabled = !isMobile;
     renderer.shadowMap.type = THREE.PCFShadowMap;
+    renderer.shadowMap.width = isTablet ? 256 : 512;
+    renderer.shadowMap.height = isTablet ? 256 : 512;
     mount.appendChild(renderer.domElement);
 
     const scene = new THREE.Scene();
@@ -233,16 +240,16 @@ function HeroAdversaryThreeScene({
     const cableMat = new THREE.MeshStandardMaterial({ color: 0x7e1f19, roughness: 0.7, metalness: 0.18 });
     const concreteMat = new THREE.MeshStandardMaterial({ color: 0x2a2926, roughness: 0.94, metalness: 0.02 });
 
-    const tubeBetween = (start: THREE.Vector3, end: THREE.Vector3, radius: number, material: THREE.Material, segments = 12) => {
-      const mesh = new THREE.Mesh(new THREE.CylinderGeometry(radius, radius, start.distanceTo(end), segments), material);
+    const tubeBetween = (start: THREE.Vector3, end: THREE.Vector3, radius: number, material: THREE.Material, segments = 12, isMobile = false) => {
+      const mesh = new THREE.Mesh(new THREE.CylinderGeometry(radius, radius, start.distanceTo(end), isMobile ? Math.min(segments, 6) : segments), material);
       mesh.position.copy(start).lerp(end, 0.5);
       mesh.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), end.clone().sub(start).normalize());
-      mesh.castShadow = true;
-      mesh.receiveShadow = true;
+      mesh.castShadow = !isMobile;
+      mesh.receiveShadow = !isMobile;
       return mesh;
     };
 
-    const roundedBoxGeometry = (width: number, height: number, depth: number, radius: number) => {
+    const roundedBoxGeometry = (width: number, height: number, depth: number, radius: number, isMobile = false) => {
       const shape = new THREE.Shape();
       const x = -width / 2;
       const y = -height / 2;
@@ -258,10 +265,10 @@ function HeroAdversaryThreeScene({
       const geometry = new THREE.ExtrudeGeometry(shape, {
         depth,
         bevelEnabled: true,
-        bevelSegments: 4,
+        bevelSegments: isMobile ? 2 : 4,
         bevelSize: radius * 0.32,
         bevelThickness: radius * 0.28,
-        curveSegments: 8,
+        curveSegments: isMobile ? 4 : 8,
       });
       geometry.center();
       return geometry;
@@ -360,8 +367,8 @@ function HeroAdversaryThreeScene({
         bevelEnabled: true,
         bevelSize: 0.035,
         bevelThickness: 0.035,
-        bevelSegments: 3,
-        curveSegments: 24,
+        bevelSegments: isMobile ? 2 : 3,
+        curveSegments: isMobile ? 12 : 24,
       }),
       waterVolumeMat,
     );
@@ -440,8 +447,8 @@ function HeroAdversaryThreeScene({
       { z: 0.62, width: 1.64, x: 2.02, phase: 0.78, speed: 0.28 },
       { z: -1.74, width: 1.45, x: 2.32, phase: 0.42, speed: 0.22 },
     ].map(({ z, width, x, phase, speed }) => {
-      const points = Array.from({ length: 40 }, (_, index) => {
-        const t = index / 39;
+      const points = Array.from({ length: isMobile ? 24 : 40 }, (_, index) => {
+        const t = index / (isMobile ? 23 : 39);
         const px = x - width / 2 + t * width;
         return new THREE.Vector3(px, -0.065, z + Math.sin(t * Math.PI * 2) * 0.025);
       });
@@ -459,8 +466,8 @@ function HeroAdversaryThreeScene({
         bevelEnabled: true,
         bevelSize: 0.06,
         bevelThickness: 0.06,
-        bevelSegments: 5,
-        curveSegments: 24,
+        bevelSegments: isMobile ? 3 : 5,
+        curveSegments: isMobile ? 12 : 24,
       }),
       [terrainMat, terrainSideMat],
     );
@@ -836,6 +843,7 @@ function HeroAdversaryThreeScene({
       0.04,
       darkSteelMat,
       18,
+      isMobile,
     );
     generator.add(exhaustStack);
     const exhaustTip = new THREE.Mesh(new THREE.CylinderGeometry(0.052, 0.064, 0.055, 18), steelMat);
@@ -939,8 +947,8 @@ function HeroAdversaryThreeScene({
       new THREE.Vector3(0.12, 1.12, 1.18),
       new THREE.Vector3(0.38, 1.4, 1.2),
     ]);
-    const lampWire = new THREE.Mesh(new THREE.TubeGeometry(lampWireCurve, 72, 0.012, 10), cableMat);
-    lampWire.castShadow = true;
+    const lampWire = new THREE.Mesh(new THREE.TubeGeometry(lampWireCurve, isMobile ? 36 : 72, 0.012, isMobile ? 6 : 10), cableMat);
+    lampWire.castShadow = !isMobile;
     root.add(lampWire);
     [
       [0.12, 0.5, 1.17],
@@ -961,18 +969,16 @@ function HeroAdversaryThreeScene({
     });
     const lampWirePulse = new THREE.Mesh(new THREE.SphereGeometry(0.032, 14, 10), lampWirePulseMaterial);
     root.add(lampWirePulse);
-    const lampWireSpark = new THREE.Line(
-      new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(), new THREE.Vector3(0.08, 0.02, 0)]),
-      new THREE.LineBasicMaterial({ color: 0xff9b62, transparent: true, opacity: 0.72 }),
-    );
+    const lampWireSparkGeometry = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(), new THREE.Vector3(0.08, 0.02, 0)]);
+    const lampWireSpark = new THREE.Line(lampWireSparkGeometry, new THREE.LineBasicMaterial({ color: 0xff9b62, transparent: true, opacity: 0.72 }));
     root.add(lampWireSpark);
 
     const smokeMat = new THREE.MeshBasicMaterial({ color: 0xa4adb0, transparent: true, opacity: 0.14, depthWrite: false });
-    const smokePuffs = [0, 1, 2, 3, 4].map((index) => {
-      const puff = new THREE.Mesh(new THREE.SphereGeometry(0.08 + index * 0.016, 18, 12), smokeMat.clone());
+    const smokePuffs = Array.from({ length: isMobile ? 3 : 5 }, (_, index) => {
+      const puff = new THREE.Mesh(new THREE.SphereGeometry(0.08 + index * 0.016, 12, 8), smokeMat.clone());
       puff.position.copy(smokeOrigin).add(new THREE.Vector3(index * 0.035, index * 0.075, index * 0.008));
       root.add(puff);
-      puff.userData.phase = index / 5;
+      puff.userData.phase = index / (isMobile ? 3 : 5);
       return puff;
     });
 
@@ -981,7 +987,7 @@ function HeroAdversaryThreeScene({
       new THREE.Vector3(-0.72, 0.36, 0.18),
       new THREE.Vector3(-0.55, 0.3, -0.14),
       new THREE.Vector3(-0.36, 0.34, -0.27),
-      ...Array.from({ length: 18 }, (_, index) => {
+      ...Array.from({ length: isMobile ? 9 : 18 }, (_, index) => {
         const y = 0.34 + index * 0.105;
         const angle = index * 0.92;
         return new THREE.Vector3(-0.34 + Math.cos(angle) * 0.105, y, -0.24 + Math.sin(angle) * 0.08);
@@ -990,8 +996,8 @@ function HeroAdversaryThreeScene({
       new THREE.Vector3(-0.02, 2.36, -0.11),
     ];
     const cableCurve = new THREE.CatmullRomCurve3(cablePoints);
-    const cableMesh = new THREE.Mesh(new THREE.TubeGeometry(cableCurve, 120, 0.024, 14), cableMat);
-    cableMesh.castShadow = true;
+    const cableMesh = new THREE.Mesh(new THREE.TubeGeometry(cableCurve, isMobile ? 60 : 120, 0.024, isMobile ? 8 : 14), cableMat);
+    cableMesh.castShadow = !isMobile;
     root.add(cableMesh);
     const electricityMat = new THREE.MeshBasicMaterial({
       color: 0xff4d2d,
@@ -1001,20 +1007,18 @@ function HeroAdversaryThreeScene({
     });
     const electricityPulse = new THREE.Mesh(new THREE.SphereGeometry(0.045, 16, 10), electricityMat);
     root.add(electricityPulse);
-    const sparkLine = new THREE.Line(
-      new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(), new THREE.Vector3(0.12, 0.03, 0)]),
-      new THREE.LineBasicMaterial({ color: 0xff7850, transparent: true, opacity: 0.68 }),
-    );
+    const sparkLineGeometry = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(), new THREE.Vector3(0.12, 0.03, 0)]);
+    const sparkLine = new THREE.Line(sparkLineGeometry, new THREE.LineBasicMaterial({ color: 0xff7850, transparent: true, opacity: 0.68 }));
     root.add(sparkLine);
 
-    const signalRings = [0, 1, 2].map((index) => {
+    const signalRings = Array.from({ length: isMobile ? 1 : 3 }, (_, index) => {
       const ring = new THREE.Mesh(
-        new THREE.TorusGeometry(0.14, 0.006, 8, 72),
+        new THREE.TorusGeometry(0.14, 0.006, 8, isMobile ? 32 : 72),
         new THREE.MeshBasicMaterial({ color: 0xff5642, transparent: true, opacity: 0.78 }),
       );
       ring.position.copy(tower.position).add(new THREE.Vector3(-0.08, 3.03, -0.03));
       ring.rotation.x = 0;
-      ring.userData.phase = index / 3;
+      ring.userData.phase = index / (isMobile ? 1 : 3);
       root.add(ring);
       return ring;
     });
@@ -1051,16 +1055,19 @@ function HeroAdversaryThreeScene({
       const width = Math.round(rect.width);
       const height = Math.round(rect.height);
       const viewportWidth = window.innerWidth;
-      const compact = viewportWidth <= 520;
-      const tablet = viewportWidth <= 780;
-      const mid = viewportWidth <= 1120;
-      const pixelRatio = compact ? 1.55 : tablet ? 1.75 : mid ? 2 : 2.25;
+      const isMobile = viewportWidth <= 760;
+      const isTablet = viewportWidth <= 1120;
+      const isCompact = viewportWidth <= 520;
+      const scale = isCompact ? 0.8 : isMobile ? 0.7 : 0.78;
+      const xOffset = isCompact ? -0.22 : isMobile ? -0.22 : -0.28;
+      const yOffset = isCompact ? -0.1 : isMobile ? -0.1 : -0.02;
+      const pixelRatio = isMobile ? 1.2 : isTablet ? 1.4 : 2;
       renderer.setPixelRatio(Math.min(window.devicePixelRatio, pixelRatio));
-      renderer.shadowMap.enabled = !compact;
-      key.castShadow = !compact;
-      key.shadow.mapSize.set(tablet ? 256 : mid ? 384 : 512, tablet ? 256 : mid ? 384 : 512);
-      root.scale.setScalar(compact ? 0.8 : tablet ? 0.8 : mid ? 0.76 : 0.78);
-      root.position.set(compact ? -0.22 : tablet ? -0.36 : mid ? -0.28 : -0.22, compact ? -0.1 : tablet ? -0.08 : mid ? -0.02 : 0.02, 0);
+      renderer.shadowMap.enabled = !isMobile;
+      key.castShadow = !isMobile;
+      key.shadow.mapSize.set(isTablet ? 256 : 512, isTablet ? 256 : 512);
+      root.scale.setScalar(scale);
+      root.position.set(xOffset, yOffset, 0.02);
       renderer.setSize(Math.max(1, width), Math.max(1, height), false);
       camera.aspect = Math.max(1, width) / Math.max(1, height);
       camera.updateProjectionMatrix();
@@ -1084,11 +1091,13 @@ function HeroAdversaryThreeScene({
     let lastRenderTime = 0;
     renderer.setAnimationLoop((time: number) => {
       const viewportWidth = window.innerWidth;
-      const frameBudget = viewportWidth <= 520 ? 40 : viewportWidth <= 760 ? 33 : 24;
+      const isMobile = viewportWidth <= 760;
+      const frameBudget = isMobile ? 50 : 24;
       if (!isSceneVisible || time - lastRenderTime < frameBudget) return;
       lastRenderTime = time;
       if (animationStart == null) animationStart = time;
       const elapsed = (time - animationStart) / 1000;
+      if (isMobile && Math.sin(elapsed * 3) > 0.95) return;
       const pendingManualShots = manualShotPulseRef.current - lastConsumedManualPulse;
       if (pendingManualShots > 0) {
         for (let index = 0; index < pendingManualShots; index += 1) {
@@ -1105,6 +1114,18 @@ function HeroAdversaryThreeScene({
           material.opacity = Math.max(0, 0.54 * (1 - progress));
         }
       });
+      if (!isMobile) {
+        waterHighlights.forEach((line) => {
+          const progress = (elapsed * line.userData.speed + line.userData.phase) % 1;
+          line.position.x = Math.sin(elapsed * 0.52 + line.userData.phase * Math.PI) * 0.09;
+          line.position.z = Math.sin(elapsed * 0.36 + line.userData.baseZ) * 0.035;
+          line.scale.x = 0.92 + Math.sin(elapsed * 0.48 + line.userData.phase) * 0.08;
+          const material = line.material;
+          if (material instanceof THREE.LineBasicMaterial) {
+            material.opacity = 0.08 + Math.sin(progress * Math.PI) * 0.34;
+          }
+        });
+      }
       const antennaTipMaterial = antennaTip.material;
       if (antennaTipMaterial instanceof THREE.MeshStandardMaterial) {
         const blink = 0.5 + Math.sin(elapsed * 5.8) * 0.5;
@@ -1117,30 +1138,32 @@ function HeroAdversaryThreeScene({
       waterMat.uniforms.uTime.value = elapsed;
       waterMat.uniforms.uOpacity.value = 0.48 + Math.sin(elapsed * 0.52) * 0.05;
       waterVolumeMat.opacity = 0.4 + Math.sin(elapsed * 0.44) * 0.045;
-      waterHighlights.forEach((line) => {
-        const progress = (elapsed * line.userData.speed + line.userData.phase) % 1;
-        line.position.x = Math.sin(elapsed * 0.52 + line.userData.phase * Math.PI) * 0.09;
-        line.position.z = Math.sin(elapsed * 0.36 + line.userData.baseZ) * 0.035;
-        line.scale.x = 0.92 + Math.sin(elapsed * 0.48 + line.userData.phase) * 0.08;
-        const material = line.material;
-        if (material instanceof THREE.LineBasicMaterial) {
-          material.opacity = 0.08 + Math.sin(progress * Math.PI) * 0.34;
-        }
-      });
+      if (!isMobile) {
+        waterHighlights.forEach((line) => {
+          const progress = (elapsed * line.userData.speed + line.userData.phase) % 1;
+          line.position.x = Math.sin(elapsed * 0.52 + line.userData.phase * Math.PI) * 0.09;
+          line.position.z = Math.sin(elapsed * 0.36 + line.userData.baseZ) * 0.035;
+          line.scale.x = 0.92 + Math.sin(elapsed * 0.48 + line.userData.phase) * 0.08;
+          const material = line.material;
+          if (material instanceof THREE.LineBasicMaterial) {
+            material.opacity = 0.08 + Math.sin(progress * Math.PI) * 0.34;
+          }
+        });
+      }
       const lampBulbMaterial = lampBulb.material;
       if (lampBulbMaterial instanceof THREE.MeshStandardMaterial) {
-        const flutter = Math.max(0, Math.sin(elapsed * 9.2 + Math.sin(elapsed * 1.4) * 0.9));
+        const flutter = Math.max(0, Math.sin(elapsed * (isMobile ? 4.6 : 9.2) + Math.sin(elapsed * 1.4) * 0.9));
         const outagePhase = elapsed % 4.9;
         const hardOutage = outagePhase > 2.45 && outagePhase < 2.9;
         const preOutageStutter = outagePhase > 2.05 && outagePhase <= 2.45
-          ? 0.28 + Math.max(0, Math.sin(elapsed * 12)) * 0.72
+          ? 0.28 + Math.max(0, Math.sin(elapsed * (isMobile ? 6 : 12))) * 0.72
           : 1;
         const restartStutter = outagePhase >= 2.9 && outagePhase < 3.45
-          ? 0.32 + Math.max(0, Math.sin(elapsed * 14)) * 0.68
+          ? 0.32 + Math.max(0, Math.sin(elapsed * (isMobile ? 7 : 14))) * 0.68
           : 1;
         const outage = hardOutage ? 0.08 : Math.min(preOutageStutter, restartStutter);
         const oldBulbDip = Math.pow(flutter, 5) * 0.22;
-        const flicker = Math.max(0.05, (0.94 + Math.sin(elapsed * 2.7) * 0.07 + Math.sin(elapsed * 6.4) * 0.035 - oldBulbDip) * outage);
+        const flicker = Math.max(0.05, (0.94 + Math.sin(elapsed * (isMobile ? 1.35 : 2.7)) * 0.07 + Math.sin(elapsed * (isMobile ? 3.2 : 6.4)) * 0.035 - oldBulbDip) * outage);
         lampBulbMaterial.emissiveIntensity = flicker * 2.18;
         lampGlow.intensity = 0.12 + flicker * 2.9;
         lampSpot.intensity = 0.18 + flicker * 4.7;
@@ -1155,7 +1178,7 @@ function HeroAdversaryThreeScene({
       }
       ledOnMat.emissiveIntensity = 1.25 + Math.max(0, Math.sin(elapsed * 4.2)) * 0.5;
       smokePuffs.forEach((puff) => {
-        const progress = (elapsed * 0.16 + puff.userData.phase) % 1;
+        const progress = (elapsed * (isMobile ? 0.12 : 0.16) + puff.userData.phase) % 1;
         puff.position.y = smokeOrigin.y + progress * 0.5;
         puff.position.x = smokeOrigin.x - progress * 0.26 + Math.sin(progress * Math.PI * 2) * 0.05;
         puff.position.z = smokeOrigin.z + Math.cos(progress * Math.PI * 2) * 0.025;
@@ -1171,7 +1194,14 @@ function HeroAdversaryThreeScene({
       electricityMat.opacity = 0.45 + Math.max(0, Math.sin(elapsed * 8.5)) * 0.34;
       const sparkStart = cableCurve.getPointAt(cableProgress);
       const sparkEnd = cableCurve.getPointAt(Math.min(0.995, cableProgress + 0.02));
-      sparkLine.geometry.setFromPoints([sparkStart, sparkEnd]);
+      const positions = sparkLineGeometry.attributes.position.array as Float32Array;
+      positions[0] = sparkStart.x;
+      positions[1] = sparkStart.y;
+      positions[2] = sparkStart.z;
+      positions[3] = sparkEnd.x;
+      positions[4] = sparkEnd.y;
+      positions[5] = sparkEnd.z;
+      sparkLineGeometry.attributes.position.needsUpdate = true;
       const sparkLineMaterial = sparkLine.material;
       if (sparkLineMaterial instanceof THREE.LineBasicMaterial) {
         sparkLineMaterial.opacity = 0.26 + Math.max(0, Math.sin(elapsed * 9.4 + 0.5)) * 0.45;
@@ -1182,7 +1212,14 @@ function HeroAdversaryThreeScene({
       lampWirePulse.position.copy(lampPulseStart);
       lampWirePulse.scale.setScalar(0.66 + Math.max(0, Math.sin(elapsed * 13.5)) * 0.3);
       lampWirePulseMaterial.opacity = 0.38 + Math.max(0, Math.sin(elapsed * 10.5 + 0.7)) * 0.38;
-      lampWireSpark.geometry.setFromPoints([lampPulseStart, lampPulseEnd]);
+      const lampSparkPositions = lampWireSparkGeometry.attributes.position.array as Float32Array;
+      lampSparkPositions[0] = lampPulseStart.x;
+      lampSparkPositions[1] = lampPulseStart.y;
+      lampSparkPositions[2] = lampPulseStart.z;
+      lampSparkPositions[3] = lampPulseEnd.x;
+      lampSparkPositions[4] = lampPulseEnd.y;
+      lampSparkPositions[5] = lampPulseEnd.z;
+      lampWireSparkGeometry.attributes.position.needsUpdate = true;
       const lampWireSparkMaterial = lampWireSpark.material;
       if (lampWireSparkMaterial instanceof THREE.LineBasicMaterial) {
         lampWireSparkMaterial.opacity = 0.24 + Math.max(0, Math.sin(elapsed * 12.5)) * 0.4;
