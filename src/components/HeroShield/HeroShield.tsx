@@ -7,10 +7,18 @@ import { createPortal } from 'react-dom';
 import type { CSSProperties, RefObject } from 'react';
 
 // All arrows fire from the Three.js tower turret muzzle.
+const threatLabels = ['Trackers', 'Data brokers', 'Spyware', 'Ad networks', 'Malware'];
+
+// Round-robin label pool: each arrow gets a guaranteed-unique label per cycle
+let labelCycle = Math.floor(Math.random() * threatLabels.length);
+const pickUniqueLabel = (arrowIndex: number) => {
+  labelCycle++;
+  return threatLabels[(labelCycle + arrowIndex) % threatLabels.length];
+};
 const baseThreats = [
-  { id: 'trackers', label: 'Trackers', lane: 82, delay: '0s', color: '#ff5a45', path: 'M326 100 C418 68 560 78 700 115' },
-  { id: 'brokers', label: 'Data brokers', lane: 132, delay: '1.35s', color: '#ff3f35', path: 'M326 100 C438 104 570 128 702 141' },
-  { id: 'spyware', label: 'Spyware', lane: 182, delay: '2.7s', color: '#ff7264', path: 'M326 100 C414 154 540 202 696 163' },
+  { id: 'trackers', label: pickUniqueLabel(0), lane: 82, delay: '0s', color: '#ff5a45', path: 'M326 100 C418 68 560 78 700 115' },
+  { id: 'brokers', label: pickUniqueLabel(1), lane: 132, delay: '1.35s', color: '#ff3f35', path: 'M326 100 C438 104 570 128 702 141' },
+  { id: 'spyware', label: pickUniqueLabel(2), lane: 182, delay: '2.7s', color: '#ff7264', path: 'M326 100 C414 154 540 202 696 163' },
 ];
 const guardianOffsetX = 30;
 const shotCycleMs = 4050;
@@ -75,6 +83,7 @@ function threatsFromMuzzle(x: number, y: number) {
 
     return {
       ...threat,
+      label: pickUniqueLabel(index),
       path: `M${x} ${y} C${c1x.toFixed(1)} ${c1y.toFixed(1)} ${c2x.toFixed(1)} ${c2y.toFixed(1)} ${end.x} ${end.y}`,
     };
   });
@@ -91,7 +100,32 @@ function ThreatArrow({
   repeat = true,
 }: Threat & { repeat?: boolean }) {
   const motionRef = useRef<SVGAnimateMotionElement>(null);
+  const labelRef = useRef<SVGTextElement>(null);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const pathId = repeat ? `threat-path-${id}` : `threat-path-${id}-${delay.replace(/[^a-z0-9]/gi, '')}`;
+
+  // Label self-managed: rotate label every animation cycle via timer
+  useEffect(() => {
+    if (!repeat) return;
+    const delayS = parseFloat(delay) || 0;
+    const cycleMs = 4050;
+    const arrowIndex = id === 'trackers' ? 0 : id === 'brokers' ? 1 : 2;
+
+    const tick = () => {
+      if (labelRef.current) labelRef.current.textContent = pickUniqueLabel(arrowIndex);
+    };
+    // First rotation happens after this arrow's initial cycle completes
+    const firstTick = delayS * 1000 + cycleMs;
+    const timeout = setTimeout(() => {
+      tick();
+      intervalRef.current = setInterval(tick, cycleMs);
+    }, firstTick);
+
+    return () => {
+      clearTimeout(timeout);
+      if (intervalRef.current) clearInterval(intervalRef.current);
+    };
+  }, [repeat, delay, id]);
 
   useEffect(() => {
     if (!repeat) {
@@ -122,7 +156,7 @@ function ThreatArrow({
           <line className="hero-arrow-shaft" x1="0" y1="0" x2="42" y2="0" />
           <path className="hero-arrow-head" d="M42 -7 58 0 42 7Z" />
           <path className="hero-arrow-fin" d="M0 0 -12 -8 -7 0 -12 8Z" />
-          <text className="hero-arrow-label" x="12" y="-13">{label}</text>
+          <text ref={labelRef} className="hero-arrow-label" x="12" y="-13">{label}</text>
         </g>
       </g>
     </g>
