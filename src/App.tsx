@@ -285,12 +285,13 @@ function WordReveal({ text, start, className, wordClassName, delay = 0 }: { text
   const words = text.split(' ');
 
   useEffect(() => {
+    if (!start) return;
     const el = ref.current;
-    if (!el || !start) return;
+    if (!el) return;
+
     const targets = el.querySelectorAll<HTMLElement>('.reveal-word');
-    gsap.fromTo(
-      targets,
-      { yPercent: 110, filter: 'blur(8px)', opacity: 0 },
+    gsap.fromTo(targets,
+      { yPercent: 110 },
       {
         yPercent: 0,
         filter: 'blur(0px)',
@@ -376,36 +377,6 @@ const App: React.FC = () => {
     sections.forEach((s) => observer.observe(s));
     return () => observer.disconnect();
   }, []);
-
-  useEffect(() => {
-    if (isLoading) return;
-
-    const ctx = gsap.context(() => {
-      gsap.from('.hero-reveal', {
-        y: 18,
-        opacity: 0,
-        duration: 0.7,
-        stagger: 0.07,
-        ease: 'power3.out',
-      });
-
-      gsap.utils.toArray<HTMLElement>('.reveal').forEach((element) => {
-        gsap.from(element, {
-          y: 24,
-          opacity: 0,
-          duration: 0.62,
-          ease: 'power3.out',
-          scrollTrigger: {
-            trigger: element,
-            start: 'top 90%',
-            toggleActions: 'play none none none',
-          },
-        });
-      });
-    }, rootRef);
-
-    return () => ctx.revert();
-  }, [isLoading]);
 
   // Animate mobile menu items in stagger
   useEffect(() => {
@@ -589,21 +560,21 @@ const App: React.FC = () => {
         <section className="hero-section">
           <HeroSignalBackdrop />
           <div className="hero-copy">
-            <Badge variant="outline" className="hero-reveal section-badge">
+            <Badge variant="outline" className="section-badge">
               <ShieldCheck />
               Privacy-first FOSS software company
             </Badge>
             <h1 className="hero-headline">
-              <WordReveal text="Privacy today," start={true} delay={0.2} />
+              <WordReveal text="Privacy today," start={!isLoading} delay={0.2} />
               <br />
-              <WordReveal text="tomorrow," start={true} delay={0.42} />
+              <WordReveal text="tomorrow," start={!isLoading} delay={0.42} />
               {' '}
-              <WordReveal text="forever." start={true} delay={0.42} wordClassName="hero-headline-accent" />
+              <WordReveal text="forever." start={!isLoading} delay={0.42} wordClassName="hero-headline-accent" />
             </h1>
-            <p className="hero-reveal hero-lede">
+            <p className="hero-lede">
               Open-source Android, iOS, Flutter, and desktop software. Public source, zero hidden tracking, production-grade engineering.
             </p>
-            <div className="hero-actions hero-reveal">
+            <div className="hero-actions">
               <a href="#services" className={buttonVariants({ size: 'lg', className: 'hero-action' })} onClick={(e) => handleNavClick(e, '#services')}>
                 Explore services
                 <ArrowRight />

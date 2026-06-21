@@ -1,3 +1,6 @@
+# Workflow
+- Do not run build, dev, or other npm/pnpm scripts — only edit files and make code changes. Confidence: 0.75
+
 # Package Manager
 - Use `pnpm` for this project, never `npm`. Confidence: 0.90
 - When a dependency install fails, fix the underlying tool/postinstall issue instead of skipping the package. Confidence: 0.85
@@ -55,7 +58,7 @@
 - In the product section, feature the flagship product with a real photo/asset (e.g. the pilot pic) and describe use cases (documentation, safety, etc.), not release-version tables. Link out to GitHub for the rest. Confidence: 0.70
 
 # Loading Screen
-- Loading screens must be "very minimal fast and modern" — no bloated multi-phase animations, progress bars, sigils, dossier themes, or extended sequences. A simple, lightweight, fast-dismissing indicator is preferred. Confidence: 0.70
+- Loading screens must be "very minimal fast and modern" — no bloated multi-phase animations, progress bars, sigils, dossier themes, or extended sequences. A simple, lightweight, fast-dismissing indicator is preferred. The loading screen must actually preload/wait for real resources to load (not just run a cosmetic timer) so the website appears instantly when dismissed. Use the complete brand name (e.g. "FADSEC LAB", not abbreviated "FADSEC"). Confidence: 0.75
 
 # Design Iteration
 - When the user says "i liked the old X" or "old Y was better", preserve the prior version of that element instead of redesigning it. Do not redesign components the user is happy with. Confidence: 0.85
@@ -71,6 +74,7 @@
 
 # Motion
 - Animations must start promptly when in view and stay visible long enough to register. Watch for late-start / early-end animation bugs on smaller screens and fix by adjusting thresholds and duration. Confidence: 0.70
+- When GSAP-animated elements start from a hidden/offset state (e.g. `yPercent: 110`, `opacity: 0`), set those initial values in CSS (not just `gsap.set` in JS) to prevent FOUT. CSS loads before JS, so the element is hidden from the first paint. `gsap.set` alone still leaves a render-frame flash because the DOM paints before JS executes. Confidence: 0.80
 - Hero heading should use a SaaS-style word-by-word slide-up + unblur reveal animation. This motion pattern is the gold-standard reference for other animated elements on the site (e.g. brand wordmark hover). Other headings should match the military-dossier aesthetic with a "blinking" / typed-on type treatment so the two patterns feel cohesive. Confidence: 0.80
 
 # Typography
