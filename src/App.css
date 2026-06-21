@@ -958,6 +958,45 @@ main {
   display: block;
 }
 
+.world-map-frame svg {
+  cursor: grab;
+}
+
+.world-map-frame svg:active {
+  cursor: grabbing;
+}
+
+/* Zoom controls */
+.map-zoom-controls {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  z-index: 10;
+}
+
+.map-zoom-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: 1px solid var(--hairline-strong);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--text-soft);
+  cursor: pointer;
+  transition: background 160ms ease, color 160ms ease, border-color 160ms ease;
+}
+
+.map-zoom-btn:hover {
+  background: var(--surface-hover);
+  color: var(--text);
+  border-color: var(--faint);
+}
+
 .world-map-foot {
   margin-top: 10px;
   padding-top: 10px;
@@ -977,7 +1016,7 @@ main {
 
 .map-dot:hover,
 .map-dot:focus {
-  r: 7;
+  r: 5;
   fill: var(--text);
 }
 
@@ -989,8 +1028,8 @@ main {
 }
 
 @keyframes pulse-pin {
-  0%, 100% { opacity: 0.12; r: 10; }
-  50% { opacity: 0.32; r: 16; }
+  0%, 100% { opacity: 0.12; r: 7; }
+  50% { opacity: 0.32; r: 11; }
 }
 
 .map-tooltip {
