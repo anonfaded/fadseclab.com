@@ -5,13 +5,17 @@ import {
   Camera,
   ChevronRight,
   ExternalLink,
+  FileText,
   HandCoins,
+  Lock,
   Mail,
   MapPin,
   Moon,
+  Palette,
   ShieldCheck,
   Sparkles,
   Sun,
+  Terminal,
   User,
 } from 'lucide-react';
 import { FaDiscord, FaGithub, FaPatreon } from 'react-icons/fa6';
@@ -843,16 +847,40 @@ const App: React.FC = () => {
                 We build a lot more than FadCam. Privacy utilities, secure notes, file tools, a small library of small-but-loved apps. They all live on GitHub under the same banner.
               </p>
               <ul className="product-rest-names">
-                <li><span>Fadocx</span><span className="product-rest-tag">android</span></li>
-                <li><span>FadeBoard</span><span className="product-rest-tag">android</span></li>
-                <li><span>FadCrypt</span><span className="product-rest-tag">android</span></li>
-                <li><span>FadCat</span><span className="product-rest-tag">android</span></li>
-                <li><span>Fadify</span><span className="product-rest-tag">android</span></li>
-                <li><span>FadSec ID</span><span className="product-rest-tag">account</span></li>
+                <li>
+                  <button type="button" className="product-rest-link" onClick={() => queueExternalNav({ label: 'Fadocx', url: 'https://github.com/fadsec-lab/fadocx' })}>
+                    <FileText size={12} />
+                    <span>Fadocx</span>
+                  </button>
+                </li>
+                <li>
+                  <button type="button" className="product-rest-link" onClick={() => queueExternalNav({ label: 'FadeBoard', url: 'https://github.com/fadsec-lab/fadeboard' })}>
+                    <Terminal size={12} />
+                    <span>FadeBoard</span>
+                  </button>
+                </li>
+                <li>
+                  <button type="button" className="product-rest-link" onClick={() => queueExternalNav({ label: 'FadCrypt', url: 'https://github.com/fadsec-lab/fadcrypt' })}>
+                    <Lock size={12} />
+                    <span>FadCrypt</span>
+                  </button>
+                </li>
+                <li>
+                  <button type="button" className="product-rest-link" onClick={() => queueExternalNav({ label: 'FadCat', url: 'https://github.com/fadsec-lab/fadcat' })}>
+                    <Terminal size={12} />
+                    <span>FadCat</span>
+                  </button>
+                </li>
+                <li>
+                  <button type="button" className="product-rest-link" onClick={() => queueExternalNav({ label: 'Fadify', url: 'https://github.com/fadsec-lab/fadify' })}>
+                    <Palette size={12} />
+                    <span>Fadify</span>
+                  </button>
+                </li>
               </ul>
               <div className="product-rest-cta">
                 <Button type="button" size="lg" onClick={() => queueExternalNav({ label: 'GitHub', url: githubOrgUrl })}>
-                  <FaGithub /> See everything on GitHub
+                  <FaGithub /> Browse all projects
                   <ArrowRight />
                 </Button>
               </div>

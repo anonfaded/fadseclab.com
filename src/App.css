@@ -367,6 +367,7 @@ main {
 
 .menu-button {
   display: none;
+  cursor: pointer;
 }
 
 .menu-button-stack {
@@ -918,6 +919,31 @@ main {
   padding: 18px;
 }
 
+.world-map-card::before,
+.world-map-card::after {
+  content: '';
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border-color: var(--frame-bracket);
+  border-style: solid;
+  border-width: 0;
+}
+
+.world-map-card::before {
+  top: -1px;
+  left: -1px;
+  border-top-width: 1.5px;
+  border-left-width: 1.5px;
+}
+
+.world-map-card::after {
+  bottom: -1px;
+  right: -1px;
+  border-bottom-width: 1.5px;
+  border-right-width: 1.5px;
+}
+
 .world-map-head {
   display: flex;
   align-items: baseline;
@@ -1086,6 +1112,7 @@ main {
 }
 
 .product-flagship {
+  position: relative;
   display: grid;
   grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
   gap: 0;
@@ -1093,6 +1120,31 @@ main {
   background: var(--report-surface);
   overflow: hidden;
   transition: border-color 220ms ease, transform 220ms ease;
+}
+
+.product-flagship::before,
+.product-flagship::after {
+  content: '';
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border-color: var(--frame-bracket);
+  border-style: solid;
+  border-width: 0;
+}
+
+.product-flagship::before {
+  top: -1px;
+  left: -1px;
+  border-top-width: 1.5px;
+  border-left-width: 1.5px;
+}
+
+.product-flagship::after {
+  bottom: -1px;
+  right: -1px;
+  border-bottom-width: 1.5px;
+  border-right-width: 1.5px;
 }
 
 .product-flagship.is-visible {
@@ -1230,12 +1282,38 @@ main {
 }
 
 .product-rest {
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: 12px;
   padding: 24px;
   border: 1px solid var(--frame-border);
   background: var(--report-surface);
+}
+
+.product-rest::before,
+.product-rest::after {
+  content: '';
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border-color: var(--frame-bracket);
+  border-style: solid;
+  border-width: 0;
+}
+
+.product-rest::before {
+  top: -1px;
+  left: -1px;
+  border-top-width: 1.5px;
+  border-left-width: 1.5px;
+}
+
+.product-rest::after {
+  bottom: -1px;
+  right: -1px;
+  border-bottom-width: 1.5px;
+  border-right-width: 1.5px;
 }
 
 .product-rest-title {
@@ -1265,26 +1343,43 @@ main {
 }
 
 .product-rest-names li {
+  padding: 0;
+}
+
+.product-rest-names li:last-child {
+  border-bottom: none;
+}
+
+.product-rest-link {
   display: flex;
   align-items: center;
-  justify-content: space-between;
   gap: 8px;
+  width: 100%;
   padding: 9px 0;
-  border-bottom: 1px solid var(--hairline);
+  border: 0;
+  background: transparent;
   color: var(--text);
   font-family: var(--font-mono);
   font-size: 12.5px;
   font-weight: 700;
   letter-spacing: -0.005em;
+  cursor: pointer;
+  transition: color 200ms ease;
+  text-align: left;
 }
 
-.product-rest-tag {
+.product-rest-link:hover {
+  color: var(--accent-brand);
+}
+
+.product-rest-link svg {
   color: var(--text-soft);
-  font-family: var(--font-mono);
-  font-size: 9.5px;
-  font-weight: 800;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+  flex-shrink: 0;
+  transition: color 200ms ease;
+}
+
+.product-rest-link:hover svg {
+  color: var(--accent-brand);
 }
 
 .product-rest-cta {
@@ -1333,6 +1428,7 @@ main {
 .services-copy button {
   margin-top: 8px;
   align-self: flex-start;
+  cursor: pointer;
 }
 
 .services-list {
@@ -1637,6 +1733,7 @@ main {
 
 .mission-donate-actions button {
   align-self: flex-start;
+  cursor: pointer;
 }
 
 .donate-link {
@@ -1798,6 +1895,31 @@ main {
   border: 1px solid rgba(255, 255, 255, 0.08);
   background: rgba(0, 0, 0, 0.18);
   margin-bottom: 28px;
+}
+
+.footer-manifest::before,
+.footer-manifest::after {
+  content: '';
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border-color: var(--frame-bracket);
+  border-style: solid;
+  border-width: 0;
+}
+
+.footer-manifest::before {
+  top: -1px;
+  left: -1px;
+  border-top-width: 1.5px;
+  border-left-width: 1.5px;
+}
+
+.footer-manifest::after {
+  bottom: -1px;
+  right: -1px;
+  border-bottom-width: 1.5px;
+  border-right-width: 1.5px;
 }
 
 .footer-manifest-eyebrow {
