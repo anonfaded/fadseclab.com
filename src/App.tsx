@@ -331,6 +331,8 @@ const App: React.FC = () => {
 
   const { ref: trustRef, inView: trustInView } = useInView<HTMLDivElement>(0.2);
   const { ref: productRef, inView: productInView } = useInView<HTMLDivElement>(0.2);
+  const { ref: servicesRef, inView: servicesInView } = useInView<HTMLDivElement>(0.2);
+  const { ref: openSourceRef, inView: openSourceInView } = useInView<HTMLDivElement>(0.2);
   const { ref: missionRef, inView: missionInView } = useInView<HTMLDivElement>(0.2);
 
   useEffect(() => {
@@ -751,12 +753,12 @@ const App: React.FC = () => {
           </div>
         </section>
 
-        <section className="services-section reveal" id="services">
+        <section className="services-section reveal" id="services" ref={servicesRef}>
           <div className="services-grid">
             <div className="services-copy">
-              <span className="eyebrow"><span className="eyebrow-sigil">//</span><TubelightReveal text="Services" start={true} /></span>
+              <span className="eyebrow"><span className="eyebrow-sigil">//</span><TubelightReveal text="Services" start={servicesInView} /></span>
               <h2>
-                <TubelightReveal text="Need a privacy-first app shipped? We do that." start={true} />
+                <TubelightReveal text="Need a privacy-first app shipped? We do that." start={servicesInView} />
               </h2>
               <p>
                 We work with founders, security teams, and open-source projects who care about what runs on their users' devices. Every engagement is a working partnership: clean architecture, real engineering review, and code you'll be proud to publish.
@@ -825,12 +827,12 @@ const App: React.FC = () => {
           </div>
         </section>
 
-        <section className="open-source-section reveal" id="open-source">
+        <section className="open-source-section reveal" id="open-source" ref={openSourceRef}>
           <div className="open-source-grid">
             <div className="open-source-stance">
-              <span className="eyebrow"><span className="eyebrow-sigil">//</span><TubelightReveal text="Open source" start={true} /></span>
+              <span className="eyebrow"><span className="eyebrow-sigil">//</span><TubelightReveal text="Open source" start={openSourceInView} /></span>
               <h2>
-                <TubelightReveal text="We work in public, on principle." start={true} />
+                <TubelightReveal text="We work in public, on principle." start={openSourceInView} />
               </h2>
               <p>
                 Privacy is a claim, not a feature. It is only credible when the code is open and the history is visible. Every FadSec Lab project ships with a public repo, public releases, and a public issue tracker. We do not lock downloads behind a marketing site. We do not gate changelogs behind an account. The work has to stand on its own.
