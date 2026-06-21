@@ -73,11 +73,7 @@
 - For an open-source / "we work in public" stance section, lead with the stance and philosophy, not the repository count. The count supports the stance, not the other way around. Confidence: 0.70
 
 # Motion
-- Animations must start promptly when in view and stay visible long enough to register. Watch for late-start / early-end animation bugs on smaller screens and fix by adjusting thresholds and duration. Confidence: 0.70
-- Scroll-triggered animations (ScrollTrigger) on below-the-fold sections must not be initialized until after the loading screen completes dismissal. On mobile, headings that trigger while the loader is still up finish invisible and appear static when scrolled to — delay ScrollTrigger setup until the loader's onComplete fires. Confidence: 0.70
-- When GSAP-animated elements start from a hidden/offset state (e.g. `yPercent: 110`, `opacity: 0`), set those initial values in CSS (not just `gsap.set` in JS) to prevent FOUT. CSS loads before JS, so the element is hidden from the first paint. `gsap.set` alone still leaves a render-frame flash because the DOM paints before JS executes. Confidence: 0.80
-- Hero heading should use a SaaS-style word-by-word slide-up + unblur reveal animation. This motion pattern is the gold-standard reference for other animated elements on the site (e.g. brand wordmark hover). Other headings should match the military-dossier aesthetic with a "blinking" / typed-on type treatment so the two patterns feel cohesive. Confidence: 0.80
-
+See [motion/taste.md](motion/taste.md)
 # Typography
 - Treat font choice as a first-class decision for this security/SaaS-feeling project. Pair a strong display sans for headings with a mono for labels and a clean sans for body. The current token set is not the final answer — iterate the font combination rather than defaulting to the existing stack. Confidence: 0.70
 

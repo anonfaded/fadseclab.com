@@ -329,7 +329,10 @@ const App: React.FC = () => {
   const [hasScrolled, setHasScrolled] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState(true);
 
-  const { ref: trustRef, inView: trustInView } = useInView<HTMLDivElement>(0.2);
+  const { ref: trustRef, inView: trustInView } = useInView<HTMLDivElement>(0);
+  const { ref: trustMetricsRef1, inView: trustMetrics1 } = useInView<HTMLDivElement>(0);
+  const { ref: trustMetricsRef2, inView: trustMetrics2 } = useInView<HTMLDivElement>(0);
+  const { ref: trustMetricsRef3, inView: trustMetrics3 } = useInView<HTMLDivElement>(0);
   const { ref: productRef, inView: productInView } = useInView<HTMLDivElement>(0.2);
   const { ref: servicesRef, inView: servicesInView } = useInView<HTMLDivElement>(0.2);
   const { ref: openSourceRef, inView: openSourceInView } = useInView<HTMLDivElement>(0.2);
@@ -595,31 +598,31 @@ const App: React.FC = () => {
         <section className="trust-section reveal" aria-label="Users trust us" id="trust" ref={trustRef}>
           <div className="trust-grid">
             <div className="trust-copy">
-              <span className="eyebrow"><span className="eyebrow-sigil">//</span><TubelightReveal text="Users trust us" start={trustInView} /></span>
+              <span className="eyebrow"><span className="eyebrow-sigil">//</span><TubelightReveal text="Users trust us" start={trustInView && !isLoading} /></span>
               <h2 className="trust-headline">
-                <TubelightReveal text="A privacy-first company with a global footprint." start={trustInView} />
+                <TubelightReveal text="A privacy-first company with a global footprint." start={trustInView && !isLoading} />
               </h2>
               <p className="trust-body">
                 FadSec Lab products are used by individuals, journalists, security researchers, and small teams across every inhabited continent. They install our software because the source is public, the defaults hold up under audit, and no one is paying us to look the other way.
               </p>
               <div className="trust-metric-strip">
-                <article className="trust-metric">
+                <article className="trust-metric" ref={trustMetricsRef1}>
                   <div className="trust-metric-num">
-                    <AnimatedNumber value={51} suffix="+" start={trustInView} />
+                    <AnimatedNumber value={51} suffix="+" start={trustMetrics1 && !isLoading} />
                   </div>
                   <div className="trust-metric-label">Countries</div>
                   <div className="trust-metric-provenance">with active installs across the open-source catalog</div>
                 </article>
-                <article className="trust-metric">
+                <article className="trust-metric" ref={trustMetricsRef2}>
                   <div className="trust-metric-num">
-                    <AnimatedNumber value={150} suffix="K+" start={trustInView} />
+                    <AnimatedNumber value={150} suffix="K+" start={trustMetrics2 && !isLoading} />
                   </div>
                   <div className="trust-metric-label">Users reached</div>
                   <div className="trust-metric-provenance">across all FadSec Lab releases, Play Store and FOSS</div>
                 </article>
-                <article className="trust-metric">
+                <article className="trust-metric" ref={trustMetricsRef3}>
                   <div className="trust-metric-num trust-metric-num--quiet">
-                    <AnimatedNumber value={0} suffix="" start={trustInView} />
+                    <AnimatedNumber value={0} suffix="" start={trustMetrics3 && !isLoading} />
                   </div>
                   <div className="trust-metric-label">Hidden trackers</div>
                   <div className="trust-metric-provenance">no third-party SDKs, no analytics, no ad identifiers</div>
@@ -684,9 +687,9 @@ const App: React.FC = () => {
 
         <section className="product-section reveal" id="products" ref={productRef}>
           <div className="product-head reveal">
-            <span className="eyebrow"><span className="eyebrow-sigil">//</span><TubelightReveal text="Products" start={productInView} /></span>
+            <span className="eyebrow"><span className="eyebrow-sigil">//</span><TubelightReveal text="Products" start={productInView && !isLoading} /></span>
             <h2 className="product-section-title">
-              <TubelightReveal text="Privacy-first software, shipped in the open." start={productInView} />
+              <TubelightReveal text="Privacy-first software, shipped in the open." start={productInView && !isLoading} />
             </h2>
             <p className="product-section-lede">
               A focused catalog of native and cross-platform apps, built for people who want full control over what runs on their devices.
@@ -694,7 +697,7 @@ const App: React.FC = () => {
           </div>
 
           <div className="product-grid">
-            <article className={cn('product-flagship', productInView && 'is-visible')}>
+            <article className={cn('product-flagship', productInView && !isLoading && 'is-visible')}>
               <div className="product-flagship-meta">
                 <Badge variant="destructive">Flagship</Badge>
                 <span className="product-flagship-eyebrow">// FADCAM · ANDROID</span>
@@ -730,7 +733,7 @@ const App: React.FC = () => {
             </article>
 
             <aside className="product-rest reveal">
-              <span className="eyebrow"><span className="eyebrow-sigil">//</span><TubelightReveal text="The rest of the catalog" start={productInView} /></span>
+              <span className="eyebrow"><span className="eyebrow-sigil">//</span><TubelightReveal text="The rest of the catalog" start={productInView && !isLoading} /></span>
               <h3 className="product-rest-title">Android apps, desktop tools, and more.</h3>
               <p className="product-rest-body">
                 We build a lot more than FadCam. Privacy utilities, secure notes, file tools, a small library of small-but-loved apps. They all live on GitHub under the same banner.
@@ -756,9 +759,9 @@ const App: React.FC = () => {
         <section className="services-section reveal" id="services" ref={servicesRef}>
           <div className="services-grid">
             <div className="services-copy">
-              <span className="eyebrow"><span className="eyebrow-sigil">//</span><TubelightReveal text="Services" start={servicesInView} /></span>
+              <span className="eyebrow"><span className="eyebrow-sigil">//</span><TubelightReveal text="Services" start={servicesInView && !isLoading} /></span>
               <h2>
-                <TubelightReveal text="Need a privacy-first app shipped? We do that." start={servicesInView} />
+                <TubelightReveal text="Need a privacy-first app shipped? We do that." start={servicesInView && !isLoading} />
               </h2>
               <p>
                 We work with founders, security teams, and open-source projects who care about what runs on their users' devices. Every engagement is a working partnership: clean architecture, real engineering review, and code you'll be proud to publish.
@@ -830,9 +833,9 @@ const App: React.FC = () => {
         <section className="open-source-section reveal" id="open-source" ref={openSourceRef}>
           <div className="open-source-grid">
             <div className="open-source-stance">
-              <span className="eyebrow"><span className="eyebrow-sigil">//</span><TubelightReveal text="Open source" start={openSourceInView} /></span>
+              <span className="eyebrow"><span className="eyebrow-sigil">//</span><TubelightReveal text="Open source" start={openSourceInView && !isLoading} /></span>
               <h2>
-                <TubelightReveal text="We work in public, on principle." start={openSourceInView} />
+                <TubelightReveal text="We work in public, on principle." start={openSourceInView && !isLoading} />
               </h2>
               <p>
                 Privacy is a claim, not a feature. It is only credible when the code is open and the history is visible. Every FadSec Lab project ships with a public repo, public releases, and a public issue tracker. We do not lock downloads behind a marketing site. We do not gate changelogs behind an account. The work has to stand on its own.
@@ -866,11 +869,11 @@ const App: React.FC = () => {
         </section>
 
         <section className="mission-section reveal" id="mission" ref={missionRef}>
-          <div className={cn('mission-grid', missionInView && 'is-visible')}>
+          <div className={cn('mission-grid', missionInView && !isLoading && 'is-visible')}>
             <div className="mission-stance">
-              <span className="eyebrow"><span className="eyebrow-sigil">//</span><TubelightReveal text="Mission" start={missionInView} /></span>
+              <span className="eyebrow"><span className="eyebrow-sigil">//</span><TubelightReveal text="Mission" start={missionInView && !isLoading} /></span>
               <h2 className="mission-headline">
-                <TubelightReveal text="Surveillance-free technology is a fundamental right." start={missionInView} />
+                <TubelightReveal text="Surveillance-free technology is a fundamental right." start={missionInView && !isLoading} />
               </h2>
               <p className="mission-lede">
                 FadSec Lab was founded with one goal: to give users, and ourselves, full control over the software we run. The base condition for that is Shariah compliance, which we treat as a hard line. We do not track anyone. We do not collect any data. We do not show ads, and we do not earn from ads, surveillance, or privacy invasion of any kind.
@@ -884,7 +887,7 @@ const App: React.FC = () => {
             </div>
 
             <aside className="mission-donate">
-              <span className="eyebrow"><span className="eyebrow-sigil">//</span><TubelightReveal text="Support the mission" start={missionInView} /></span>
+              <span className="eyebrow"><span className="eyebrow-sigil">//</span><TubelightReveal text="Support the mission" start={missionInView && !isLoading} /></span>
               <h3 className="mission-donate-title">We work in public. Help us keep going.</h3>
               <p className="mission-donate-body">
                 FadSec Lab does not run on ads, surveillance, or investor money. We run on the people who believe in the mission and want a private, ethical alternative to the mainstream stack. If our work has earned your support, you can back us on Patreon, or reach out directly for crypto donations.
