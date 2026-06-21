@@ -809,17 +809,17 @@ const App: React.FC = () => {
             <article className={cn('product-flagship', productInView && !isLoading && 'is-visible')}>
               <div className="product-flagship-meta">
                 <Badge variant="default">Flagship</Badge>
-                <span className="product-flagship-eyebrow"><FaAndroid size={11} /> ANDROID</span>
+                <span className="product-flagship-eyebrow"><FaAndroid size={14} /> ANDROID</span>
               </div>
               <div className="product-flagship-body">
                 <h3 className="product-flagship-title">FadCam</h3>
                 <p className="product-flagship-desc">
-                  An open-source camera app that records on device, not into a surveillance pipeline. Privacy defaults that hold under audit, and a public source tree that anyone can read.
+                  Privacy-focused Android multimedia suite: background video recording, dashcam, screen recorder, live streaming and remote camera control — ad-free and open-source.
                 </p>
                 <ul className="product-flagship-uses">
-                  <li><Camera /><div><b>Documentation.</b><span>Field reports, training material, and product walkthroughs recorded without uploading a frame.</span></div></li>
-                  <li><ShieldCheck /><div><b>Personal safety.</b><span>Discreet on-device recording for situations where evidence matters and surveillance does not.</span></div></li>
-                  <li><Sparkles /><div><b>Daily journaling.</b><span>Travel logs, life recaps, and family memories kept private by default.</span></div></li>
+                  <li><Camera /><div><b>Dashcam & background recording.</b><span>Record video with the screen off. Fragmented MP4 eliminates corruption risk, with auto-splitting at customizable size limits.</span></div></li>
+                  <li><ShieldCheck /><div><b>Remote monitoring.</b><span>Live stream your camera over a local network with a web interface. Start and stop recording, toggle the torch, and check battery status from any device.</span></div></li>
+                  <li><Sparkles /><div><b>Screen recorder.</b><span>Full-featured capture with annotation tools — pen, eraser, text, and shapes. Multi-layer editing with version control and unlimited undo.</span></div></li>
                 </ul>
                 <div className="product-flagship-cta">
                   <Button type="button" size="lg" onClick={() => queueExternalNav({ label: 'FadCam', url: fadCamUrl })}>
@@ -833,7 +833,7 @@ const App: React.FC = () => {
                 </div>
               </div>
               <figure className="product-flagship-pilot">
-                <img src={pilotPicImg} alt="A pilot using FadCam in the cockpit" />
+                <img src={pilotPicImg} alt="A pilot using FadCam in the cockpit" width="512" height="384" />
                 <figcaption>
                   <span className="pilot-eyebrow">// IN THE FIELD</span>
                   <span className="pilot-caption">Over the North Atlantic, flying from Canada to Greenland.</span>
@@ -848,58 +848,75 @@ const App: React.FC = () => {
               <p className="product-rest-body">
                 Open-source tools for Android, Windows, Linux, and macOS — all built with the same commitment to privacy, transparency, and real user control. No data collection, no telemetry, no exceptions.
               </p>
-              <ul className="product-rest-names">
-                <li>
-                  <button type="button" className="product-rest-link" onClick={() => queueExternalNav({ label: 'Fadocx', url: 'https://github.com/anonfaded/Fadocx' })}>
-                    <span className="product-rest-link-icon"><FileText size={15} /></span>
-                    <span className="product-rest-link-text">
-                      <span className="product-rest-link-name">Fadocx</span>
-                      <span className="product-rest-link-desc">Android document viewer with OCR — privacy-first, offline-first.</span>
-                    </span>
-                    <span className="product-rest-link-meta"><FaAndroid size={14} /><FaApple size={14} /><span className="product-rest-link-meta-badge">(soon)</span><ExternalLink size={12} /></span>
-                  </button>
-                </li>
-                <li>
-                  <button type="button" className="product-rest-link" onClick={() => queueExternalNav({ label: 'FadeBoard', url: 'https://github.com/anonfaded/fadeboard' })}>
-                    <span className="product-rest-link-icon"><Keyboard size={15} /></span>
-                    <span className="product-rest-link-text">
-                      <span className="product-rest-link-name">FadeBoard</span>
-                      <span className="product-rest-link-desc">Android keyboard that bypasses censorship with special characters.</span>
-                    </span>
-                    <span className="product-rest-link-meta"><FaAndroid size={14} /><ExternalLink size={12} /></span>
-                  </button>
-                </li>
-                <li>
-                  <button type="button" className="product-rest-link" onClick={() => queueExternalNav({ label: 'FadCrypt', url: 'https://github.com/anonfaded/FadCrypt' })}>
-                    <span className="product-rest-link-icon"><Lock size={15} /></span>
-                    <span className="product-rest-link-text">
-                      <span className="product-rest-link-name">FadCrypt</span>
-                      <span className="product-rest-link-desc">Windows app encryption — powerful, customizable, and free.</span>
-                    </span>
-                    <span className="product-rest-link-meta"><FaWindows size={14} /><FaLinux size={14} /><FaApple size={14} /><span className="product-rest-link-meta-badge">(soon)</span><ExternalLink size={12} /></span>
-                  </button>
-                </li>
-                <li>
-                  <button type="button" className="product-rest-link" onClick={() => queueExternalNav({ label: 'FadCat', url: 'https://github.com/anonfaded/FadCat' })}>
-                    <span className="product-rest-link-icon"><Terminal size={15} /></span>
-                    <span className="product-rest-link-text">
-                      <span className="product-rest-link-name">FadCat</span>
-                      <span className="product-rest-link-desc">Cross-platform logcat utility with MCP automation support.</span>
-                    </span>
-                    <span className="product-rest-link-meta"><FaApple size={14} /><FaWindows size={14} /><FaLinux size={14} /><ExternalLink size={12} /></span>
-                  </button>
-                </li>
-                <li>
-                  <button type="button" className="product-rest-link" onClick={() => queueExternalNav({ label: 'Fadify', url: 'https://github.com/anonfaded/Fadify' })}>
-                    <span className="product-rest-link-icon"><Palette size={15} /></span>
-                    <span className="product-rest-link-text">
-                      <span className="product-rest-link-name">Fadify</span>
-                      <span className="product-rest-link-desc">Firefox add-on for true dark aesthetics and web customization.</span>
-                    </span>
-                    <span className="product-rest-link-meta"><FaFirefox size={14} /><ExternalLink size={12} /></span>
-                  </button>
-                </li>
-              </ul>
+              <table className="product-rest-table">
+                <thead>
+                  <tr>
+                    <th className="product-rest-th--project">Project</th>
+                    <th className="product-rest-th--desc">Description</th>
+                    <th className="product-rest-th--platforms">Platforms</th>
+                    <th className="product-rest-th--link"></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr className="product-rest-row" onClick={() => queueExternalNav({ label: 'Fadocx', url: 'https://github.com/anonfaded/Fadocx' })}>
+                    <td className="product-rest-td--project"><span className="product-rest-td--project-inner">
+                      <span className="product-rest-link-icon"><FileText size={14} /></span>
+                      <span>Fadocx</span>
+                    </span></td>
+                    <td className="product-rest-td--desc">Android document viewer with OCR — privacy-first, offline-first.</td>
+                    <td className="product-rest-td--platforms"><span className="product-rest-td--platforms-inner">
+                      <FaAndroid size={13} />
+                      <span className="product-rest-soon"><FaApple size={10} /> soon</span>
+                    </span></td>
+                    <td className="product-rest-td--link"><ExternalLink size={11} /></td>
+                  </tr>
+                  <tr className="product-rest-row" onClick={() => queueExternalNav({ label: 'FadeBoard', url: 'https://github.com/anonfaded/fadeboard' })}>
+                    <td className="product-rest-td--project"><span className="product-rest-td--project-inner">
+                      <span className="product-rest-link-icon"><Keyboard size={14} /></span>
+                      <span>FadeBoard</span>
+                    </span></td>
+                    <td className="product-rest-td--desc">Android keyboard that bypasses censorship with special characters.</td>
+                    <td className="product-rest-td--platforms"><span className="product-rest-td--platforms-inner">
+                      <FaAndroid size={13} />
+                    </span></td>
+                    <td className="product-rest-td--link"><ExternalLink size={11} /></td>
+                  </tr>
+                  <tr className="product-rest-row" onClick={() => queueExternalNav({ label: 'FadCrypt', url: 'https://github.com/anonfaded/FadCrypt' })}>
+                    <td className="product-rest-td--project"><span className="product-rest-td--project-inner">
+                      <span className="product-rest-link-icon"><Lock size={14} /></span>
+                      <span>FadCrypt</span>
+                    </span></td>
+                    <td className="product-rest-td--desc">Windows app encryption — powerful, customizable, and free.</td>
+                    <td className="product-rest-td--platforms"><span className="product-rest-td--platforms-inner">
+                      <FaWindows size={13} /><FaLinux size={13} />
+                      <span className="product-rest-soon"><FaApple size={10} /> soon</span>
+                    </span></td>
+                    <td className="product-rest-td--link"><ExternalLink size={11} /></td>
+                  </tr>
+                  <tr className="product-rest-row" onClick={() => queueExternalNav({ label: 'FadCat', url: 'https://github.com/anonfaded/FadCat' })}>
+                    <td className="product-rest-td--project"><span className="product-rest-td--project-inner">
+                      <span className="product-rest-link-icon"><Terminal size={14} /></span>
+                      <span>FadCat</span>
+                    </span></td>
+                    <td className="product-rest-td--desc">Cross-platform logcat utility with MCP automation support.</td>
+                    <td className="product-rest-td--platforms"><span className="product-rest-td--platforms-inner">
+                      <FaApple size={13} /><FaWindows size={13} /><FaLinux size={13} />
+                    </span></td>
+                    <td className="product-rest-td--link"><ExternalLink size={11} /></td>
+                  </tr>
+                  <tr className="product-rest-row" onClick={() => queueExternalNav({ label: 'Fadify', url: 'https://github.com/anonfaded/Fadify' })}>
+                    <td className="product-rest-td--project"><span className="product-rest-td--project-inner">
+                      <span className="product-rest-link-icon"><Palette size={14} /></span>
+                      <span>Fadify</span>
+                    </span></td>
+                    <td className="product-rest-td--desc">Firefox add-on for true dark aesthetics and web customization.</td>
+                    <td className="product-rest-td--platforms"><span className="product-rest-td--platforms-inner">
+                      <FaFirefox size={13} />
+                    </span></td>
+                    <td className="product-rest-td--link"><ExternalLink size={11} /></td>
+                  </tr>
+                </tbody>
+              </table>
               <div className="product-rest-cta">
                 <Button type="button" size="lg" onClick={() => queueExternalNav({ label: 'GitHub', url: githubOrgUrl })}>
                   <FaGithub /> Browse all projects
