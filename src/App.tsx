@@ -158,7 +158,7 @@ function BrandWordmark() {
     gsap.killTweensOf(els);
 
     if (hovered) {
-      if (sigil) gsap.to(sigil, { x: 140, duration: 0.5, ease: 'expo.out', overwrite: 'auto' });
+      if (sigil) gsap.to(sigil, { x: 135, duration: 0.5, ease: 'expo.out', overwrite: 'auto' });
       if (wordmark) gsap.to(wordmark, { opacity: 0, filter: 'blur(4px)', duration: 0.35, ease: 'power3.out', overwrite: 'auto' });
       gsap.to(target!, { yPercent: 0, filter: 'blur(0px)', opacity: 1, duration: 0.45, ease: 'expo.out', overwrite: 'auto' });
     } else {
