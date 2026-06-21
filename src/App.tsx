@@ -7,9 +7,11 @@ import {
   ExternalLink,
   FileText,
   HandCoins,
+  Keyboard,
   Lock,
   Mail,
   MapPin,
+  Monitor,
   Moon,
   Palette,
   ShieldCheck,
@@ -18,7 +20,7 @@ import {
   Terminal,
   User,
 } from 'lucide-react';
-import { FaDiscord, FaGithub, FaPatreon } from 'react-icons/fa6';
+import { FaAndroid, FaDiscord, FaFirefox, FaGithub, FaPatreon } from 'react-icons/fa6';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { buttonVariants } from '@/components/ui/button-variants';
@@ -807,8 +809,8 @@ const App: React.FC = () => {
           <div className="product-grid">
             <article className={cn('product-flagship', productInView && !isLoading && 'is-visible')}>
               <div className="product-flagship-meta">
-                <Badge variant="destructive">Flagship</Badge>
-                <span className="product-flagship-eyebrow">// FADCAM · ANDROID</span>
+                <Badge variant="default">Flagship</Badge>
+                <span className="product-flagship-eyebrow"><FaAndroid size={11} /> ANDROID</span>
               </div>
               <div className="product-flagship-body">
                 <h3 className="product-flagship-title">FadCam</h3>
@@ -835,46 +837,67 @@ const App: React.FC = () => {
                 <img src={pilotPicImg} alt="A pilot using FadCam in the cockpit" />
                 <figcaption>
                   <span className="pilot-eyebrow">// IN THE FIELD</span>
-                  <span className="pilot-caption">FadCam in the cockpit — one of the real-world crews documenting their work with us.</span>
+                  <span className="pilot-caption">Over the North Atlantic, flying from Canada to Greenland.</span>
+                  <span className="pilot-credit">Photo by <a href="https://neophile.me" target="_blank">Sam Rutherford</a></span>
                 </figcaption>
               </figure>
             </article>
 
             <aside className="product-rest reveal">
               <span className="eyebrow"><span className="eyebrow-sigil">//</span><TubelightReveal text="The rest of the catalog" start={productInView && !isLoading} /></span>
-              <h3 className="product-rest-title">Android apps, desktop tools, and more.</h3>
+              <h3 className="product-rest-title">More from the catalog</h3>
               <p className="product-rest-body">
-                We build a lot more than FadCam. Privacy utilities, secure notes, file tools, a small library of small-but-loved apps. They all live on GitHub under the same banner.
+                Open-source tools spanning Android, Windows, desktop, and browser extensions — all built with the same commitment to privacy, transparency, and real user control. No data collection, no telemetry, no exceptions.
               </p>
               <ul className="product-rest-names">
                 <li>
-                  <button type="button" className="product-rest-link" onClick={() => queueExternalNav({ label: 'Fadocx', url: 'https://github.com/fadsec-lab/fadocx' })}>
-                    <FileText size={12} />
-                    <span>Fadocx</span>
+                  <button type="button" className="product-rest-link" onClick={() => queueExternalNav({ label: 'Fadocx', url: 'https://github.com/anonfaded/Fadocx' })}>
+                    <FileText size={14} />
+                    <span className="product-rest-link-text">
+                      <span className="product-rest-link-name">Fadocx</span>
+                      <span className="product-rest-link-desc">Android document viewer with OCR — privacy-first, offline-first.</span>
+                    </span>
+                    <span className="product-rest-link-meta"><FaAndroid size={12} /><ExternalLink size={11} /></span>
                   </button>
                 </li>
                 <li>
-                  <button type="button" className="product-rest-link" onClick={() => queueExternalNav({ label: 'FadeBoard', url: 'https://github.com/fadsec-lab/fadeboard' })}>
-                    <Terminal size={12} />
-                    <span>FadeBoard</span>
+                  <button type="button" className="product-rest-link" onClick={() => queueExternalNav({ label: 'FadeBoard', url: 'https://github.com/anonfaded/fadeboard' })}>
+                    <Keyboard size={14} />
+                    <span className="product-rest-link-text">
+                      <span className="product-rest-link-name">FadeBoard</span>
+                      <span className="product-rest-link-desc">Android keyboard that bypasses censorship with special characters.</span>
+                    </span>
+                    <span className="product-rest-link-meta"><FaAndroid size={12} /><ExternalLink size={11} /></span>
                   </button>
                 </li>
                 <li>
-                  <button type="button" className="product-rest-link" onClick={() => queueExternalNav({ label: 'FadCrypt', url: 'https://github.com/fadsec-lab/fadcrypt' })}>
-                    <Lock size={12} />
-                    <span>FadCrypt</span>
+                  <button type="button" className="product-rest-link" onClick={() => queueExternalNav({ label: 'FadCrypt', url: 'https://github.com/anonfaded/FadCrypt' })}>
+                    <Lock size={14} />
+                    <span className="product-rest-link-text">
+                      <span className="product-rest-link-name">FadCrypt</span>
+                      <span className="product-rest-link-desc">Windows app encryption — powerful, customizable, and free.</span>
+                    </span>
+                    <span className="product-rest-link-meta"><Monitor size={12} /><ExternalLink size={11} /></span>
                   </button>
                 </li>
                 <li>
-                  <button type="button" className="product-rest-link" onClick={() => queueExternalNav({ label: 'FadCat', url: 'https://github.com/fadsec-lab/fadcat' })}>
-                    <Terminal size={12} />
-                    <span>FadCat</span>
+                  <button type="button" className="product-rest-link" onClick={() => queueExternalNav({ label: 'FadCat', url: 'https://github.com/anonfaded/FadCat' })}>
+                    <Terminal size={14} />
+                    <span className="product-rest-link-text">
+                      <span className="product-rest-link-name">FadCat</span>
+                      <span className="product-rest-link-desc">Cross-platform logcat utility with MCP automation support.</span>
+                    </span>
+                    <span className="product-rest-link-meta"><Monitor size={12} /><ExternalLink size={11} /></span>
                   </button>
                 </li>
                 <li>
-                  <button type="button" className="product-rest-link" onClick={() => queueExternalNav({ label: 'Fadify', url: 'https://github.com/fadsec-lab/fadify' })}>
-                    <Palette size={12} />
-                    <span>Fadify</span>
+                  <button type="button" className="product-rest-link" onClick={() => queueExternalNav({ label: 'Fadify', url: 'https://github.com/anonfaded/Fadify' })}>
+                    <Palette size={14} />
+                    <span className="product-rest-link-text">
+                      <span className="product-rest-link-name">Fadify</span>
+                      <span className="product-rest-link-desc">Firefox add-on for true dark aesthetics and web customization.</span>
+                    </span>
+                    <span className="product-rest-link-meta"><FaFirefox size={12} /><ExternalLink size={11} /></span>
                   </button>
                 </li>
               </ul>
