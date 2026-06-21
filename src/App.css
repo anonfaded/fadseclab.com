@@ -387,15 +387,19 @@ main {
 }
 
 .menu-button-stack span:nth-child(1) { top: 3px; }
-.menu-button-stack span:nth-child(2) { top: 10px; }
+.menu-button-stack span:nth-child(2) { top: 10px; left: 40%; right: 0; }
 
 .menu-button-stack[data-open='true'] span:nth-child(1) {
   top: 6px;
+  left: 0;
+  right: 0;
   transform: rotate(45deg);
 }
 
 .menu-button-stack[data-open='true'] span:nth-child(2) {
   top: 6px;
+  left: 0;
+  right: 0;
   transform: rotate(-45deg);
 }
 
