@@ -1118,7 +1118,6 @@ main {
   gap: 0;
   border: 1px solid var(--frame-border);
   background: var(--report-surface);
-  overflow: hidden;
   transition: border-color 220ms ease, transform 220ms ease;
 }
 
@@ -1198,7 +1197,7 @@ main {
 
 .product-flagship-uses {
   display: grid;
-  gap: 12px;
+  gap: 0;
   margin: 6px 0 0;
   padding: 14px 0 0;
   list-style: none;
@@ -1210,6 +1209,13 @@ main {
   grid-template-columns: 18px 1fr;
   gap: 10px;
   align-items: start;
+  padding: 8px 6px;
+  border-radius: 4px;
+  transition: background-color 200ms ease;
+}
+
+.product-flagship-uses li:nth-child(even) {
+  background: color-mix(in srgb, var(--accent-brand) 4%, transparent);
 }
 
 .product-flagship-uses svg {
@@ -1361,6 +1367,12 @@ main {
 
 .product-rest-names li {
   padding: 0;
+  border-radius: 4px;
+  transition: background-color 200ms ease;
+}
+
+.product-rest-names li:nth-child(even) {
+  background: color-mix(in srgb, var(--accent-brand) 4%, transparent);
 }
 
 .product-rest-names li:last-child {
@@ -1370,7 +1382,7 @@ main {
 .product-rest-link {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   width: 100%;
   padding: 9px 0;
   border: 0;
@@ -1420,6 +1432,22 @@ main {
 
 .product-rest-link-meta svg {
   display: block;
+}
+
+.product-rest-link-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  flex-shrink: 0;
+}
+
+.product-rest-link-meta-badge {
+  color: var(--text-faint);
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
 }
 
 .product-rest-link-name {
