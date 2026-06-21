@@ -683,8 +683,8 @@ function HeroAdversaryThreeScene({
     antenna.add(tubeBetween(new THREE.Vector3(-0.11, 0.25, 0), new THREE.Vector3(0.11, 0.25, 0), 0.007, steelMat, 8));
     antenna.add(tubeBetween(new THREE.Vector3(-0.08, 0.14, 0), new THREE.Vector3(0.08, 0.14, 0), 0.006, steelMat, 8));
     const antennaTipMaterial = new THREE.MeshStandardMaterial({
-      color: 0xff5e4d,
-      emissive: 0xff2d20,
+      color: 0xcc1111,
+      emissive: 0xff0000,
       emissiveIntensity: 1.05,
       roughness: 0.36,
       metalness: 0.18,
@@ -1012,7 +1012,7 @@ function HeroAdversaryThreeScene({
         new THREE.TorusGeometry(0.14, 0.006, 8, 72),
         new THREE.MeshBasicMaterial({ color: 0xff5642, transparent: true, opacity: 0.78 }),
       );
-      ring.position.copy(tower.position).add(new THREE.Vector3(-0.08, 2.97, -0.08));
+      ring.position.copy(tower.position).add(new THREE.Vector3(-0.08, 3.03, -0.03));
       ring.rotation.x = 0;
       ring.userData.phase = index / 3;
       root.add(ring);
