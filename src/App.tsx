@@ -583,7 +583,7 @@ const App: React.FC = () => {
               <WordReveal text="forever." start={!isLoading} delay={0.42} wordClassName="hero-headline-accent" />
             </h1>
             <p className="hero-lede">
-              Open-source Android, iOS, Flutter, and desktop software. Public source, zero hidden tracking, production-grade engineering.
+              Anti-adversary, open-source software for Android, iOS, and desktop.<br /> Zero tracking, zero telemetry, production-grade engineering.
             </p>
             <div className="hero-actions">
               <a href="#services" className={buttonVariants({ size: 'lg', className: 'hero-action' })} onClick={(e) => handleNavClick(e, '#services')}>
