@@ -435,6 +435,7 @@ const App: React.FC = () => {
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
     if (!href.startsWith('#')) return;
     e.preventDefault();
+    history.replaceState(null, '', href);
     const target = document.querySelector(href);
     if (target) {
       const top = target.getBoundingClientRect().top + window.scrollY - 80;
