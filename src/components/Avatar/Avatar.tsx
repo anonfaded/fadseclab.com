@@ -161,6 +161,16 @@ const Avatar: React.FC = () => {
 
   return (
     <aside className="avatar-container" aria-label="FadSec Lab avatar">
+      <svg className="avatar-floor" viewBox="0 0 106 20" aria-hidden="true">
+        <defs>
+          <linearGradient id="avatar-floor-grad" x1="0" x2="1" y1="0" y2="0">
+            <stop offset="0%" stopColor="rgba(232,51,74,0)" />
+            <stop offset="50%" stopColor="rgba(232,51,74,0.18)" />
+            <stop offset="100%" stopColor="rgba(232,51,74,0)" />
+          </linearGradient>
+        </defs>
+        <ellipse cx="53" cy="10" rx="42" ry="6" fill="url(#avatar-floor-grad)" />
+      </svg>
       <motion.div
         className="avatar-wrapper"
         initial={{ y: 24, opacity: 0 }}

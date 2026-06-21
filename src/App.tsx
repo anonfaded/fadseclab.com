@@ -161,11 +161,11 @@ function BrandWordmark() {
     gsap.killTweensOf(els);
 
     if (hovered) {
-      if (sigil) gsap.to(sigil, { x: 135, keyframes: [{ filter: 'blur(4px)', opacity: 0.3 }, { filter: 'blur(0px)', opacity: 1 }], duration: 0.5, ease: 'expo.out', overwrite: 'auto' });
+      if (sigil) gsap.to(sigil, { x: 135, duration: 0.5, ease: 'expo.out', overwrite: 'auto' });
       if (wordmark) gsap.to(wordmark, { opacity: 0, filter: 'blur(4px)', duration: 0.35, ease: 'power3.out', overwrite: 'auto' });
       gsap.to(target!, { yPercent: 0, filter: 'blur(0px)', opacity: 1, duration: 0.45, ease: 'expo.out', overwrite: 'auto' });
     } else {
-      if (sigil) gsap.to(sigil, { x: 0, keyframes: [{ filter: 'blur(4px)', opacity: 0.3 }, { filter: 'blur(0px)', opacity: 1 }], duration: 0.35, ease: 'expo.out', overwrite: 'auto' });
+      if (sigil) gsap.to(sigil, { x: 0, duration: 0.35, ease: 'expo.out', overwrite: 'auto' });
       if (wordmark) gsap.to(wordmark, { opacity: 1, filter: 'blur(0px)', duration: 0.2, ease: 'power3.in', overwrite: 'auto' });
       gsap.to(target!, { yPercent: 110, filter: 'blur(8px)', opacity: 0, duration: 0.25, ease: 'power3.in', overwrite: 'auto' });
     }

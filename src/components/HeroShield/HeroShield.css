@@ -110,11 +110,6 @@
   text-transform: uppercase;
 }
 
-.hero-defense-floor {
-  fill: url(#hero-floor);
-  opacity: 0.56;
-}
-
 .hero-guardian {
   transform-box: fill-box;
 }
@@ -854,10 +849,6 @@
   49% {
     scale: 1 0.18;
   }
-}
-
-[data-theme='light'] .hero-defense-floor {
-  opacity: 0.32;
 }
 
 [data-theme='light'] .hero-stage-wall {

@@ -2148,11 +2148,6 @@ export default function HeroShield() {
             <stop offset="48%" stopColor="rgba(255,255,255,0.08)" />
             <stop offset="100%" stopColor="rgba(255,255,255,0)" />
           </radialGradient>
-          <linearGradient id="hero-floor" x1="0" x2="1" y1="0" y2="0">
-            <stop offset="0%" stopColor="rgba(232,51,74,0.08)" />
-            <stop offset="52%" stopColor="rgba(232,51,74,0.16)" />
-            <stop offset="100%" stopColor="rgba(232,51,74,0)" />
-          </linearGradient>
           <clipPath id="hero-shield-clip">
             <path d={shieldCorePath} />
           </clipPath>
@@ -2192,8 +2187,6 @@ export default function HeroShield() {
             <stop offset="100%" stopColor="#1c1c1f" />
           </linearGradient>
         </defs>
-
-        <ellipse className="hero-defense-floor" cx="520" cy="254" rx="350" ry="24" />
 
         <ThreatBorder />
 
