@@ -54,6 +54,9 @@
 - In the services section, explain the offering in copy rather than dumping "Stack / What you get" as terse table cells. Engage users with a narrative, not a spec sheet. Confidence: 0.75
 - In the product section, feature the flagship product with a real photo/asset (e.g. the pilot pic) and describe use cases (documentation, safety, etc.), not release-version tables. Link out to GitHub for the rest. Confidence: 0.70
 
+# Loading Screen
+- Loading screens must be "very minimal fast and modern" — no bloated multi-phase animations, progress bars, sigils, dossier themes, or extended sequences. A simple, lightweight, fast-dismissing indicator is preferred. Confidence: 0.70
+
 # Design Iteration
 - When the user says "i liked the old X" or "old Y was better", preserve the prior version of that element instead of redesigning it. Do not redesign components the user is happy with. Confidence: 0.85
 - Avoid replacing existing, working assets (photos, maps, icons) with abstract data tables or placeholder visuals during a redesign. If the old asset is in use, keep using it. Confidence: 0.80

@@ -32,6 +32,7 @@ import { ComposableMap, Geographies, Geography, Marker } from 'react-simple-maps
 import Avatar from './components/Avatar/Avatar';
 import HeroShield from './components/HeroShield/HeroShield';
 import TransitionOverlay from './components/ui/TransitionOverlay';
+import MilitaryLoader from './components/MilitaryLoader/MilitaryLoader';
 import './App.css';
 
 import pilotPicImg from './assets/images/fadcam_sam_rutherford.jpg';
@@ -325,6 +326,7 @@ const App: React.FC = () => {
   const [activeCountry, setActiveCountry] = useState('');
   const [activeSection, setActiveSection] = useState<string>('home');
   const [hasScrolled, setHasScrolled] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   const { ref: trustRef, inView: trustInView } = useInView<HTMLDivElement>(0.2);
   const { ref: productRef, inView: productInView } = useInView<HTMLDivElement>(0.2);
@@ -376,6 +378,8 @@ const App: React.FC = () => {
   }, []);
 
   useEffect(() => {
+    if (isLoading) return;
+
     const ctx = gsap.context(() => {
       gsap.from('.hero-reveal', {
         y: 18,
@@ -401,7 +405,7 @@ const App: React.FC = () => {
     }, rootRef);
 
     return () => ctx.revert();
-  }, []);
+  }, [isLoading]);
 
   // Animate mobile menu items in stagger
   useEffect(() => {
@@ -576,6 +580,10 @@ const App: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {isLoading && (
+        <MilitaryLoader onComplete={() => setIsLoading(false)} />
+      )}
 
       <main id="home">
         <section className="hero-section">
