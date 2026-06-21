@@ -418,23 +418,26 @@ main {
 
 .header-account:hover,
 .header-account:focus-visible {
-  border-color: color-mix(in srgb, var(--accent-brand) 55%, var(--border-strong));
+  border-color: var(--accent-brand);
   background: var(--surface-hover);
 }
 
-.header-account-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--accent-brand);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent-brand) 22%, transparent);
+.header-account-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  border: 1px solid var(--hairline-strong);
+  color: var(--text-soft);
   flex: 0 0 auto;
-  animation: account-pulse 2.4s ease-in-out infinite;
+  transition: border-color 200ms ease, color 200ms ease;
 }
 
-@keyframes account-pulse {
-  0%, 100% { box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent-brand) 22%, transparent); }
-  50% { box-shadow: 0 0 0 5px color-mix(in srgb, var(--accent-brand) 8%, transparent); }
+.header-account:hover .header-account-icon {
+  border-color: var(--faint);
+  color: var(--text);
 }
 
 .header-account-text {
@@ -483,7 +486,7 @@ main {
 
 .header-account:hover .header-account-beta {
   color: var(--accent-brand) !important;
-  background: color-mix(in srgb, var(--accent-brand) 14%, transparent) !important;
+  background: color-mix(in srgb, var(--accent-brand) 10%, transparent) !important;
 }
 
 .header-account svg {
@@ -491,12 +494,42 @@ main {
   height: 14px;
   color: var(--text-soft);
   margin-left: 2px;
-  transition: transform 200ms ease, color 200ms ease;
+  transition: color 200ms ease;
 }
 
 .header-account:hover svg {
-  transform: translate(1px, -1px);
-  color: var(--accent-brand);
+  color: var(--text);
+}
+
+/* --- Account button: compact mode (tablet) --- */
+@media (max-width: 860px) and (min-width: 781px) {
+  .site-nav {
+    gap: 0;
+  }
+
+  .nav-link {
+    padding: 0 8px;
+    font-size: 12.5px;
+    gap: 5px;
+  }
+
+  .nav-sigil {
+    font-size: 10px;
+  }
+
+  .header-account-text,
+  .header-account > svg,
+  .header-account .header-account-beta {
+    display: none;
+  }
+  .header-account {
+    padding: 0;
+    gap: 0;
+    justify-content: center;
+    border-radius: 10px;
+    height: 36px;
+    width: 36px;
+  }
 }
 
 /* ====================================================
@@ -580,12 +613,33 @@ main {
 }
 
 .nav-item--cta {
-  color: var(--accent-brand);
+  /* Same neutral treatment as other nav items */
 }
 
 .mobile-menu-foot {
   margin-top: auto;
   padding-top: 24px;
+  padding-bottom: 20px;
+  border-top: 1px solid var(--hairline);
+  opacity: 1;
+}
+
+.mobile-menu.open .mobile-menu-foot {
+  animation: menuFootIn 0.4s ease 0.5s both;
+}
+
+@keyframes menuFootIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.mobile-menu.open .mobile-menu-foot .header-account {
+  width: 100%;
+  justify-content: flex-start;
+  height: auto;
+  padding: 14px 16px;
+  border-radius: 12px;
+  gap: 10px;
 }
 
 /* ====================================================
@@ -2001,7 +2055,7 @@ main {
   }
 
   .site-nav,
-  .header-account {
+  .site-header .header-account {
     display: none;
   }
 

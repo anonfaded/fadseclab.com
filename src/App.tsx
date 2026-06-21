@@ -12,6 +12,7 @@ import {
   ShieldCheck,
   Sparkles,
   Sun,
+  User,
 } from 'lucide-react';
 import { FaDiscord, FaGithub, FaPatreon } from 'react-icons/fa6';
 import { Badge } from '@/components/ui/badge';
@@ -392,6 +393,7 @@ const App: React.FC = () => {
       { y: 24, opacity: 0 },
       { y: 0, opacity: 1, duration: 0.45, stagger: 0.06, ease: 'power3.out', delay: 0.1 },
     );
+    // mobile-menu-foot animated via CSS
   }, [isMenuOpen]);
 
   const queueExternalNav = (target: ExternalTarget) => setPendingNav(target);
@@ -490,7 +492,9 @@ const App: React.FC = () => {
             onClick={() => queueExternalNav({ label: 'FadSec ID', url: accountUrl })}
             aria-label="Open FadSec ID account"
           >
-            <span className="header-account-dot" aria-hidden="true" />
+            <span className="header-account-icon">
+              <User size={16} strokeWidth={2} aria-hidden="true" />
+            </span>
             <span className="header-account-text">
               <span className="header-account-eyebrow">FadSec ID</span>
               <span className="header-account-label">Account</span>
@@ -545,7 +549,9 @@ const App: React.FC = () => {
               className="header-account"
               onClick={() => { closeMenu(); queueExternalNav({ label: 'FadSec ID', url: accountUrl }); }}
             >
-              <span className="header-account-dot" aria-hidden="true" />
+              <span className="header-account-icon">
+                <User size={16} strokeWidth={2} aria-hidden="true" />
+              </span>
               <span className="header-account-text">
                 <span className="header-account-eyebrow">FadSec ID</span>
                 <span className="header-account-label">Account</span>
