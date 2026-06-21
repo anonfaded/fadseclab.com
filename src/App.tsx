@@ -119,6 +119,17 @@ const mapMarkers: { name: string; coordinates: [number, number] }[] = [
   { name: 'Taiwan', coordinates: [121.0, 24.0] },
   { name: 'Argentina', coordinates: [-63.6, -38.4] },
   { name: 'Austria', coordinates: [13.2, 47.5] },
+  { name: 'Sri Lanka', coordinates: [80.8, 7.9] },
+  { name: 'Australia', coordinates: [133.8, -25.3] },
+  { name: 'Romania', coordinates: [25.0, 45.9] },
+  { name: 'Ghana', coordinates: [-1.0, 7.9] },
+  { name: 'Bolivia', coordinates: [-63.6, -16.3] },
+  { name: 'Armenia', coordinates: [45.0, 40.0] },
+  { name: 'Algeria', coordinates: [2.6, 28.0] },
+  { name: 'Georgia', coordinates: [43.4, 42.3] },
+  { name: 'Portugal', coordinates: [-8.0, 39.4] },
+  { name: 'Thailand', coordinates: [100.5, 15.9] },
+  { name: 'Costa Rica', coordinates: [-84.0, 9.9] },
 ];
 
 const footerGroups = [
@@ -654,7 +665,7 @@ const App: React.FC = () => {
               <div className="trust-metric-strip">
                 <article className="trust-metric" ref={trustMetricsRef1}>
                   <div className="trust-metric-num">
-                    <AnimatedNumber value={51} suffix="+" start={trustMetrics1 && !isLoading} />
+                    <AnimatedNumber value={60} suffix="+" start={trustMetrics1 && !isLoading} />
                   </div>
                   <div className="trust-metric-label">Countries</div>
                   <div className="trust-metric-provenance">with active installs across the open-source catalog</div>
@@ -1088,7 +1099,7 @@ const App: React.FC = () => {
             <span className="footer-manifest-eyebrow">// SHIP MANIFEST</span>
             <div className="footer-manifest-grid">
               <span><b>23+</b> public repos</span>
-              <span><b>51+</b> countries</span>
+              <span><b>60+</b> countries</span>
               <span><b>0</b> hidden trackers</span>
               <span><b>since 2024</b></span>
             </div>
