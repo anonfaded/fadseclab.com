@@ -190,8 +190,8 @@ main {
 .brand-swap-area {
   position: relative;
   display: inline-block;
-  overflow: hidden;
   vertical-align: bottom;
+  line-height: 0;
 }
 
 .brand-wordmark {
@@ -225,7 +225,9 @@ main {
 
 .brand-hover-target {
   position: absolute;
-  inset: 0;
+  left: 0;
+  top: 0;
+  width: max-content;
   display: inline-flex;
   align-items: center;
   gap: 6px;

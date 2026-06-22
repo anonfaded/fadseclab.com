@@ -171,13 +171,15 @@ const footerGroups = [
         links: [
           { label: 'FadCrypt', action: 'external' as const, url: 'https://github.com/anonfaded/FadCrypt' },
           { label: 'FadCat', action: 'external' as const, url: 'https://github.com/anonfaded/FadCat' },
+          { label: 'QuranCLI', action: 'external' as const, url: 'https://github.com/anonfaded/wifade' },
         ],
       },
       {
         label: 'Extension',
         icons: ['firefox' as const],
         links: [
-          { label: 'Fadify', action: 'external' as const, url: 'https://github.com/anonfaded/Fadify' },
+          { label: 'Fadify', action: 'external' as const, url: 'https://addons.mozilla.org/en-US/firefox/addon/fadify-from-fadsec-lab/' },
+          { label: 'Kali Theme', action: 'external' as const, url: 'https://addons.mozilla.org/en-US/firefox/addon/kali-linux-from-fadsec-lab/' },
         ],
       },
     ],
