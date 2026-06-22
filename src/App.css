@@ -858,6 +858,32 @@ main {
   margin-top: 22px;
   border-top: 1px solid var(--hairline);
   border-bottom: 1px solid var(--hairline);
+  position: relative;
+}
+
+.trust-metric-strip::before,
+.trust-metric-strip::after {
+  content: '';
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border-color: var(--frame-bracket);
+  border-style: solid;
+  border-width: 0;
+}
+
+.trust-metric-strip::before {
+  top: -1px;
+  left: -1px;
+  border-top-width: 1.5px;
+  border-left-width: 1.5px;
+}
+
+.trust-metric-strip::after {
+  bottom: -1px;
+  right: -1px;
+  border-bottom-width: 1.5px;
+  border-right-width: 1.5px;
 }
 
 .trust-metric {
@@ -868,8 +894,51 @@ main {
 }
 
 .trust-metric + .trust-metric {
+  position: relative;
   padding-left: 18px;
   border-left: 1px solid var(--hairline);
+}
+
+.trust-metric + .trust-metric::before {
+  content: '';
+  position: absolute;
+  top: -1px;
+  left: -6px;
+  width: 10px;
+  height: 8px;
+  background: var(--frame-bracket);
+  clip-path: polygon(
+    0% 0%,
+    100% 0%,
+    100% 1.5px,
+    calc(50% + 0.75px) 1.5px,
+    calc(50% + 0.75px) 100%,
+    calc(50% - 0.75px) 100%,
+    calc(50% - 0.75px) 1.5px,
+    0% 1.5px
+  );
+  pointer-events: none;
+}
+
+.trust-metric + .trust-metric::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: -6px;
+  width: 10px;
+  height: 8px;
+  background: var(--frame-bracket);
+  clip-path: polygon(
+    0% calc(100% - 1.5px),
+    calc(50% - 0.75px) calc(100% - 1.5px),
+    calc(50% - 0.75px) 0%,
+    calc(50% + 0.75px) 0%,
+    calc(50% + 0.75px) calc(100% - 1.5px),
+    100% calc(100% - 1.5px),
+    100% 100%,
+    0% 100%
+  );
+  pointer-events: none;
 }
 
 .trust-metric-num {
@@ -1623,6 +1692,22 @@ main {
   flex-direction: column;
   gap: 0;
   border-top: 1px solid var(--hairline);
+  position: relative;
+}
+
+.services-list::before {
+  content: '';
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-color: var(--frame-bracket);
+  border-style: solid;
+  border-width: 0;
+  top: -1px;
+  left: -1px;
+  border-top-width: 1.5px;
+  border-left-width: 1.5px;
+  pointer-events: none;
 }
 
 .service-row {
@@ -1630,6 +1715,25 @@ main {
   padding: 22px 4px 22px;
   border-bottom: 1px solid var(--hairline);
   transition: background-color 180ms ease;
+}
+
+.service-row::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: -1px;
+  width: 12px;
+  height: 22px;
+  background: var(--frame-bracket);
+  clip-path: polygon(
+    0% 0%,
+    1.5px 0%,
+    1.5px calc(100% - 1.5px),
+    100% calc(100% - 1.5px),
+    100% 100%,
+    0% 100%
+  );
+  pointer-events: none;
 }
 
 .service-row:hover {
@@ -2432,22 +2536,6 @@ main {
     grid-template-columns: 1fr;
   }
 
-  .trust-metric-strip {
-    grid-template-columns: 1fr;
-  }
-
-  .trust-metric,
-  .trust-metric + .trust-metric {
-    padding: 16px 0;
-    border-left: 0;
-    border-top: 1px solid var(--hairline);
-  }
-
-  .trust-metric:first-child {
-    border-top: 0;
-    padding-top: 4px;
-  }
-
   .open-source-grid,
   .mission-donate {
     padding: 28px;
@@ -2557,6 +2645,24 @@ main {
   .footer-meta {
     width: 100%;
     justify-content: space-between;
+  }
+}
+
+@media (max-width: 360px) {
+  .trust-metric-strip {
+    grid-template-columns: 1fr;
+  }
+
+  .trust-metric,
+  .trust-metric + .trust-metric {
+    padding: 16px 0;
+    border-left: 0;
+    border-top: 1px solid var(--hairline);
+  }
+
+  .trust-metric:first-child {
+    border-top: 0;
+    padding-top: 4px;
   }
 }
 
