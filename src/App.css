@@ -784,7 +784,6 @@ main {
 /* hero-headline-accent is applied per-word via WordReveal's wordClassName */
 
 .hero-lede {
-  max-width: 680px;
   margin-top: 16px;
   color: var(--text-soft);
   font-size: 17px;
@@ -843,7 +842,7 @@ main {
 
 .trust-grid {
   display: grid;
-  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 32px;
   align-items: stretch;
 }
@@ -868,7 +867,6 @@ main {
 
 .trust-body {
   margin: 4px 0 0;
-  max-width: 56ch;
   color: var(--text-soft);
   font-size: 15px;
   line-height: 1.65;
@@ -1168,7 +1166,6 @@ main {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  max-width: 720px;
   margin-bottom: 22px;
 }
 
@@ -1187,7 +1184,6 @@ main {
   color: var(--text-soft);
   font-size: 16px;
   line-height: 1.6;
-  max-width: 56ch;
 }
 
 .product-grid {
@@ -1289,7 +1285,6 @@ main {
   color: var(--text-soft);
   font-size: 14px;
   line-height: 1.6;
-  max-width: 48ch;
   overflow-wrap: break-word;
   word-break: break-word;
 }
@@ -1696,7 +1691,7 @@ main {
 
 .services-grid {
   display: grid;
-  grid-template-columns: minmax(0, 0.7fr) minmax(0, 1.3fr);
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 24px;
   align-items: stretch;
 }
@@ -1717,7 +1712,6 @@ main {
   line-height: 1.1;
   letter-spacing: -0.025em;
   color: var(--text);
-  max-width: 22ch;
 }
 
 .services-copy p {
@@ -1725,7 +1719,6 @@ main {
   color: var(--text-soft);
   font-size: 15px;
   line-height: 1.65;
-  max-width: 52ch;
 }
 
 .services-copy .eyebrow:last-child {
@@ -1874,7 +1867,6 @@ main {
   color: var(--text-soft);
   font-size: 13.5px;
   line-height: 1.65;
-  max-width: 60ch;
 }
 
 .services-foot {
@@ -1882,7 +1874,7 @@ main {
   align-items: center;
   justify-content: space-between;
   gap: 18px;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   padding: 20px 16px 20px;
   margin-top: 0;
   border-top: 1px solid var(--hairline);
@@ -1891,10 +1883,10 @@ main {
 
 .services-foot p {
   margin: 0;
-  max-width: 44ch;
   color: var(--text);
   font-size: 13.5px;
   line-height: 1.6;
+  flex: 0 1 auto;
 }
 
 .services-foot b {
@@ -1917,13 +1909,6 @@ main {
   }
 }
 
-.services-foot p {
-  margin: 0;
-  max-width: 52ch;
-  color: var(--text);
-  font-size: 14px;
-  line-height: 1.55;
-}
 
 .services-foot b {
   color: var(--accent-brand);
@@ -1988,26 +1973,58 @@ main {
   color: var(--text-soft);
   font-size: 15px;
   line-height: 1.65;
-  max-width: 60ch;
 }
 
 .open-source-stats {
-  display: flex;
-  gap: 28px;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0;
   padding-top: 16px;
   border-top: 1px solid var(--hairline);
+  border-bottom: 1px solid var(--hairline);
+  position: relative;
+}
+
+.open-source-stats::before,
+.open-source-stats::after {
+  content: '';
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border-color: var(--frame-bracket);
+  border-style: solid;
+  border-width: 0;
+}
+
+.open-source-stats::before {
+  top: -1px;
+  left: -1px;
+  border-top-width: 1.5px;
+  border-left-width: 1.5px;
+}
+
+.open-source-stats::after {
+  bottom: -1px;
+  right: -1px;
+  border-bottom-width: 1.5px;
+  border-right-width: 1.5px;
 }
 
 .open-source-stat {
   display: flex;
   flex-direction: column;
   gap: 4px;
+  padding: 18px 18px 18px 0;
+}
+
+.open-source-stat + .open-source-stat {
+  padding-left: 18px;
+  border-left: 1px solid var(--hairline);
 }
 
 .open-source-stat-num {
   font-family: var(--font-display);
-  font-size: 32px;
+  font-size: 38px;
   font-weight: 700;
   line-height: 1;
   letter-spacing: -0.03em;
@@ -2016,12 +2033,11 @@ main {
 }
 
 .open-source-stat-label {
-  color: var(--text-soft);
-  font-family: var(--font-mono);
-  font-size: 10px;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  margin-top: 8px;
+  color: var(--text);
+  font-size: 12.5px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
 }
 
 .open-source-cta {
@@ -2047,7 +2063,6 @@ main {
   color: var(--text-soft);
   font-size: 14px;
   line-height: 1.6;
-  max-width: 36ch;
 }
 
 /* ====================================================
@@ -2094,7 +2109,6 @@ main {
   color: var(--text-soft);
   font-size: 15px;
   line-height: 1.7;
-  max-width: 62ch;
 }
 
 .mission-donate {
@@ -2147,7 +2161,6 @@ main {
   color: var(--text-soft);
   font-size: 14px;
   line-height: 1.6;
-  max-width: 50ch;
 }
 
 .mission-donate-actions {
