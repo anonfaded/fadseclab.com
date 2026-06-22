@@ -2157,6 +2157,11 @@ main {
   line-height: 1.7;
 }
 
+.mission-why {
+  color: var(--accent-brand);
+  font-weight: 600;
+}
+
 .mission-donate {
   position: relative;
   display: flex;

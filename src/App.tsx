@@ -1071,13 +1071,19 @@ const App: React.FC = () => {
                 <TubelightReveal text="Surveillance-free technology is a fundamental right." start={missionInView && !isLoading} />
               </h2>
               <p className="mission-lede">
-                FadSec Lab was founded with one goal: to give users, and ourselves, full control over the software we run. The base condition for that is Shariah compliance, which we treat as a hard line. We do not track anyone. We do not collect any data. We do not show ads, and we do not earn from ads, surveillance, or privacy invasion of any kind.
+                FadSec Lab was founded with a simple goal: to give users, and ourselves, full control over the software we run. The foundation of that mission is Shariah compliance, which we treat as a non-negotiable principle.
               </p>
               <p className="mission-lede">
-                That stance is the product. Our part of the bargain is a mission to build solutions where users have the control, where the work runs on hardware the user already owns, and where the native power of that hardware belongs to the user, not to an analytics pipeline. We are working day and night to make surveillance-free technology the default, and to dethrone the mainstream tools that are unethical by design.
+                <strong className="mission-why">Why Shariah?</strong> Because privacy, dignity, and respect for personal boundaries are fundamental principles within Shariah. Surveillance, data exploitation, behavioral profiling, and ad-driven manipulation are unethical practices that violate those principles. Shariah provides a framework that upholds human dignity, protects personal privacy, and establishes clear ethical limits on how people and their data should be treated.
               </p>
               <p className="mission-lede">
-                We are different on purpose. We work in public, ship open source, and draw strict boundaries. Privacy is not a feature in a list, it is the foundation everything else has to clear. We believe that being free from surveillance is a fundamental right of every person, and we build accordingly.
+                We do not track anyone. We do not collect personally identifiable information, telemetry, usage data, crash reports, or diagnostic logs of any kind. We do not show ads, and we do not profit from surveillance, privacy invasion, or user profiling.
+              </p>
+              <p className="mission-lede">
+                That commitment defines everything we do. Our mission is to build solutions that put users in control, run on hardware they already own, and ensure that the power of that hardware serves the user—not an analytics pipeline. We are committed to making surveillance-free technology the default and replacing mainstream tools that are unethical by design.
+              </p>
+              <p className="mission-lede">
+                We are different by choice. We build in public, ship open source software, and maintain clear ethical boundaries. Privacy is not a feature on a checklist; it is the foundation upon which everything else is built. We believe every person has the right to use technology without being monitored, profiled, or exploited, and we build accordingly.
               </p>
             </div>
 
