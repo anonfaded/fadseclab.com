@@ -967,8 +967,9 @@ const App: React.FC = () => {
                 <TubelightReveal text="Ship production-grade apps, on your timeline." start={servicesInView && !isLoading} />
               </h2>
               <p>
-                We build production-grade Android, iOS, and desktop applications grounded in clean architecture and designed to scale. AI-assisted workflows accelerate development without compromising quality — your MVP ships in 14 days, not weeks or months.
+                We work with startups, founders, and individual developers to ship full-stack mobile and desktop applications — from native Android and iOS to cross-platform solutions. Clean architecture, maintainable codebases, and AI-assisted workflows — your MVP delivered in 14 days, not months.
               </p>
+              <span className="eyebrow"><span className="eyebrow-sigil">//</span> What we offer</span>
             </div>
 
             <div className="services-list">
@@ -977,10 +978,10 @@ const App: React.FC = () => {
                 <div className="service-row-content">
                   <div className="service-row-head">
                     <h3>Native Android</h3>
-                    <span className="service-row-meta">Kotlin · Jetpack Compose · Material 3</span>
                   </div>
+                  <span className="service-row-meta">Kotlin · Jetpack Compose · Material 3</span>
                   <p>
-                    Modern Android applications built with clean architecture and full platform integration. CI/CD pipelines, Play Store and FOSS distribution, and scalable codebases — from rapid MVPs to enterprise-grade products.
+                    Modern Android applications built with clean architecture and full platform integration. We set up Fastlane CI/CD for automated builds and distribution-ready pipelines — from rapid MVPs to enterprise-grade products.
                   </p>
                 </div>
               </article>
@@ -990,10 +991,10 @@ const App: React.FC = () => {
                 <div className="service-row-content">
                   <div className="service-row-head">
                     <h3>Native iOS</h3>
-                    <span className="service-row-meta">Swift · SwiftUI · Xcode Cloud</span>
                   </div>
+                  <span className="service-row-meta">Swift · SwiftUI</span>
                   <p>
-                    Production iOS and iPadOS apps with Swift and SwiftUI, architected for App Store and enterprise deployment. Camera pipelines, on-device machine learning, and real-time media processing at full platform fidelity.
+                    Production iOS and iPadOS apps built with Swift and SwiftUI. We cover the full development lifecycle — from architecture and prototyping to polished, release-ready products.
                   </p>
                 </div>
               </article>
@@ -1002,21 +1003,21 @@ const App: React.FC = () => {
                 <span className="service-row-icon"><Monitor /></span>
                 <div className="service-row-content">
                   <div className="service-row-head">
-                    <h3>Cross-platform Desktop</h3>
-                    <span className="service-row-meta">Tauri · Electron · Flutter</span>
+                    <h3>Cross-platform Mobile & Desktop</h3>
                   </div>
+                  <span className="service-row-meta">Tauri · Electron · Flutter · Qt</span>
                   <p>
-                    macOS, Windows, and Linux from a single codebase. We select the right stack for each use case — Tauri for lean, native-feeling applications; Electron for web-integrated workflows; or Flutter for code shared with your mobile product.
+                    iOS, Android, macOS, Windows, and Linux from a single codebase. We choose the right stack for your use case — Tauri for resource-efficient cross-platform apps, Electron for complex web-integrated workflows, Flutter for shared mobile and desktop experiences, or Qt with Python for high-performance native tooling.
                   </p>
                 </div>
               </article>
 
               <div className="services-foot">
                 <p>
-                  AI-assisted workflows keep us fast. <b>Your MVP ships in 14 days</b> — with clean architecture, CI/CD, and a codebase designed to scale.
+                  <b>Your MVP ships in 14 days</b> — clean architecture, automated CI/CD, and a maintainable codebase built to scale with your product.
                 </p>
                 <Button type="button" size="lg" onClick={() => setActiveDialog('contact')}>
-                  Ship your MVP in 14 days
+                  Start your project
                   <ArrowRight />
                 </Button>
               </div>

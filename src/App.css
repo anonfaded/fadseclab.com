@@ -1516,12 +1516,13 @@ main {
 .product-rest-table {
   width: 100%;
   min-width: 560px;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
   font-size: 12.5px;
 }
 
 .product-rest-table thead tr {
-  border-bottom: 1px solid var(--hairline);
+  border: 0;
 }
 
 .product-rest-table th {
@@ -1533,6 +1534,15 @@ main {
   letter-spacing: 0.1em;
   text-transform: uppercase;
   text-align: left;
+  border-bottom: 1px solid var(--hairline);
+}
+
+.product-rest-table th:first-child {
+  border-radius: 6px 0 0 0;
+}
+
+.product-rest-table th:last-child {
+  border-radius: 0 6px 0 0;
 }
 
 .product-rest-th--project { width: 140px; }
@@ -1543,6 +1553,18 @@ main {
 .product-rest-row {
   cursor: pointer;
   transition: background-color 180ms ease;
+}
+
+.product-rest-row td:first-child {
+  border-radius: 6px 0 0 6px;
+}
+
+.product-rest-row td:last-child {
+  border-radius: 0 6px 6px 0;
+}
+
+.product-rest-row td {
+  padding: 7px 8px;
 }
 
 .product-rest-row:nth-child(even) {
@@ -1706,10 +1728,9 @@ main {
   max-width: 52ch;
 }
 
-.services-copy > button {
-  margin-top: 8px;
-  align-self: flex-start;
-  cursor: pointer;
+.services-copy .eyebrow:last-child {
+  margin-top: 12px;
+  margin-bottom: -4px;
 }
 
 .services-list {
@@ -1717,13 +1738,15 @@ main {
   flex-direction: column;
   gap: 0;
   position: relative;
+  border: 1px solid var(--frame-border);
+  background: var(--report-surface);
 }
 
 .services-list::before {
   content: '';
   position: absolute;
-  width: 8px;
-  height: 8px;
+  width: 12px;
+  height: 12px;
   border-color: var(--frame-bracket);
   border-style: solid;
   border-width: 0;
@@ -1734,21 +1757,64 @@ main {
   pointer-events: none;
 }
 
+.services-list::after {
+  content: '';
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border-color: var(--frame-bracket);
+  border-style: solid;
+  border-width: 0;
+  bottom: -1px;
+  right: -1px;
+  border-bottom-width: 1.5px;
+  border-right-width: 1.5px;
+  pointer-events: none;
+}
+
 .service-row {
   display: grid;
   grid-template-columns: 36px 1fr;
   gap: 14px;
   padding: 20px 16px;
-  border-radius: 8px;
+  border-bottom: 1px solid var(--hairline);
   transition: background-color 180ms ease;
 }
 
+.service-row:last-of-type {
+  border-bottom: 0;
+}
+
 .service-row:nth-child(even) {
-  background: var(--row-hover);
+  background: var(--report-surface-2);
 }
 
 .service-row:hover {
-  background: color-mix(in srgb, var(--row-hover) 140%, var(--accent-brand) 2%);
+  background: var(--row-hover);
+}
+
+.service-row h3,
+.service-row p {
+  transition: color 180ms ease;
+}
+
+.service-row:hover h3 {
+  color: var(--text);
+}
+
+.service-row:hover p {
+  color: var(--text);
+}
+
+.service-row-icon svg {
+  width: 20px;
+  height: 20px;
+  color: var(--text);
+  transition: color 180ms ease;
+}
+
+.service-row:hover .service-row-icon svg {
+  color: var(--text);
 }
 
 .service-row-icon {
@@ -1761,7 +1827,7 @@ main {
 .service-row-icon svg {
   width: 20px;
   height: 20px;
-  color: var(--accent-brand);
+  color: var(--text);
 }
 
 .service-row-content {
@@ -1789,12 +1855,18 @@ main {
 }
 
 .service-row-meta {
+  display: inline-block;
+  align-self: flex-start;
   color: var(--text-faint);
   font-family: var(--font-mono);
   font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.04em;
   text-transform: uppercase;
+  padding: 3px 8px;
+  border: 1px solid var(--hairline);
+  border-radius: 5px;
+  background: var(--surface);
 }
 
 .service-row p {
@@ -1811,17 +1883,18 @@ main {
   justify-content: space-between;
   gap: 18px;
   flex-wrap: wrap;
-  padding: 20px 0 0;
-  margin-top: 4px;
+  padding: 20px 16px 20px;
+  margin-top: 0;
   border-top: 1px solid var(--hairline);
+  background: var(--surface);
 }
 
 .services-foot p {
   margin: 0;
-  max-width: 52ch;
+  max-width: 44ch;
   color: var(--text);
-  font-size: 14px;
-  line-height: 1.55;
+  font-size: 13.5px;
+  line-height: 1.6;
 }
 
 .services-foot b {
