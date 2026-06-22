@@ -11,12 +11,40 @@ const Avatar: React.FC<{ simplified?: boolean }> = ({ simplified = false }) => {
   const leftSocketRef = useRef<HTMLDivElement>(null);
   const rightSocketRef = useRef<HTMLDivElement>(null);
   const blinkTimerRef = useRef<number | null>(null);
+  const containerRef = useRef<HTMLElement>(null);
 
   const updateEyeState = useCallback((targetX: number, targetY: number) => {
     const eyes = [
       { ref: leftEyeRef, socket: leftSocketRef },
       { ref: rightEyeRef, socket: rightSocketRef },
     ];
+
+    // Distance-based eye color
+    if (simplified && containerRef.current) {
+      const avatarRect = containerRef.current.getBoundingClientRect();
+      const avatarCX = avatarRect.left + avatarRect.width / 2;
+      const avatarCY = avatarRect.top + avatarRect.height / 2;
+      const distanceToAvatar = Math.sqrt(Math.pow(targetX - avatarCX, 2) + Math.pow(targetY - avatarCY, 2));
+      const t = Math.min(1, Math.max(0, 1 - distanceToAvatar / 700));
+      // Interpolate color: white (far) -> brand red (close)
+      const r = Math.round(240 - (240 - 232) * t);
+      const g = Math.round(240 - (240 - 51) * t);
+      const b = Math.round(245 - (245 - 74) * t);
+      const color = `rgb(${r}, ${g}, ${b})`;
+      // Interpolate glow: white glow (far) -> red glow (close)
+      const glowInner = `0 0 ${Math.round(3 + 1 * t)}px rgba(${Math.round(255 - (255-232) * t)}, ${Math.round(255 - (255-51) * t)}, ${Math.round(255 - (255-74) * t)}, ${(0.5 + 0.2 * t).toFixed(2)})`;
+      const glowOuter = `0 0 ${Math.round(10 + 4 * t)}px rgba(${Math.round(255 - (255-232) * t)}, ${Math.round(255 - (255-51) * t)}, ${Math.round(255 - (255-74) * t)}, ${(0.15 + 0.15 * t).toFixed(2)})`;
+
+      eyes.forEach(({ ref }) => {
+        if (!ref.current) return;
+        gsap.to(ref.current, {
+          backgroundColor: color,
+          boxShadow: `${glowInner}, ${glowOuter}`,
+          duration: 0.35,
+          overwrite: 'auto',
+        });
+      });
+    }
 
     eyes.forEach(({ ref, socket }) => {
       if (!ref.current || !socket.current) return;
@@ -43,7 +71,7 @@ const Avatar: React.FC<{ simplified?: boolean }> = ({ simplified = false }) => {
         overwrite: 'auto',
       });
     });
-  }, []);
+  }, [simplified]);
 
   useEffect(() => {
     if (simplified || !rigRef.current) return undefined;
@@ -162,7 +190,7 @@ const Avatar: React.FC<{ simplified?: boolean }> = ({ simplified = false }) => {
   }, []);
 
   return simplified ? (
-    <aside className="avatar-container" aria-label="FadSec Lab avatar">
+    <aside className="avatar-container" aria-label="FadSec Lab avatar" ref={containerRef}>
       <div className="avatar-wrapper">
         <div className="avatar-head">
           <div className="eyes-container">
