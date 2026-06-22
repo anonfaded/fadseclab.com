@@ -1179,7 +1179,7 @@ const App: React.FC = () => {
 
       <footer className="site-footer">
         <div className="footer-mascot" aria-hidden="true">
-          <Avatar />
+          <Avatar simplified={true} />
         </div>
         <div className="footer-panel">
           <div className="footer-top">

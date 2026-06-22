@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import gsap from 'gsap';
 import './Avatar.css';
 
-const Avatar: React.FC = () => {
+const Avatar: React.FC<{ simplified?: boolean }> = ({ simplified = false }) => {
   const hitRigRef = useRef<HTMLDivElement>(null);
   const rigRef = useRef<HTMLDivElement>(null);
   const leftEyeRef = useRef<HTMLDivElement>(null);
@@ -26,10 +26,10 @@ const Avatar: React.FC = () => {
       const centerY = rect.top + rect.height / 2;
 
       const angle = Math.atan2(targetY - centerY, targetX - centerX);
-      const maxDist = rect.width / 4;
+      const maxDist = rect.width / 3.6;
       const dist = Math.min(
         maxDist,
-        Math.sqrt(Math.pow(targetX - centerX, 2) + Math.pow(targetY - centerY, 2)) / 12
+        Math.sqrt(Math.pow(targetX - centerX, 2) + Math.pow(targetY - centerY, 2)) / 10
       );
 
       const moveX = dist * Math.cos(angle);
@@ -46,7 +46,7 @@ const Avatar: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    if (!rigRef.current) return undefined;
+    if (simplified || !rigRef.current) return undefined;
 
     const ctx = gsap.context(() => {
       gsap
@@ -87,6 +87,8 @@ const Avatar: React.FC = () => {
   }, []);
 
   useEffect(() => {
+    if (simplified) return;
+
     const handleHeroHit = (event: Event) => {
       if (!hitRigRef.current) return;
 
@@ -159,7 +161,23 @@ const Avatar: React.FC = () => {
     };
   }, []);
 
-  return (
+  return simplified ? (
+    <aside className="avatar-container" aria-label="FadSec Lab avatar">
+      <div className="avatar-wrapper">
+        <div className="avatar-head">
+          <div className="eyes-container">
+            <div className="eye-socket" ref={leftSocketRef}>
+              <div className="eyeball" ref={leftEyeRef} />
+            </div>
+            <div className="eye-socket" ref={rightSocketRef}>
+              <div className="eyeball" ref={rightEyeRef} />
+            </div>
+          </div>
+        </div>
+        <div className="avatar-body" />
+      </div>
+    </aside>
+  ) : (
     <aside className="avatar-container" aria-label="FadSec Lab avatar">
       <motion.div
         className="avatar-wrapper"
