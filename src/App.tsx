@@ -1182,20 +1182,25 @@ const App: React.FC = () => {
           <Avatar />
         </div>
         <div className="footer-panel">
-          <div className="footer-manifest">
-            <span className="footer-manifest-eyebrow">// SHIP MANIFEST</span>
-            <div className="footer-manifest-grid">
-              <span><b>23+</b> public repos</span>
-              <span><b>60+</b> countries</span>
-              <span><b>0</b> hidden trackers</span>
-              <span><b>since 2024</b></span>
+          <div className="footer-top">
+            <div className="footer-grid">
+              {footerGroups.map((group) => (
+                <div key={group.title}>
+                  <h3>{group.title}</h3>
+                  {group.links.map((link) => (
+                    <button key={link.label} type="button" onClick={() => handleFooterLink(link)}>
+                      {link.label}
+                    </button>
+                  ))}
+                </div>
+              ))}
+            </div>
+            <div className="footer-brand">
+              <span>Privacy today, tomorrow, forever.</span>
+              <span className="footer-copyright">© 2024–2026 FadSec Lab</span>
             </div>
           </div>
           <div className="footer-wordmark-wrap" aria-hidden="true">
-            <span className="footer-coord footer-coord--tl">x:0 y:0</span>
-            <span className="footer-coord footer-coord--tr">FADCAM.LAB</span>
-            <span className="footer-coord footer-coord--bl">REV.2026</span>
-            <span className="footer-coord footer-coord--br">x:∞ y:∞</span>
             <span className="footer-corner footer-corner--tl" />
             <span className="footer-corner footer-corner--tr" />
             <span className="footer-corner footer-corner--bl" />
@@ -1205,37 +1210,17 @@ const App: React.FC = () => {
               <span className="wm-back">Lab</span>
             </div>
           </div>
-          <div className="footer-grid">
-            {footerGroups.map((group) => (
-              <div key={group.title}>
-                <h3>{group.title}</h3>
-                {group.links.map((link) => (
-                  <button key={link.label} type="button" onClick={() => handleFooterLink(link)}>
-                    {link.label}
-                  </button>
-                ))}
-              </div>
-            ))}
-          </div>
-          <div className="footer-bottom">
-            <div className="footer-brand">
-              <span>Privacy today, tomorrow, forever.</span>
-            </div>
-            <div className="footer-meta">
-              <span className="footer-copyright">© 2024–2026 FadSec Lab</span>
-              <div className="footer-links">
-                <Button type="button" variant="ghost" size="sm" onClick={() => queueExternalNav({ label: 'GitHub', url: githubOrgUrl })}>
-                  <FaGithub />
-                  GitHub
-                </Button>
-                <Button type="button" variant="ghost" size="sm" onClick={() => navigateToPage('privacy')}>
-                  Privacy
-                </Button>
-                <Button type="button" variant="ghost" size="sm" onClick={() => navigateToPage('terms')}>
-                  Terms and Conditions
-                </Button>
-              </div>
-            </div>
+          <div className="footer-links">
+            <Button type="button" variant="ghost" size="sm" onClick={() => queueExternalNav({ label: 'GitHub', url: githubOrgUrl })}>
+              <FaGithub />
+              GitHub
+            </Button>
+            <Button type="button" variant="ghost" size="sm" onClick={() => navigateToPage('privacy')}>
+              Privacy
+            </Button>
+            <Button type="button" variant="ghost" size="sm" onClick={() => navigateToPage('terms')}>
+              Terms and Conditions
+            </Button>
           </div>
         </div>
       </footer>
