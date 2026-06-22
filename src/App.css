@@ -1386,7 +1386,7 @@ main {
 /* ── Catalog table ── */
 .product-rest-table-wrap {
   width: 100%;
-  overflow-x: auto;
+  overflow-x: scroll;
   -webkit-overflow-scrolling: touch;
   margin: 10px 0 0;
   scrollbar-width: thin;
@@ -1412,6 +1412,13 @@ main {
 
 .product-rest-table-wrap::-webkit-scrollbar-thumb:hover {
   background: color-mix(in srgb, var(--accent-brand) 85%, white);
+}
+
+.product-rest-table-wrap::-webkit-scrollbar-button {
+  display: block;
+  width: 4px;
+  height: 7px;
+  background: transparent;
 }
 
 .product-rest-table {
@@ -1552,6 +1559,18 @@ main {
 
 .product-rest-cta {
   margin-top: 12px;
+  display: flex;
+}
+
+.product-rest-cta > button {
+  width: 100%;
+  justify-content: center;
+}
+
+@media (min-width: 781px) {
+  .product-rest-cta > button {
+    width: auto;
+  }
 }
 
 /* ====================================================
@@ -1659,6 +1678,21 @@ main {
   flex-wrap: wrap;
   padding: 18px 0 0;
   margin-top: 4px;
+}
+
+.services-foot > button {
+  flex-shrink: 0;
+}
+
+@media (max-width: 600px) {
+  .services-foot {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .services-foot > button {
+    width: 100%;
+    justify-content: center;
+  }
 }
 
 .services-foot p {
@@ -1773,6 +1807,17 @@ main {
   flex-direction: column;
   gap: 14px;
   align-items: flex-start;
+}
+
+.open-source-cta > button {
+  width: 100%;
+  justify-content: center;
+}
+
+@media (min-width: 781px) {
+  .open-source-cta > button {
+    width: auto;
+  }
 }
 
 .open-source-cta-text {
@@ -1894,14 +1939,54 @@ main {
 
 .mission-donate-actions > button,
 .mission-donate-actions > a {
-  display: inline-flex;
+  width: 100%;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
   align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--hairline);
+  background: var(--report-surface-2);
+  color: var(--text);
+  text-decoration: none;
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+  transition: border-color 200ms ease, background-color 200ms ease, box-shadow 200ms ease;
+  text-align: left;
+  box-sizing: border-box;
+}
+
+.mission-donate-actions > button:hover,
+.mission-donate-actions > a:hover,
+.mission-donate-actions > button:focus-visible,
+.mission-donate-actions > a:focus-visible {
+  border-color: color-mix(in srgb, var(--accent-brand) 45%, var(--hairline));
+  background: color-mix(in srgb, var(--accent-brand) 6%, var(--report-surface-2));
+  box-shadow: 1px 2px 8px rgba(0, 0, 0, 0.18);
+}
+
+/* Primary Patreon button — accent fill, centered text */
+.mission-donate-actions > button:first-of-type {
+  background: var(--accent-brand);
+  color: #fff;
+  border-color: var(--accent-brand);
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   gap: 8px;
 }
 
-.mission-donate-actions button {
-  align-self: flex-start;
-  cursor: pointer;
+.mission-donate-actions > button:first-of-type:hover {
+  background: color-mix(in srgb, var(--accent-brand) 88%, white);
+  border-color: color-mix(in srgb, var(--accent-brand) 88%, white);
+  box-shadow: 1px 3px 12px rgba(232, 51, 74, 0.35);
+}
+
+.mission-donate-actions > button:first-of-type svg {
+  color: #fff;
 }
 
 .donate-link {
@@ -1911,20 +1996,23 @@ main {
   gap: 12px;
   padding: 12px 14px;
   border: 1px solid var(--hairline);
+  border-radius: 10px;
   background: var(--report-surface-2);
   color: var(--text);
   text-decoration: none;
   font: inherit;
+  font-size: 13px;
   cursor: pointer;
-  transition: border-color 200ms ease, background-color 200ms ease, transform 200ms ease;
+  transition: border-color 200ms ease, background-color 200ms ease, box-shadow 200ms ease;
   text-align: left;
+  box-sizing: border-box;
 }
 
 .donate-link:hover,
 .donate-link:focus-visible {
   border-color: color-mix(in srgb, var(--accent-brand) 45%, var(--hairline));
   background: color-mix(in srgb, var(--accent-brand) 6%, var(--report-surface-2));
-  transform: translateX(2px);
+  box-shadow: 1px 2px 8px rgba(0, 0, 0, 0.18);
 }
 
 .donate-link-icon {
@@ -1971,12 +2059,11 @@ main {
   width: 14px;
   height: 14px;
   color: var(--text-soft);
-  transition: transform 200ms ease, color 200ms ease;
+  transition: color 200ms ease;
 }
 
 .donate-link:hover svg {
   color: var(--accent-brand);
-  transform: translate(1px, -1px);
 }
 
 .mission-donate-foot {
