@@ -848,6 +848,7 @@ const App: React.FC = () => {
               <p className="product-rest-body">
                 Open-source tools for Android, Windows, Linux, and macOS — all built with the same commitment to privacy, transparency, and real user control. No data collection, no telemetry, no exceptions.
               </p>
+              <div className="product-rest-table-wrap">
               <table className="product-rest-table">
                 <thead>
                   <tr>
@@ -917,6 +918,7 @@ const App: React.FC = () => {
                   </tr>
                 </tbody>
               </table>
+              </div>
               <div className="product-rest-cta">
                 <Button type="button" size="lg" onClick={() => queueExternalNav({ label: 'GitHub', url: githubOrgUrl })}>
                   <FaGithub /> Browse all projects
