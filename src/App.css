@@ -2579,6 +2579,12 @@ main {
   background-image:
     radial-gradient(circle, rgba(255, 255, 255, 0.12) 1px, transparent 1px);
   background-size: 24px 24px;
+  background-position: 0 0;
+  transition: background-position 0.75s cubic-bezier(0.77, 0, 0.18, 1);
+}
+
+.footer-wordmark-wrap:hover {
+  background-position: 0 -70px;
 }
 
 .footer-corner {
@@ -2629,20 +2635,22 @@ main {
 
 .footer-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 22px;
   margin-bottom: 34px;
 }
 
 .footer-grid h3 {
-  margin-bottom: 12px;
+  margin-bottom: 16px;
   font-size: var(--text-lg);
   font-weight: var(--weight-semibold);
   color: #fff;
 }
 
-.footer-grid button {
-  display: block;
+.footer-grid .footer-link-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   padding: 6px 0;
   border: 0;
   color: rgba(255, 255, 255, 0.64);
@@ -2650,10 +2658,141 @@ main {
   font: inherit;
   text-align: left;
   cursor: pointer;
+  transition: color 0.15s;
 }
 
-.footer-grid button:hover {
+.footer-grid .footer-link-btn:hover {
   color: #ffffff;
+}
+
+.footer-grid .footer-link-btn svg {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  opacity: 0.7;
+}
+
+.footer-grid .footer-link-btn:hover svg {
+  opacity: 1;
+}
+
+.footer-link-label {
+  font-size: inherit;
+  line-height: 1;
+}
+
+.footer-ext-icon {
+  opacity: 0.45;
+  vertical-align: middle;
+}
+
+.footer-link-btn:hover .footer-ext-icon {
+  opacity: 0.8;
+}
+
+.footer-subgrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0;
+  border: 1px solid var(--hairline);
+  position: relative;
+}
+
+.footer-subgrid::before,
+.footer-subgrid::after {
+  content: '';
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border-color: var(--frame-bracket);
+  border-style: solid;
+  border-width: 0;
+}
+
+.footer-subgrid::before {
+  top: -1px;
+  left: -1px;
+  border-top-width: 1.5px;
+  border-left-width: 1.5px;
+}
+
+.footer-subgrid::after {
+  bottom: -1px;
+  right: -1px;
+  border-bottom-width: 1.5px;
+  border-right-width: 1.5px;
+}
+
+.footer-subsection {
+  padding: 14px 14px 14px 16px;
+  position: relative;
+}
+
+.footer-subsection:first-child {
+  padding-left: 14px;
+}
+
+.footer-subsection + .footer-subsection {
+  border-left: 1px solid var(--hairline);
+}
+
+.footer-subsection + .footer-subsection::before {
+  content: '';
+  position: absolute;
+  top: -1px;
+  left: -6px;
+  width: 10px;
+  height: 8px;
+  background: var(--frame-bracket);
+  clip-path: polygon(
+    0% 0%,
+    100% 0%,
+    100% 1.5px,
+    calc(50% + 0.75px) 1.5px,
+    calc(50% + 0.75px) 100%,
+    calc(50% - 0.75px) 100%,
+    calc(50% - 0.75px) 1.5px,
+    0% 1.5px
+  );
+  pointer-events: none;
+}
+
+.footer-subsection + .footer-subsection::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: -6px;
+  width: 10px;
+  height: 8px;
+  background: var(--frame-bracket);
+  clip-path: polygon(
+    0% calc(100% - 1.5px),
+    calc(50% - 0.75px) calc(100% - 1.5px),
+    calc(50% - 0.75px) 0%,
+    calc(50% + 0.75px) 0%,
+    calc(50% + 0.75px) calc(100% - 1.5px),
+    100% calc(100% - 1.5px),
+    100% 100%,
+    0% 100%
+  );
+  pointer-events: none;
+}
+
+.footer-subsection-title {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 8px;
+  font-size: 11px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.35);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.footer-subsection-icon {
+  display: inline-flex;
+  opacity: 0.5;
 }
 
 .footer-brand {
@@ -2661,9 +2800,8 @@ main {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  padding: 16px 0;
+  padding: 18px 0 0;
   border-top: 1px solid rgba(255, 255, 255, 0.08);
-  margin-bottom: 18px;
 }
 
 .footer-brand span:first-child {
@@ -2678,28 +2816,6 @@ main {
   font-weight: 700;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-}
-
-.footer-links {
-  text-transform: uppercase;
-}
-
-.footer-links {
-  display: flex;
-  justify-content: center;
-  gap: 6px;
-  padding: 14px 0 0;
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
-}
-
-.footer-links button {
-  cursor: pointer;
-  font-size: 11.5px;
-}
-
-.footer-links svg {
-  width: 14px;
-  height: 14px;
 }
 
 /* ====================================================
@@ -2895,10 +3011,6 @@ main {
     align-items: center;
   }
 
-  .footer-links {
-    flex-wrap: wrap;
-    justify-content: center;
-  }
 }
 
 @media (max-width: 360px) {

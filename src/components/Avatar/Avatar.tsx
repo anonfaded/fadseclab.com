@@ -166,6 +166,8 @@ const Avatar: React.FC<{ simplified?: boolean }> = ({ simplified = false }) => {
   }, [updateEyeState]);
 
   useEffect(() => {
+    if (simplified) return;
+
     const blink = () => {
       const sockets = [leftSocketRef.current, rightSocketRef.current];
       gsap.to(sockets, {
@@ -187,7 +189,7 @@ const Avatar: React.FC<{ simplified?: boolean }> = ({ simplified = false }) => {
         window.clearTimeout(blinkTimerRef.current);
       }
     };
-  }, []);
+  }, [simplified]);
 
   return simplified ? (
     <aside className="avatar-container" aria-label="FadSec Lab avatar" ref={containerRef}>

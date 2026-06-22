@@ -6,7 +6,7 @@ import {
   ChevronRight,
   ExternalLink,
   FileText,
-  HandCoins,
+  Heart,
   Keyboard,
   Lock,
   Mail,
@@ -140,41 +140,62 @@ const mapMarkers: { name: string; coordinates: [number, number] }[] = [
   { name: 'Costa Rica', coordinates: [-84.0, 9.9] },
 ];
 
+const iconMap = {
+  file: <FileText size={14} />,
+  lock: <Lock size={14} />,
+  heart: <Heart size={14} />,
+  github: <FaGithub size={14} />,
+  mail: <Mail size={14} />,
+  discord: <FaDiscord size={14} />,
+  monitor: <Monitor size={12} />,
+  android: <FaAndroid size={12} />,
+  firefox: <FaFirefox size={12} />,
+};
+
 const footerGroups = [
+  {
+    title: 'Products',
+    subsections: [
+      {
+        label: 'Android',
+        icons: ['android' as const],
+        links: [
+          { label: 'FadCam', action: 'external' as const, url: fadCamUrl },
+          { label: 'Fadocx', action: 'external' as const, url: 'https://github.com/anonfaded/Fadocx' },
+          { label: 'FadeBoard', action: 'external' as const, url: 'https://github.com/anonfaded/fadeboard' },
+        ],
+      },
+      {
+        label: 'Desktop',
+        icons: ['monitor' as const],
+        links: [
+          { label: 'FadCrypt', action: 'external' as const, url: 'https://github.com/anonfaded/FadCrypt' },
+          { label: 'FadCat', action: 'external' as const, url: 'https://github.com/anonfaded/FadCat' },
+        ],
+      },
+      {
+        label: 'Extension',
+        icons: ['firefox' as const],
+        links: [
+          { label: 'Fadify', action: 'external' as const, url: 'https://github.com/anonfaded/Fadify' },
+        ],
+      },
+    ],
+  },
   {
     title: 'Company',
     links: [
-      { label: 'Mission', action: 'anchor' as const, target: '#mission' },
-      { label: 'Open source', action: 'anchor' as const, target: '#open-source' },
-      { label: 'Privacy', action: 'privacy' as const },
-      { label: 'Contact', action: 'contact' as const },
+      { label: 'Donation', action: 'external' as const, url: patreonUrl, icon: 'heart' as const },
+      { label: 'Privacy Policy', action: 'privacy' as const, icon: 'lock' as const },
+      { label: 'Terms of Service', action: 'terms' as const, icon: 'file' as const },
     ],
   },
   {
-    title: 'Products',
+    title: 'Connect',
     links: [
-      { label: 'FadCam', action: 'external' as const, url: fadCamUrl },
-      { label: 'Android apps', action: 'external' as const, url: githubOrgUrl },
-      { label: 'Desktop tools', action: 'external' as const, url: githubOrgUrl },
-      { label: 'FadSec ID', action: 'external' as const, url: accountUrl },
-    ],
-  },
-  {
-    title: 'Services',
-    links: [
-      { label: 'Native Android', action: 'anchor' as const, target: '#services' },
-      { label: 'Native iOS', action: 'anchor' as const, target: '#services' },
-      { label: 'Cross-platform', action: 'anchor' as const, target: '#services' },
-      { label: 'Desktop apps', action: 'anchor' as const, target: '#services' },
-    ],
-  },
-  {
-    title: 'Support',
-    links: [
-      { label: 'Patreon', action: 'external' as const, url: patreonUrl },
-      { label: 'Discord', action: 'external' as const, url: discordUrl },
-      { label: 'GitHub', action: 'external' as const, url: githubOrgUrl },
-      { label: 'Releases', action: 'external' as const, url: `${githubOrgUrl}/fadcam/releases` },
+      { label: 'GitHub', action: 'external' as const, url: githubOrgUrl, icon: 'github' as const },
+      { label: 'Email', action: 'email' as const, icon: 'mail' as const },
+      { label: 'Discord', action: 'external' as const, url: discordUrl, icon: 'discord' as const },
     ],
   },
 ];
@@ -507,10 +528,14 @@ const App: React.FC = () => {
   };
 
   const handleFooterLink = (
-    link: { label: string; action: string; url?: string; target?: string },
+    link: { label: string; action: string; url?: string; target?: string; icon?: string },
   ) => {
     if (link.action === 'external' && link.url) {
       queueExternalNav({ label: link.label, url: link.url });
+    } else if (link.action === 'email') {
+      window.open(`mailto:${contactEmail}`, '_self');
+    } else if (link.action === 'terms') {
+      navigateToPage('terms');
     } else if (link.action === 'privacy') {
       navigateToPage('privacy');
     } else if (link.action === 'contact') {
@@ -1128,7 +1153,7 @@ const App: React.FC = () => {
                 </button>
               </div>
               <div className="mission-donate-foot">
-                <HandCoins />
+                <Heart />
                 <span>Every contribution helps us build, maintain, and improve privacy-respecting, open source alternatives without compromising our principles.</span>
               </div>
             </aside>
@@ -1187,17 +1212,36 @@ const App: React.FC = () => {
               {footerGroups.map((group) => (
                 <div key={group.title}>
                   <h3>{group.title}</h3>
-                  {group.links.map((link) => (
-                    <button key={link.label} type="button" onClick={() => handleFooterLink(link)}>
-                      {link.label}
-                    </button>
-                  ))}
+                  {'subsections' in group ? (
+                    <div className="footer-subgrid">
+                      {(group as { subsections: { label: string; icons: readonly string[]; links: { label: string; action: string; url?: string }[] }[] }).subsections.map((sub) => (
+                        <div key={sub.label} className="footer-subsection">
+                          <h4 className="footer-subsection-title">
+                            {sub.icons?.map(ic => (
+                              <span key={ic} className="footer-subsection-icon">{iconMap[ic as keyof typeof iconMap]}</span>
+                            ))}
+                            {sub.label}
+                          </h4>
+                          {sub.links.map(link => (
+                            <button key={link.label} type="button" onClick={() => handleFooterLink(link)} className="footer-link-btn">
+                              <span className="footer-link-label">{link.label}</span>
+                              <ExternalLink size={12} className="footer-ext-icon" />
+                            </button>
+                          ))}
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    (group as { links: { label: string; action: string; url?: string; target?: string; icon?: string }[] }).links.map((footerLink) => (
+                      <button key={footerLink.label} type="button" onClick={() => handleFooterLink(footerLink)} className="footer-link-btn">
+                        {footerLink.icon && iconMap[footerLink.icon as keyof typeof iconMap]}
+                        <span className="footer-link-label">{footerLink.label}</span>
+                        {footerLink.action === 'external' && <ExternalLink size={12} className="footer-ext-icon" />}
+                      </button>
+                    ))
+                  )}
                 </div>
               ))}
-            </div>
-            <div className="footer-brand">
-              <span>Privacy today, tomorrow, forever.</span>
-              <span className="footer-copyright">© 2024–2026 FadSec Lab</span>
             </div>
           </div>
           <div className="footer-wordmark-wrap" aria-hidden="true">
@@ -1210,17 +1254,9 @@ const App: React.FC = () => {
               <span className="wm-back">Lab</span>
             </div>
           </div>
-          <div className="footer-links">
-            <Button type="button" variant="ghost" size="sm" onClick={() => queueExternalNav({ label: 'GitHub', url: githubOrgUrl })}>
-              <FaGithub />
-              GitHub
-            </Button>
-            <Button type="button" variant="ghost" size="sm" onClick={() => navigateToPage('privacy')}>
-              Privacy
-            </Button>
-            <Button type="button" variant="ghost" size="sm" onClick={() => navigateToPage('terms')}>
-              Terms and Conditions
-            </Button>
+          <div className="footer-brand">
+            <span>Privacy today, tomorrow, forever.</span>
+            <span className="footer-copyright">© 2024–2026 FadSec Lab</span>
           </div>
         </div>
       </footer>
