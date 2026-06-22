@@ -11,6 +11,7 @@ import {
   Lock,
   Mail,
   MapPin,
+  Monitor,
   Moon,
   Palette,
   ShieldCheck,
@@ -39,6 +40,8 @@ import Avatar from './components/Avatar/Avatar';
 import HeroShield from './components/HeroShield/HeroShield';
 import TransitionOverlay from './components/ui/TransitionOverlay';
 import MilitaryLoader from './components/MilitaryLoader/MilitaryLoader';
+import PrivacyPage from './PrivacyPage';
+import TermsPage from './TermsPage';
 import './App.css';
 
 import pilotPicImg from './assets/images/fadcam_sam_rutherford.jpg';
@@ -385,6 +388,13 @@ const App: React.FC = () => {
   const [activeSection, setActiveSection] = useState<string>('home');
   const [hasScrolled, setHasScrolled] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [page, setPage] = useState<'home' | 'privacy' | 'terms'>(() => {
+    const path = window.location.pathname;
+    if (path === '/privacy') return 'privacy';
+    if (path === '/terms') return 'terms';
+    return 'home';
+  });
+  const scrollPosRef = useRef(0);
 
   const { ref: trustRef, inView: trustInView } = useInView<HTMLDivElement>(0);
   const { ref: trustMetricsRef1, inView: trustMetrics1 } = useInView<HTMLDivElement>(0);
@@ -470,6 +480,20 @@ const App: React.FC = () => {
 
   const closeMenu = () => setIsMenuOpen(false);
 
+  const navigateToPage = (p: 'privacy' | 'terms') => {
+    closeMenu();
+    scrollPosRef.current = window.scrollY;
+    history.replaceState(null, '', `/${p}`);
+    window.scrollTo(0, 0);
+    setPage(p);
+  };
+
+  const goHome = () => {
+    history.replaceState(null, '', '/');
+    setPage('home');
+    requestAnimationFrame(() => window.scrollTo(0, scrollPosRef.current));
+  };
+
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
     if (!href.startsWith('#')) return;
     e.preventDefault();
@@ -488,7 +512,7 @@ const App: React.FC = () => {
     if (link.action === 'external' && link.url) {
       queueExternalNav({ label: link.label, url: link.url });
     } else if (link.action === 'privacy') {
-      setActiveDialog('privacy');
+      navigateToPage('privacy');
     } else if (link.action === 'contact') {
       setActiveDialog('contact');
     } else if (link.action === 'anchor' && link.target) {
@@ -500,7 +524,7 @@ const App: React.FC = () => {
     }
   };
 
-  return (
+  return page === 'home' ? (
     <div className="site-shell" ref={rootRef}>
       <header className="site-header" data-scrolled={hasScrolled ? 'true' : 'false'}>
         <a className="brand-lockup" href="#home" aria-label="FadSec Lab home" onClick={(e) => handleNavClick(e, '#home')}>
@@ -515,17 +539,15 @@ const App: React.FC = () => {
               className={cn('nav-link', activeSection === link.id && 'is-active')}
               onClick={(e) => handleNavClick(e, link.href)}
             >
-              <span className="nav-sigil">//</span>
               <span className="nav-label">{link.label}</span>
               <span className="nav-underline" aria-hidden="true" />
             </a>
           ))}
           <button
             type="button"
-            className="nav-link nav-link--cta"
+            className="nav-link"
             onClick={() => setActiveDialog('contact')}
           >
-            <span className="nav-sigil">//</span>
             <span className="nav-label">Contact</span>
             <span className="nav-underline" aria-hidden="true" />
           </button>
@@ -577,7 +599,6 @@ const App: React.FC = () => {
 
       <div className={cn('mobile-menu', isMenuOpen && 'open')} aria-hidden={!isMenuOpen}>
         <div className="mobile-menu-inner">
-          <span className="mobile-menu-eyebrow">// NAVIGATE</span>
           {navLinks.map((link) => (
             <a
               key={link.href}
@@ -592,7 +613,7 @@ const App: React.FC = () => {
           ))}
           <button
             type="button"
-            className="nav-item nav-item--cta"
+            className="nav-item"
             onClick={() => { closeMenu(); setActiveDialog('contact'); }}
           >
             <span className="nav-sigil">//</span>
@@ -615,6 +636,15 @@ const App: React.FC = () => {
               <ArrowUpRight />
               <Badge variant="outline" className="header-account-beta">BETA</Badge>
             </button>
+            <div className="mobile-menu-pages">
+              <button type="button" className="mobile-menu-page-link" onClick={() => { closeMenu(); navigateToPage('privacy'); }}>
+                Privacy Policy
+              </button>
+              <span className="mobile-menu-page-dot">·</span>
+              <button type="button" className="mobile-menu-page-link" onClick={() => { closeMenu(); navigateToPage('terms'); }}>
+                Terms and Conditions
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -934,68 +964,59 @@ const App: React.FC = () => {
             <div className="services-copy">
               <span className="eyebrow"><span className="eyebrow-sigil">//</span><TubelightReveal text="Services" start={servicesInView && !isLoading} /></span>
               <h2>
-                <TubelightReveal text="Need a privacy-first app shipped? We do that." start={servicesInView && !isLoading} />
+                <TubelightReveal text="Ship production-grade apps, on your timeline." start={servicesInView && !isLoading} />
               </h2>
               <p>
-                We work with founders, security teams, and open-source projects who care about what runs on their users' devices. Every engagement is a working partnership: clean architecture, real engineering review, and code you'll be proud to publish.
+                We build production-grade Android, iOS, and desktop applications grounded in clean architecture and designed to scale. AI-assisted workflows accelerate development without compromising quality — your MVP ships in 14 days, not weeks or months.
               </p>
-              <Button type="button" size="lg" onClick={() => setActiveDialog('contact')}>
-                Start a conversation
-                <Mail />
-              </Button>
             </div>
 
             <div className="services-list">
               <article className="service-row">
-                <div className="service-row-head">
-                  <h3>Native Android</h3>
-                  <span className="service-row-meta">Kotlin · Jetpack · modern SDK</span>
+                <span className="service-row-icon"><FaAndroid /></span>
+                <div className="service-row-content">
+                  <div className="service-row-head">
+                    <h3>Native Android</h3>
+                    <span className="service-row-meta">Kotlin · Jetpack Compose · Material 3</span>
+                  </div>
+                  <p>
+                    Modern Android applications built with clean architecture and full platform integration. CI/CD pipelines, Play Store and FOSS distribution, and scalable codebases — from rapid MVPs to enterprise-grade products.
+                  </p>
                 </div>
-                <p>
-                  From camera tools to secure file utilities, we build Android apps that respect the platform and the user. Production work for Play Store, sideloaded FOSS, and enterprise rollouts.
-                </p>
-                <span className="service-row-line" aria-hidden="true" />
               </article>
 
               <article className="service-row">
-                <div className="service-row-head">
-                  <h3>Native iOS</h3>
-                  <span className="service-row-meta">Swift · SwiftUI · Xcode</span>
+                <span className="service-row-icon"><FaApple /></span>
+                <div className="service-row-content">
+                  <div className="service-row-head">
+                    <h3>Native iOS</h3>
+                    <span className="service-row-meta">Swift · SwiftUI · Xcode Cloud</span>
+                  </div>
+                  <p>
+                    Production iOS and iPadOS apps with Swift and SwiftUI, architected for App Store and enterprise deployment. Camera pipelines, on-device machine learning, and real-time media processing at full platform fidelity.
+                  </p>
                 </div>
-                <p>
-                  First-party Swift and SwiftUI for App Store, TestFlight, and enterprise distribution. Camera, AVFoundation, and on-device ML done the way Apple intends.
-                </p>
-                <span className="service-row-line" aria-hidden="true" />
               </article>
 
               <article className="service-row">
-                <div className="service-row-head">
-                  <h3>Cross-platform Flutter</h3>
-                  <span className="service-row-meta">Dart · Riverpod · Material 3</span>
+                <span className="service-row-icon"><Monitor /></span>
+                <div className="service-row-content">
+                  <div className="service-row-head">
+                    <h3>Cross-platform Desktop</h3>
+                    <span className="service-row-meta">Tauri · Electron · Flutter</span>
+                  </div>
+                  <p>
+                    macOS, Windows, and Linux from a single codebase. We select the right stack for each use case — Tauri for lean, native-feeling applications; Electron for web-integrated workflows; or Flutter for code shared with your mobile product.
+                  </p>
                 </div>
-                <p>
-                  One codebase, real users. iOS, Android, and web from a single Flutter tree with the polish of a native product. We keep it maintainable as the product grows.
-                </p>
-                <span className="service-row-line" aria-hidden="true" />
-              </article>
-
-              <article className="service-row">
-                <div className="service-row-head">
-                  <h3>Cross-platform desktop</h3>
-                  <span className="service-row-meta">Tauri · Electron · Flutter desktop</span>
-                </div>
-                <p>
-                  macOS, Windows, and Linux binaries from a single tree. Tauri for lean native-feeling apps, Electron when the web stack is the right call, Flutter desktop for shared code with mobile.
-                </p>
-                <span className="service-row-line" aria-hidden="true" />
               </article>
 
               <div className="services-foot">
                 <p>
-                  Agentic AI-assisted workflows keep us fast. <b>You ship in 14 days, not 14 weeks.</b> Review, architecture, and security standards never move.
+                  AI-assisted workflows keep us fast. <b>Your MVP ships in 14 days</b> — with clean architecture, CI/CD, and a codebase designed to scale.
                 </p>
-                <Button type="button" variant="outline" size="lg" onClick={() => setActiveDialog('contact')}>
-                  Email FadSec Lab
+                <Button type="button" size="lg" onClick={() => setActiveDialog('contact')}>
+                  Ship your MVP in 14 days
                   <ArrowRight />
                 </Button>
               </div>
@@ -1108,19 +1129,6 @@ const App: React.FC = () => {
 
       </main>
 
-      <Dialog open={activeDialog === 'privacy'} onOpenChange={(open) => { if (!open) setActiveDialog(null); }}>
-        <DialogContent className="dialog-surface">
-          <DialogHeader>
-            <DialogTitle>Privacy Policy</DialogTitle>
-            <DialogDescription>Zero data collection is the baseline for FadSec Lab products.</DialogDescription>
-          </DialogHeader>
-          <div className="dialog-stack">
-            <p>FadSec Lab products avoid collecting personal data unless a specific service clearly requires user-provided information.</p>
-            <p>We do not use hidden analytics, sell user data, or design product flows around surveillance.</p>
-          </div>
-        </DialogContent>
-      </Dialog>
-
       <Dialog open={activeDialog === 'contact'} onOpenChange={(open) => { if (!open) setActiveDialog(null); }}>
         <DialogContent className="dialog-surface">
           <DialogHeader>
@@ -1210,8 +1218,11 @@ const App: React.FC = () => {
                   <FaGithub />
                   GitHub
                 </Button>
-                <Button type="button" variant="ghost" size="sm" onClick={() => setActiveDialog('privacy')}>
+                <Button type="button" variant="ghost" size="sm" onClick={() => navigateToPage('privacy')}>
                   Privacy
+                </Button>
+                <Button type="button" variant="ghost" size="sm" onClick={() => navigateToPage('terms')}>
+                  Terms and Conditions
                 </Button>
               </div>
             </div>
@@ -1219,6 +1230,10 @@ const App: React.FC = () => {
         </div>
       </footer>
     </div>
+  ) : page === 'privacy' ? (
+    <PrivacyPage onBack={goHome} />
+  ) : (
+    <TermsPage onBack={goHome} />
   );
 };
 
