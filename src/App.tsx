@@ -1089,9 +1089,12 @@ const App: React.FC = () => {
 
             <aside className="mission-donate">
               <span className="eyebrow"><span className="eyebrow-sigil">//</span><TubelightReveal text="Support the mission" start={missionInView && !isLoading} /></span>
-              <h3 className="mission-donate-title">We work in public. Help us keep going.</h3>
+              <h3 className="mission-donate-title">Sustained by those who share the mission.</h3>
               <p className="mission-donate-body">
-                FadSec Lab does not run on ads, surveillance, or investor money. We run on the people who believe in the mission and want a private, ethical alternative to the mainstream stack. If our work has earned your support, you can back us on Patreon, or reach out directly for crypto donations.
+                FadSec Lab accepts no advertising revenue, no surveillance capital, and no investor funding. Our work is supported entirely by the people who believe technology should serve its users—not advertisers, data brokers, or analytics platforms.
+              </p>
+              <p className="mission-donate-body">
+                If our mission resonates with you, you can support continued development through Patreon or direct contributions. Those who prefer cryptocurrency contributions, or supporters in Pakistan seeking local contribution options, are welcome to contact us by email or through Discord.
               </p>
               <div className="mission-donate-actions">
                 <Button
@@ -1106,8 +1109,8 @@ const App: React.FC = () => {
                 <a href={`mailto:${contactEmail}?subject=Crypto%20donation%20enquiry`} className="donate-link">
                   <span className="donate-link-icon"><Mail /></span>
                   <span className="donate-link-text">
-                    <span className="donate-link-eyebrow">// CRYPTO</span>
-                    <span className="donate-link-label">Email for wallet details</span>
+                    <span className="donate-link-eyebrow">// Crypto contributions &amp; enquiries</span>
+                    <span className="donate-link-label">Email Us</span>
                   </span>
                   <ArrowUpRight />
                 </a>
@@ -1118,15 +1121,15 @@ const App: React.FC = () => {
                 >
                   <span className="donate-link-icon"><FaDiscord /></span>
                   <span className="donate-link-text">
-                    <span className="donate-link-eyebrow">// COMMUNITY</span>
-                    <span className="donate-link-label">Open a ticket on Discord</span>
+                    <span className="donate-link-eyebrow">// Open a ticket</span>
+                    <span className="donate-link-label">Contact via Discord</span>
                   </span>
                   <ArrowUpRight />
                 </button>
               </div>
               <div className="mission-donate-foot">
                 <HandCoins />
-                <span>Every contribution keeps the source open and the defaults private.</span>
+                <span>Every contribution helps us build, maintain, and improve privacy-respecting, open source alternatives without compromising our principles.</span>
               </div>
             </aside>
           </div>
