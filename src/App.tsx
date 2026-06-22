@@ -1030,10 +1030,10 @@ const App: React.FC = () => {
             <div className="open-source-stance">
               <span className="eyebrow"><span className="eyebrow-sigil">//</span><TubelightReveal text="Open source" start={openSourceInView && !isLoading} /></span>
               <h2>
-                <TubelightReveal text="We work in public, on principle." start={openSourceInView && !isLoading} />
+                <TubelightReveal text="Open by default. Auditable by design." start={openSourceInView && !isLoading} />
               </h2>
               <p>
-                Privacy is a claim, not a feature. It is only credible when the code is open and the history is visible. Every FadSec Lab project ships with a public repo, public releases, and a public issue tracker. We do not lock downloads behind a marketing site. We do not gate changelogs behind an account. The work has to stand on its own.
+                Privacy is a claim, not a feature. It is only credible when the code is open and the history is visible. Every FadSec Lab project ships with a public repo, public releases, and a public issue tracker. We do not lock downloads behind a marketing site.
               </p>
               <div className="open-source-stats">
                 <div className="open-source-stat">
@@ -1042,7 +1042,7 @@ const App: React.FC = () => {
                 </div>
                 <div className="open-source-stat">
                   <span className="open-source-stat-num">2024</span>
-                  <span className="open-source-stat-label">building in the open</span>
+                  <span className="open-source-stat-label">building openly since</span>
                 </div>
                 <div className="open-source-stat">
                   <span className="open-source-stat-num">0</span>
