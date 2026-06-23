@@ -402,6 +402,7 @@ const App: React.FC = () => {
   const rootRef = useRef<HTMLDivElement>(null);
   const [theme, setTheme] = useState<Theme>('dark');
   const [activeDialog, setActiveDialog] = useState<string | null>(null);
+  const [lightboxSrc, setLightboxSrc] = useState<string | null>(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeCountry, setActiveCountry] = useState('');
   const [mapZoom, setMapZoom] = useState(1);
@@ -879,11 +880,8 @@ const App: React.FC = () => {
 
           <div className="product-grid">
             <article className={cn('product-flagship', productInView && !isLoading && 'is-visible')}>
-              <div className="product-flagship-meta">
-                <Badge variant="default">Flagship</Badge>
-                <span className="product-flagship-eyebrow"><FaAndroid size={14} /> ANDROID</span>
-              </div>
               <div className="product-flagship-body">
+                <span className="eyebrow"><span className="eyebrow-sigil">//</span> FLAGSHIP &middot; <FaAndroid size={12} aria-hidden="true" /> ANDROID</span>
                 <h3 className="product-flagship-title">FadCam</h3>
                 <p className="product-flagship-desc">
                   Privacy-focused Android multimedia suite: background video recording, dashcam, screen recorder, live streaming and remote camera control — ad-free and open-source.
@@ -905,7 +903,9 @@ const App: React.FC = () => {
                 </div>
               </div>
               <figure className="product-flagship-pilot">
-                <img src={pilotPicImg} alt="A pilot using FadCam in the cockpit" width="512" height="384" />
+                <button type="button" className="pilot-img-btn" onClick={() => setLightboxSrc(pilotPicImg)} aria-label="View image larger">
+                  <img src={pilotPicImg} alt="A pilot using FadCam in the cockpit" width="512" height="384" />
+                </button>
                 <figcaption>
                   <span className="pilot-eyebrow">// IN THE FIELD</span>
                   <span className="pilot-caption">Running FadCam in a private aircraft over the North Atlantic, flying from Canada to Greenland.</span>
@@ -1092,7 +1092,7 @@ const App: React.FC = () => {
                 <TubelightReveal text="Open by default. Auditable by design." start={openSourceInView && !isLoading} />
               </h2>
               <p>
-                Privacy is a claim, not a feature. It is only credible when the code is open and the history is visible. Every FadSec Lab project ships with a public repo, public releases, and a public issue tracker. We do not lock downloads behind a marketing site.
+                Privacy is only meaningful when it is verifiable. That is why every FadSec Lab project is developed in the open, with public repositories, public releases, and transparent development history. No gated downloads. No closed-source components.
               </p>
             </div>
             <div className="open-source-cta">
@@ -1111,7 +1111,7 @@ const App: React.FC = () => {
                 </div>
               </div>
               <p className="open-source-cta-text">
-                Read the source, file an issue, fork a build. That is the point.
+                The source is available. The history is visible. Anyone can inspect, fork, or contribute.
               </p>
               <Button type="button" size="lg" onClick={() => queueExternalNav({ label: 'GitHub', url: githubOrgUrl })}>
                 <FaGithub />
@@ -1293,6 +1293,13 @@ const App: React.FC = () => {
               Accept
             </button>
           </div>
+        </div>
+      )}
+
+      {lightboxSrc && (
+        <div className="lightbox-overlay" onClick={() => setLightboxSrc(null)}>
+          <button type="button" className="lightbox-close" aria-label="Close">✕</button>
+          <img src={lightboxSrc} alt="" className="lightbox-img" onClick={(e) => e.stopPropagation()} />
         </div>
       )}
     </div>
