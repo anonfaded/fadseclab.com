@@ -2754,7 +2754,7 @@ main {
   left: 0;
   right: 0;
   z-index: 9999;
-  background: var(--surface-raised);
+  background: var(--surface);
   border-top: 1px solid var(--hairline-strong);
   padding: 12px 20px;
   backdrop-filter: blur(14px);
