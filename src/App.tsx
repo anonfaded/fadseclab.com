@@ -908,7 +908,7 @@ const App: React.FC = () => {
                 <img src={pilotPicImg} alt="A pilot using FadCam in the cockpit" width="512" height="384" />
                 <figcaption>
                   <span className="pilot-eyebrow">// IN THE FIELD</span>
-                  <span className="pilot-caption">Over the North Atlantic, flying from Canada to Greenland.</span>
+                  <span className="pilot-caption">Running FadCam in a private aircraft over the North Atlantic, flying from Canada to Greenland.</span>
                   <span className="pilot-credit">Photo by <a href="https://neophile.me" target="_blank">Sam Rutherford</a></span>
                 </figcaption>
               </figure>
@@ -918,7 +918,7 @@ const App: React.FC = () => {
               <span className="eyebrow"><span className="eyebrow-sigil">//</span><TubelightReveal text="Projects" start={productRestInView && !isLoading} /></span>
               <h3 className="product-rest-title"><TubelightReveal text="More from the catalog" start={productRestInView && !isLoading} /></h3>
               <p className="product-rest-body">
-                Open-source tools for Android, Windows, Linux, and macOS — all built with the same commitment to privacy, transparency, and real user control. No data collection, no telemetry, no exceptions.
+                Open-source tools for Android, Windows, Linux, and macOS — all built with the same commitment to privacy, transparency, and real user control. No personally identifiable information (PII) data collection, no telemetry, no hidden trackers.
               </p>
               <div className="product-rest-table-wrap">
               <table className="product-rest-table">
@@ -1018,7 +1018,13 @@ const App: React.FC = () => {
                 <TubelightReveal text="Ship production-grade apps, on your timeline." start={servicesInView && !isLoading} />
               </h2>
               <p>
-                We work with startups, founders, and individual developers to ship full-stack mobile and desktop applications — from native Android and iOS to cross-platform solutions. Clean architecture, maintainable codebases, and AI-assisted workflows — your MVP delivered in 14 days, not months.
+                We build full-stack mobile and desktop applications — from native Android and iOS to cross-platform solutions. Our work spans privacy and security, healthcare and welfare, media and recording applications, and operational software for organizations and teams.
+              </p>
+              <p>
+                Clean architecture, maintainable codebases, and AI-assisted workflows help us deliver production-ready software in weeks, not months.
+              </p>
+              <p>
+                <strong>Have a project in mind? Get in touch to discuss your requirements and technical goals.</strong>
               </p>
             </div>
 
