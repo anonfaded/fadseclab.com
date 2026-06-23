@@ -417,6 +417,14 @@ const App: React.FC = () => {
     return 'home';
   });
   const scrollPosRef = useRef(0);
+  const [consentAccepted, setConsentAccepted] = useState(() => {
+    return localStorage.getItem('fadsec-consent') === 'accepted';
+  });
+
+  const acceptConsent = () => {
+    localStorage.setItem('fadsec-consent', 'accepted');
+    setConsentAccepted(true);
+  };
 
   const { ref: trustRef, inView: trustInView } = useInView<HTMLDivElement>(0);
   const { ref: trustMetricsRef1, inView: trustMetrics1 } = useInView<HTMLDivElement>(0);
@@ -1187,8 +1195,8 @@ const App: React.FC = () => {
       <Dialog open={activeDialog === 'contact'} onOpenChange={(open) => { if (!open) setActiveDialog(null); }}>
         <DialogContent className="dialog-surface">
           <DialogHeader>
-            <DialogTitle>Work with FadSec Lab</DialogTitle>
-            <DialogDescription>iOS, Android, Flutter, and desktop. Privacy-first from day one.</DialogDescription>
+            <DialogTitle>Contact</DialogTitle>
+            <DialogDescription>Reach out through any of these channels.</DialogDescription>
           </DialogHeader>
           <div className="contact-links">
             <a href={`mailto:${contactEmail}`} className="contact-entry">
@@ -1265,6 +1273,22 @@ const App: React.FC = () => {
           </div>
         </div>
       </footer>
+
+      {!consentAccepted && (
+        <div className="consent-banner">
+          <div className="consent-banner-body">
+            <span className="consent-banner-text">
+              By continuing, you agree to our{' '}
+              <button type="button" className="consent-link" onClick={() => { closeMenu(); navigateToPage('privacy'); }}>Privacy Policy</button>
+              {' '}and{' '}
+              <button type="button" className="consent-link" onClick={() => { closeMenu(); navigateToPage('terms'); }}>Terms of Service</button>.
+            </span>
+            <button type="button" className="consent-accept" onClick={acceptConsent}>
+              Accept
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   ) : page === 'privacy' ? (
     <PrivacyPage onBack={goHome} />

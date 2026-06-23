@@ -2699,6 +2699,83 @@ main {
   border-right-width: 1.5px;
 }
 
+/* ── Consent banner ── */
+.consent-banner {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 9999;
+  background: var(--surface-raised);
+  border-top: 1px solid var(--hairline-strong);
+  padding: 12px 20px;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  animation: consentFadeIn 0.5s ease;
+}
+
+.consent-banner-body {
+  max-width: 1180px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.consent-banner-text {
+  color: var(--text-soft);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.consent-link {
+  background: none;
+  border: none;
+  color: var(--accent-brand);
+  font: inherit;
+  font-size: 13px;
+  padding: 0;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  transition: color 160ms ease;
+}
+
+.consent-link:hover {
+  color: var(--accent-strong);
+}
+
+.consent-accept {
+  flex-shrink: 0;
+  padding: 8px 20px;
+  border-radius: 8px;
+  border: none;
+  background: var(--accent-brand);
+  color: #fff;
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 160ms ease;
+}
+
+.consent-accept:hover {
+  background: var(--accent-strong);
+}
+
+@keyframes consentFadeIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 640px) {
+  .consent-banner { padding: 10px 14px; }
+  .consent-banner-body { flex-direction: column; text-align: center; }
+  .consent-accept { width: 100%; }
+}
+
 .footer-subsection {
   padding: 14px 14px 14px 16px;
   position: relative;
