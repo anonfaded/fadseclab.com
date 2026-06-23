@@ -673,6 +673,7 @@ main {
   text-align: center;
   overflow: hidden;
   border-radius: 0;
+  cursor: none;
   background: linear-gradient(180deg, var(--hero-bg) 0%, color-mix(in srgb, var(--hero-bg) 92%, var(--bg) 8%) 100%);
 }
 
