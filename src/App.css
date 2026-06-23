@@ -683,7 +683,6 @@ main {
   z-index: 2;
   pointer-events: none;
   background:
-    radial-gradient(ellipse 38% 28% at 50% 52%, rgba(255, 53, 88, 0.10), transparent 70%),
     linear-gradient(90deg, color-mix(in srgb, var(--hero-bg) 92%, transparent) 0%, transparent 30%, transparent 70%, color-mix(in srgb, var(--hero-bg) 92%, transparent) 100%);
 }
 
@@ -696,7 +695,7 @@ main {
   background:
     radial-gradient(circle, rgba(255, 255, 255, 0.09) 1.2px, transparent 1.2px);
   background-size: 28px 28px;
-  mask-image: radial-gradient(ellipse 70% 80% at 50% 44%, black 38%, transparent 74%);
+  mask-image: radial-gradient(ellipse 70% 80% at 50% 38%, black 38%, transparent 74%);
 }
 
 .hero-scene::before {
@@ -706,13 +705,13 @@ main {
   z-index: 2;
   pointer-events: none;
   background:
-    radial-gradient(ellipse 54% 34% at 50% 40%, var(--hero-glow), transparent 62%),
-    radial-gradient(ellipse 18% 14% at 50% 46%, var(--hero-glow-inner), transparent 72%);
+    radial-gradient(ellipse 80% 60% at 50% 35%, rgba(255, 255, 255, 0.03) 0%, transparent 55%),
+    radial-gradient(ellipse 50% 50% at 50% 50%, transparent 40%, rgba(6, 6, 10, 0.45) 100%);
 }
 
 [data-theme='light'] .hero-scene {
   background:
-    radial-gradient(circle, rgba(0, 0, 0, 0.09) 1.2px, transparent 1.2px);
+    radial-gradient(circle, rgba(0, 0, 0, 0.06) 1.2px, transparent 1.2px);
   background-size: 28px 28px;
 }
 

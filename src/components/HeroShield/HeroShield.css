@@ -241,7 +241,7 @@
   transform-box: fill-box;
   transform-origin: 86% 86%;
   animation: flag-brace 5.8s cubic-bezier(0.37, 0, 0.2, 1) infinite;
-  filter: drop-shadow(0 0 10px color-mix(in srgb, var(--accent-brand) 42%, transparent));
+  filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.25));
 }
 
 .hero-stage-wall,

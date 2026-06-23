@@ -230,7 +230,7 @@ function HeroAdversaryThreeScene({
     key.position.set(3.8, 5.8, 4.8);
     key.castShadow = true;
     key.shadow.mapSize.set(512, 512);
-    const redFill = new THREE.PointLight(0xff3b2d, 2.7, 9.5);
+    const redFill = new THREE.PointLight(0xffeedd, 2.2, 8.5);
     redFill.position.set(-1.65, 1.35, 1.5);
     const warmFill = new THREE.PointLight(0xffa66c, 1.65, 8);
     warmFill.position.set(-1.8, 1.1, 2.1);
