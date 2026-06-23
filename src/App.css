@@ -1917,9 +1917,9 @@ main {
 
 .open-source-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
   gap: 32px;
-  align-items: center;
+  align-items: start;
   padding: 36px 36px;
   border: 1px solid var(--frame-border);
   background: var(--report-surface);
@@ -2117,7 +2117,7 @@ main {
   display: grid;
   grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
   gap: 32px;
-  align-items: stretch;
+  align-items: start;
 }
 
 .mission-stance {
@@ -2150,7 +2150,8 @@ main {
 }
 
 .mission-donate {
-  position: relative;
+  position: sticky;
+  top: 100px;
   display: flex;
   flex-direction: column;
   gap: 14px;
@@ -2653,6 +2654,7 @@ main {
 .footer-link-label {
   font-size: inherit;
   line-height: 1;
+  white-space: nowrap;
 }
 
 .footer-ext-icon {

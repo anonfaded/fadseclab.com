@@ -1073,6 +1073,8 @@ const App: React.FC = () => {
               <p>
                 Privacy is a claim, not a feature. It is only credible when the code is open and the history is visible. Every FadSec Lab project ships with a public repo, public releases, and a public issue tracker. We do not lock downloads behind a marketing site.
               </p>
+            </div>
+            <div className="open-source-cta">
               <div className="open-source-stats">
                 <div className="open-source-stat">
                   <span className="open-source-stat-num">23+</span>
@@ -1087,8 +1089,6 @@ const App: React.FC = () => {
                   <span className="open-source-stat-label">gated downloads</span>
                 </div>
               </div>
-            </div>
-            <div className="open-source-cta">
               <p className="open-source-cta-text">
                 Read the source, file an issue, fork a build. That is the point.
               </p>
