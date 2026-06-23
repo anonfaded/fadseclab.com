@@ -28,7 +28,6 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
@@ -38,7 +37,6 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { ComposableMap, Geographies, Geography, Marker, ZoomableGroup } from 'react-simple-maps';
 import Avatar from './components/Avatar/Avatar';
 import HeroShield from './components/HeroShield/HeroShield';
-import TransitionOverlay from './components/ui/TransitionOverlay';
 import MilitaryLoader from './components/MilitaryLoader/MilitaryLoader';
 import PrivacyPage from './PrivacyPage';
 import TermsPage from './TermsPage';
@@ -401,9 +399,6 @@ const App: React.FC = () => {
   const rootRef = useRef<HTMLDivElement>(null);
   const [theme, setTheme] = useState<Theme>('dark');
   const [activeDialog, setActiveDialog] = useState<string | null>(null);
-  const [pendingNav, setPendingNav] = useState<ExternalTarget | null>(null);
-  const [isTransitioning, setIsTransitioning] = useState(false);
-  const [transitionTarget, setTransitionTarget] = useState('');
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeCountry, setActiveCountry] = useState('');
   const [mapZoom, setMapZoom] = useState(1);
@@ -485,20 +480,8 @@ const App: React.FC = () => {
     // mobile-menu-foot animated via CSS
   }, [isMenuOpen]);
 
-  const queueExternalNav = (target: ExternalTarget) => setPendingNav(target);
-
-  const executeExternalNav = () => {
-    const target = pendingNav;
-    if (target?.url) {
-      setTransitionTarget(target.label);
-      setIsTransitioning(true);
-      setPendingNav(null);
-      setTimeout(() => {
-        window.open(target.url, '_blank', 'noopener,noreferrer');
-        setIsTransitioning(false);
-        setTransitionTarget('');
-      }, 520);
-    }
+  const queueExternalNav = (target: ExternalTarget) => {
+    if (target.url) window.open(target.url, '_blank', 'noopener,noreferrer');
   };
 
   const closeMenu = () => setIsMenuOpen(false);
@@ -1188,21 +1171,6 @@ const App: React.FC = () => {
           </div>
         </DialogContent>
       </Dialog>
-
-      <Dialog open={!!pendingNav} onOpenChange={(open) => { if (!open) setPendingNav(null); }}>
-        <DialogContent className="dialog-surface nav-confirm">
-          <DialogHeader>
-            <DialogTitle>Open {pendingNav?.label}</DialogTitle>
-            <DialogDescription>This external page opens in a new browser tab.</DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => setPendingNav(null)}>Cancel</Button>
-            <Button type="button" onClick={executeExternalNav}>Continue</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      <TransitionOverlay isVisible={isTransitioning} targetName={transitionTarget} />
 
       <footer className="site-footer">
         <div className="footer-mascot" aria-hidden="true">
