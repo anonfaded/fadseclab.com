@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import {
   ArrowRight,
-  ArrowUpRight,
   Camera,
   ChevronRight,
   ExternalLink,
