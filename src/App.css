@@ -2658,7 +2658,7 @@ main {
 
 .footer-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: 2fr 1fr 1fr;
   gap: 22px;
   margin-bottom: 34px;
 }
@@ -2716,7 +2716,7 @@ main {
 
 .footer-subgrid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 0;
   border: 1px solid var(--hairline);
   position: relative;
@@ -3050,7 +3050,7 @@ main {
   }
 
   .footer-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: 2fr 1fr 1fr;
   }
 
   .footer-top {
@@ -3062,6 +3062,66 @@ main {
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
+  }
+}
+
+/* ── Compact footer subgrid when 3 cols are tight ── */
+@media (max-width: 1180px) and (min-width: 641px) {
+  .footer-subsection {
+    padding: 10px 10px;
+  }
+  .footer-subsection-title {
+    font-size: 10px;
+    letter-spacing: 0.04em;
+  }
+  .footer-link-label {
+    font-size: 11px;
+  }
+}
+
+/* ── Footer subgrid: stack vertically on smallest screens ── */
+@media (max-width: 440px) {
+  .footer-subgrid {
+    grid-template-columns: 1fr;
+  }
+  .footer-subsection + .footer-subsection {
+    border-left: none;
+    border-top: 1px solid var(--hairline);
+  }
+  /* Flip T-junction brackets from vertical to horizontal */
+  .footer-subsection + .footer-subsection::before {
+    top: -6px;
+    left: -1px;
+    width: 8px;
+    height: 10px;
+    clip-path: polygon(
+      0% 0%,
+      1.5px 0%,
+      1.5px calc(50% - 0.75px),
+      100% calc(50% - 0.75px),
+      100% calc(50% + 0.75px),
+      1.5px calc(50% + 0.75px),
+      1.5px 100%,
+      0% 100%
+    );
+  }
+  .footer-subsection + .footer-subsection::after {
+    bottom: auto;
+    top: -6px;
+    right: -1px;
+    left: auto;
+    width: 8px;
+    height: 10px;
+    clip-path: polygon(
+      calc(100% - 1.5px) 0%,
+      100% 0%,
+      100% 100%,
+      calc(100% - 1.5px) 100%,
+      calc(100% - 1.5px) calc(50% + 0.75px),
+      0% calc(50% + 0.75px),
+      0% calc(50% - 0.75px),
+      calc(100% - 1.5px) calc(50% - 0.75px)
+    );
   }
 }
 
@@ -3184,6 +3244,14 @@ main {
 
   .footer-grid {
     grid-template-columns: 1fr;
+  }
+
+  .footer-subsection {
+    padding: 10px 10px;
+  }
+
+  .footer-subsection-title {
+    font-size: 10px;
   }
 
   .footer-panel {

@@ -167,9 +167,10 @@ const footerGroups = [
         label: 'Desktop',
         icons: ['monitor' as const],
         links: [
+          { label: 'QuranCLI', action: 'external' as const, url: 'https://github.com/anonfaded/wifade' },
           { label: 'FadCrypt', action: 'external' as const, url: 'https://github.com/anonfaded/FadCrypt' },
           { label: 'FadCat', action: 'external' as const, url: 'https://github.com/anonfaded/FadCat' },
-          { label: 'QuranCLI', action: 'external' as const, url: 'https://github.com/anonfaded/wifade' },
+          { label: 'Wifade', action: 'external' as const, url: 'https://github.com/anonfaded/wifade' },
         ],
       },
       {
