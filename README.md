@@ -16,5 +16,5 @@ React 19 · TypeScript · Vite · Tailwind CSS v4 · GSAP · Three.js · Framer 
 
 ## License
 
-MIT
+GPL-3.0
 
