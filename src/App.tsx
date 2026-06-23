@@ -418,10 +418,10 @@ const App: React.FC = () => {
   const { ref: trustMetricsRef1, inView: trustMetrics1 } = useInView<HTMLDivElement>(0);
   const { ref: trustMetricsRef2, inView: trustMetrics2 } = useInView<HTMLDivElement>(0);
   const { ref: trustMetricsRef3, inView: trustMetrics3 } = useInView<HTMLDivElement>(0);
-  const { ref: productRef, inView: productInView } = useInView<HTMLDivElement>(0.2);
-  const { ref: servicesRef, inView: servicesInView } = useInView<HTMLDivElement>(0.2);
-  const { ref: openSourceRef, inView: openSourceInView } = useInView<HTMLDivElement>(0.2);
-  const { ref: missionRef, inView: missionInView } = useInView<HTMLDivElement>(0.2);
+  const { ref: productRef, inView: productInView } = useInView<HTMLDivElement>(0);
+  const { ref: servicesRef, inView: servicesInView } = useInView<HTMLDivElement>(0);
+  const { ref: openSourceRef, inView: openSourceInView } = useInView<HTMLDivElement>(0);
+  const { ref: missionRef, inView: missionInView } = useInView<HTMLDivElement>(0);
 
   useEffect(() => {
     document.documentElement.dataset.theme = theme;
@@ -587,7 +587,7 @@ const App: React.FC = () => {
               <span className="header-account-eyebrow">FadSec ID</span>
               <span className="header-account-label">Account</span>
             </span>
-            <ArrowUpRight />
+            <ExternalLink />
             <Badge variant="outline" className="header-account-beta">BETA</Badge>
           </button>
           <Button
@@ -643,7 +643,7 @@ const App: React.FC = () => {
                 <span className="header-account-eyebrow">FadSec ID</span>
                 <span className="header-account-label">Account</span>
               </span>
-              <ArrowUpRight />
+              <ExternalLink />
               <Badge variant="outline" className="header-account-beta">BETA</Badge>
             </button>
             <div className="mobile-menu-pages">
@@ -864,7 +864,7 @@ const App: React.FC = () => {
                 <div className="product-flagship-cta">
                   <Button type="button" size="lg" onClick={() => queueExternalNav({ label: 'FadCam', url: fadCamUrl })}>
                     Visit FadCam
-                    <ArrowRight />
+                    <ExternalLink />
                   </Button>
                   <Button type="button" variant="outline" size="lg" onClick={() => queueExternalNav({ label: 'FadCam source', url: githubOrgUrl })}>
                     <FaGithub /> Source on GitHub
@@ -962,7 +962,7 @@ const App: React.FC = () => {
               <div className="product-rest-cta">
                 <Button type="button" size="lg" onClick={() => queueExternalNav({ label: 'GitHub', url: githubOrgUrl })}>
                   <FaGithub /> Browse all projects
-                  <ArrowRight />
+                  <ExternalLink />
                 </Button>
               </div>
             </aside>
@@ -1074,7 +1074,7 @@ const App: React.FC = () => {
         </section>
 
         <section className="mission-section reveal" id="mission" ref={missionRef}>
-          <div className={cn('mission-grid', missionInView && !isLoading && 'is-visible')}>
+          <div className="mission-grid">
             <div className="mission-stance">
               <span className="eyebrow"><span className="eyebrow-sigil">//</span><TubelightReveal text="Mission" start={missionInView && !isLoading} /></span>
               <h2 className="mission-headline">
@@ -1116,14 +1116,14 @@ const App: React.FC = () => {
                   Back us on Patreon
                   <ExternalLink />
                 </Button>
-                <a href={`mailto:${contactEmail}?subject=Crypto%20donation%20enquiry`} className="donate-link">
+                <button type="button" className="donate-link" onClick={() => setActiveDialog('contact')}>
                   <span className="donate-link-icon"><Mail /></span>
                   <span className="donate-link-text">
                     <span className="donate-link-eyebrow">// Crypto contributions &amp; enquiries</span>
                     <span className="donate-link-label">Email Us</span>
                   </span>
-                  <ArrowUpRight />
-                </a>
+                  <ExternalLink />
+                </button>
                 <button
                   type="button"
                   className="donate-link"
@@ -1134,7 +1134,7 @@ const App: React.FC = () => {
                     <span className="donate-link-eyebrow">// Open a ticket</span>
                     <span className="donate-link-label">Contact via Discord</span>
                   </span>
-                  <ArrowUpRight />
+                  <ExternalLink />
                 </button>
               </div>
               <div className="mission-donate-foot">
