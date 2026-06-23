@@ -20,38 +20,60 @@ export default function PrivacyPage({ onBack }: Props) {
 
         <div className="page-body">
           <section>
-            <h2>Data Collection</h2>
+            <h2>Overview</h2>
             <p>
-              FadSec Lab products are designed to operate without collecting personal data. We do not
-              use analytics SDKs, tracking frameworks, or telemetry of any kind. When a service
-              explicitly requires user-provided information — such as an email address for account
-              recovery — that data is stored locally and never shared with third parties.
+              FadSec Lab is committed to building privacy-respecting software. We use only the
+              information needed to operate our services and provide a secure, reliable experience,
+              and we never sell, rent, or monetize user data.
+            </p>
+          </section>
+
+          <section>
+            <h2>Products</h2>
+            <p>
+              Unless explicitly stated otherwise, FadSec Lab products do not collect personal
+              information, telemetry, analytics, usage data, crash reports, or diagnostic data.
+            </p>
+          </section>
+
+          <section>
+            <h2>Website</h2>
+            <p>
+              Our website uses privacy-preserving analytics provided by Cloudflare to understand
+              aggregate traffic and improve website performance. We do not use advertising trackers,
+              behavioral profiling, or cross-site tracking technologies, and we do not collect
+              analytics data ourselves.
+            </p>
+            <p>
+              For information about how Cloudflare processes data, please refer to Cloudflare's
+              Privacy Policy.
+            </p>
+          </section>
+
+          <section>
+            <h2>Accounts</h2>
+            <p>
+              Some services, such as account systems provided through{' '}
+              <strong>id.fadseclab.com</strong>, require information supplied by the user, including
+              an email address. This information is used solely to provide and secure the requested
+              service and is never sold or shared with third parties except where required to operate
+              the service.
             </p>
           </section>
 
           <section>
             <h2>Third-Party Services</h2>
             <p>
-              Some FadSec Lab applications may integrate with third-party services you explicitly
-              choose to use (e.g., GitHub for source code access, Patreon for donations). These
-              services operate under their own privacy policies, and FadSec Lab does not control or
-              assume responsibility for their data practices.
-            </p>
-          </section>
-
-          <section>
-            <h2>Data Security</h2>
-            <p>
-              We follow industry-standard security practices in all software we release. Source code
-              is open for audit, builds are reproducible where possible, and cryptographic integrity
-              checks are provided for all distributed binaries.
+              Users may choose to interact with third-party services such as GitHub, Patreon, or
+              other external platforms. These services operate under their own privacy policies, and
+              FadSec Lab is not responsible for their data practices.
             </p>
           </section>
 
           <section>
             <h2>Contact</h2>
             <p>
-              If you have questions about this policy, reach out to{' '}
+              For privacy-related questions, contact:{' '}
               <a href="mailto:contact@fadseclab.com">contact@fadseclab.com</a>.
             </p>
           </section>
