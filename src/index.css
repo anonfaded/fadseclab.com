@@ -29,6 +29,7 @@
   --hero-bg: #06060a;
   --hero-surface: rgba(10, 10, 16, 0.74);
   --hero-glow: rgba(232, 51, 74, 0.18);
+  --hero-glow-inner: rgba(255, 53, 88, 0.08);
   --shadow: 0 28px 90px rgba(0, 0, 0, 0.52);
   --shadow-sm: 0 6px 20px rgba(0, 0, 0, 0.32);
 
@@ -97,7 +98,8 @@
   --accent-glow: rgba(212, 43, 64, 0.22);
   --hero-bg: #f4f4f8;
   --hero-surface: rgba(255, 255, 255, 0.76);
-  --hero-glow: rgba(212, 43, 64, 0.12);
+  --hero-glow: rgba(200, 55, 65, 0.07);
+  --hero-glow-inner: rgba(195, 60, 55, 0.04);
   --shadow: 0 20px 70px rgba(10, 10, 18, 0.1);
   --shadow-sm: 0 6px 20px rgba(10, 10, 18, 0.07);
 
