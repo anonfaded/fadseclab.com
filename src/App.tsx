@@ -910,18 +910,19 @@ const App: React.FC = () => {
                 <thead>
                   <tr>
                     <th className="product-rest-th--project">Project</th>
-                    <th className="product-rest-th--desc">Description</th>
                     <th className="product-rest-th--platforms">Platforms</th>
                     <th className="product-rest-th--link"></th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr className="product-rest-row" onClick={() => queueExternalNav({ label: 'Fadocx', url: 'https://github.com/anonfaded/Fadocx' })}>
-                    <td className="product-rest-td--project"><span className="product-rest-td--project-inner">
-                      <span className="product-rest-link-icon"><FileText size={14} /></span>
-                      <span>Fadocx</span>
-                    </span></td>
-                    <td className="product-rest-td--desc">Android document viewer with OCR — privacy-first, offline-first.</td>
+                    <td className="product-rest-td--project">
+                      <span className="product-rest-td--project-inner">
+                        <span className="product-rest-link-icon"><FileText size={14} /></span>
+                        <span>Fadocx</span>
+                      </span>
+                      <span className="product-rest-td--desc">Android document viewer with OCR — privacy-first, offline-first.</span>
+                    </td>
                     <td className="product-rest-td--platforms"><span className="product-rest-td--platforms-inner">
                       <FaAndroid size={13} />
                       <span className="product-rest-soon"><FaApple size={10} /> soon</span>
@@ -929,22 +930,26 @@ const App: React.FC = () => {
                     <td className="product-rest-td--link"><ExternalLink size={11} /></td>
                   </tr>
                   <tr className="product-rest-row" onClick={() => queueExternalNav({ label: 'FadeBoard', url: 'https://github.com/anonfaded/fadeboard' })}>
-                    <td className="product-rest-td--project"><span className="product-rest-td--project-inner">
-                      <span className="product-rest-link-icon"><Keyboard size={14} /></span>
-                      <span>FadeBoard</span>
-                    </span></td>
-                    <td className="product-rest-td--desc">Android keyboard that bypasses censorship with special characters.</td>
+                    <td className="product-rest-td--project">
+                      <span className="product-rest-td--project-inner">
+                        <span className="product-rest-link-icon"><Keyboard size={14} /></span>
+                        <span>FadeBoard</span>
+                      </span>
+                      <span className="product-rest-td--desc">Android keyboard that bypasses censorship with special characters.</span>
+                    </td>
                     <td className="product-rest-td--platforms"><span className="product-rest-td--platforms-inner">
                       <FaAndroid size={13} />
                     </span></td>
                     <td className="product-rest-td--link"><ExternalLink size={11} /></td>
                   </tr>
                   <tr className="product-rest-row" onClick={() => queueExternalNav({ label: 'FadCrypt', url: 'https://github.com/anonfaded/FadCrypt' })}>
-                    <td className="product-rest-td--project"><span className="product-rest-td--project-inner">
-                      <span className="product-rest-link-icon"><Lock size={14} /></span>
-                      <span>FadCrypt</span>
-                    </span></td>
-                    <td className="product-rest-td--desc">Windows app encryption — powerful, customizable, and free.</td>
+                    <td className="product-rest-td--project">
+                      <span className="product-rest-td--project-inner">
+                        <span className="product-rest-link-icon"><Lock size={14} /></span>
+                        <span>FadCrypt</span>
+                      </span>
+                      <span className="product-rest-td--desc">Windows app encryption — powerful, customizable, and free.</span>
+                    </td>
                     <td className="product-rest-td--platforms"><span className="product-rest-td--platforms-inner">
                       <FaWindows size={13} /><FaLinux size={13} />
                       <span className="product-rest-soon"><FaApple size={10} /> soon</span>
@@ -952,22 +957,26 @@ const App: React.FC = () => {
                     <td className="product-rest-td--link"><ExternalLink size={11} /></td>
                   </tr>
                   <tr className="product-rest-row" onClick={() => queueExternalNav({ label: 'FadCat', url: 'https://github.com/anonfaded/FadCat' })}>
-                    <td className="product-rest-td--project"><span className="product-rest-td--project-inner">
-                      <span className="product-rest-link-icon"><Terminal size={14} /></span>
-                      <span>FadCat</span>
-                    </span></td>
-                    <td className="product-rest-td--desc">Cross-platform logcat utility with MCP automation support.</td>
+                    <td className="product-rest-td--project">
+                      <span className="product-rest-td--project-inner">
+                        <span className="product-rest-link-icon"><Terminal size={14} /></span>
+                        <span>FadCat</span>
+                      </span>
+                      <span className="product-rest-td--desc">Cross-platform logcat utility with MCP automation support.</span>
+                    </td>
                     <td className="product-rest-td--platforms"><span className="product-rest-td--platforms-inner">
                       <FaApple size={13} /><FaWindows size={13} /><FaLinux size={13} />
                     </span></td>
                     <td className="product-rest-td--link"><ExternalLink size={11} /></td>
                   </tr>
                   <tr className="product-rest-row" onClick={() => queueExternalNav({ label: 'Fadify', url: 'https://github.com/anonfaded/Fadify' })}>
-                    <td className="product-rest-td--project"><span className="product-rest-td--project-inner">
-                      <span className="product-rest-link-icon"><Palette size={14} /></span>
-                      <span>Fadify</span>
-                    </span></td>
-                    <td className="product-rest-td--desc">Firefox add-on for true dark aesthetics and web customization.</td>
+                    <td className="product-rest-td--project">
+                      <span className="product-rest-td--project-inner">
+                        <span className="product-rest-link-icon"><Palette size={14} /></span>
+                        <span>Fadify</span>
+                      </span>
+                      <span className="product-rest-td--desc">Firefox add-on for true dark aesthetics and web customization.</span>
+                    </td>
                     <td className="product-rest-td--platforms"><span className="product-rest-td--platforms-inner">
                       <FaFirefox size={13} />
                     </span></td>
