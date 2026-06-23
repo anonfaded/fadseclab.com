@@ -215,7 +215,7 @@ function HeroAdversaryThreeScene({
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 1.14;
     renderer.shadowMap.enabled = !isMobile;
-    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    renderer.shadowMap.type = THREE.VSMShadowMap;
     renderer.shadowMap.width = isTablet ? 256 : 512;
     renderer.shadowMap.height = isTablet ? 256 : 512;
     mount.appendChild(renderer.domElement);
