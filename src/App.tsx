@@ -879,8 +879,8 @@ const App: React.FC = () => {
           </div>
 
           <div className="product-grid">
-            <article className={cn('product-flagship', productInView && !isLoading && 'is-visible')}>
-              <div className="product-flagship-body">
+            <div className={cn('product-flagship', productInView && !isLoading && 'is-visible')}>
+              <div className="product-flagship-copy">
                 <span className="eyebrow"><span className="eyebrow-sigil">//</span> FLAGSHIP &middot; <FaAndroid size={12} aria-hidden="true" /> ANDROID</span>
                 <h3 className="product-flagship-title">FadCam</h3>
                 <p className="product-flagship-desc">
@@ -903,16 +903,18 @@ const App: React.FC = () => {
                 </div>
               </div>
               <figure className="product-flagship-pilot">
+                <div className="pilot-head">
+                  <span className="pilot-eyebrow">// IN THE FIELD</span>
+                </div>
                 <button type="button" className="pilot-img-btn" onClick={() => setLightboxSrc(pilotPicImg)} aria-label="View image larger">
                   <img src={pilotPicImg} alt="A pilot using FadCam in the cockpit" width="512" height="384" />
                 </button>
-                <figcaption>
-                  <span className="pilot-eyebrow">// IN THE FIELD</span>
+                <div className="pilot-foot">
                   <span className="pilot-caption">Running FadCam in a private aircraft over the North Atlantic, flying from Canada to Greenland.</span>
                   <span className="pilot-credit">Photo by <a href="https://neophile.me" target="_blank">Sam Rutherford</a></span>
-                </figcaption>
+                </div>
               </figure>
-            </article>
+            </div>
 
             <aside className="product-rest reveal" ref={productRestRef}>
               <span className="eyebrow"><span className="eyebrow-sigil">//</span><TubelightReveal text="Projects" start={productRestInView && !isLoading} /></span>
