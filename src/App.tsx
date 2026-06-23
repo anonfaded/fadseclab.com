@@ -326,6 +326,9 @@ function TubelightReveal({ text, start, className, staggerDelay = 0.07 }: { text
     const targets = el.querySelectorAll<HTMLElement>('.tubelight-word');
     if (targets.length === 0) return;
 
+    // Kill any stale tweens before re-animating (handles HMR / re-mount)
+    gsap.killTweensOf(targets);
+
     // Fluorescent tube startup: rapid flickers progressing to steady illumination.
     gsap.fromTo(targets,
       { opacity: 0, filter: 'brightness(0.35) saturate(0.4)' },
@@ -419,9 +422,11 @@ const App: React.FC = () => {
   const { ref: trustMetricsRef2, inView: trustMetrics2 } = useInView<HTMLDivElement>(0);
   const { ref: trustMetricsRef3, inView: trustMetrics3 } = useInView<HTMLDivElement>(0);
   const { ref: productRef, inView: productInView } = useInView<HTMLDivElement>(0);
+  const { ref: productRestRef, inView: productRestInView } = useInView<HTMLDivElement>(0);
   const { ref: servicesRef, inView: servicesInView } = useInView<HTMLDivElement>(0);
   const { ref: openSourceRef, inView: openSourceInView } = useInView<HTMLDivElement>(0);
   const { ref: missionRef, inView: missionInView } = useInView<HTMLDivElement>(0);
+  const { ref: missionDonateRef, inView: missionDonateInView } = useInView<HTMLDivElement>(0);
 
   useEffect(() => {
     document.documentElement.dataset.theme = theme;
@@ -882,9 +887,9 @@ const App: React.FC = () => {
               </figure>
             </article>
 
-            <aside className="product-rest reveal">
-              <span className="eyebrow"><span className="eyebrow-sigil">//</span><TubelightReveal text="Projects" start={productInView && !isLoading} /></span>
-              <h3 className="product-rest-title">More from the catalog</h3>
+            <aside className="product-rest reveal" ref={productRestRef}>
+              <span className="eyebrow"><span className="eyebrow-sigil">//</span><TubelightReveal text="Projects" start={productRestInView && !isLoading} /></span>
+              <h3 className="product-rest-title"><TubelightReveal text="More from the catalog" start={productRestInView && !isLoading} /></h3>
               <p className="product-rest-body">
                 Open-source tools for Android, Windows, Linux, and macOS — all built with the same commitment to privacy, transparency, and real user control. No data collection, no telemetry, no exceptions.
               </p>
@@ -1097,9 +1102,9 @@ const App: React.FC = () => {
               </p>
             </div>
 
-            <aside className="mission-donate">
-              <span className="eyebrow"><span className="eyebrow-sigil">//</span><TubelightReveal text="Support the mission" start={missionInView && !isLoading} /></span>
-              <h3 className="mission-donate-title">Sustained by those who share the mission.</h3>
+            <aside className="mission-donate" ref={missionDonateRef}>
+              <span className="eyebrow"><span className="eyebrow-sigil">//</span><TubelightReveal text="Support the mission" start={missionDonateInView && !isLoading} /></span>
+              <h3 className="mission-donate-title"><TubelightReveal text="Sustained by those who share the mission." start={missionDonateInView && !isLoading} /></h3>
               <p className="mission-donate-body">
                 FadSec Lab accepts no advertising revenue, no surveillance capital, and no investor funding. Our work is supported entirely by the people who believe technology should serve its users—not advertisers, data brokers, or analytics platforms.
               </p>
