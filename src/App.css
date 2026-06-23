@@ -1338,7 +1338,7 @@ main {
 .product-flagship-uses svg {
   width: 16px;
   height: 16px;
-  color: var(--accent-brand);
+  color: var(--text-soft);
   margin-top: 2px;
 }
 

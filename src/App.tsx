@@ -889,9 +889,9 @@ const App: React.FC = () => {
                   Privacy-focused Android multimedia suite: background video recording, dashcam, screen recorder, live streaming and remote camera control — ad-free and open-source.
                 </p>
                 <ul className="product-flagship-uses">
-                  <li><Camera /><div><b>Dashcam & background recording.</b><span>Record video with the screen off. Fragmented MP4 eliminates corruption risk, with auto-splitting at customizable size limits.</span></div></li>
-                  <li><ShieldCheck /><div><b>Remote monitoring.</b><span>Live stream your camera over a local network with a web interface. Start and stop recording, toggle the torch, and check battery status from any device.</span></div></li>
-                  <li><Sparkles /><div><b>Screen recorder.</b><span>Full-featured capture with annotation tools — pen, eraser, text, and shapes. Multi-layer editing with version control and unlimited undo.</span></div></li>
+                  <li><Camera /><div><b>Dashcam & background recording.</b><span>Record video with the screen off with a crash-resistant pipeline that survives interruptions.</span></div></li>
+                  <li><ShieldCheck /><div><b>Remote monitoring &amp; control.</b><span>Live stream and control your camera over a local network from any device.</span></div></li>
+                  <li><Sparkles /><div><b>Screen recorder.</b><span>Full-featured capture with annotation and multi-layer editing.</span></div></li>
                 </ul>
                 <div className="product-flagship-cta">
                   <Button type="button" size="lg" onClick={() => queueExternalNav({ label: 'FadCam', url: fadCamUrl })}>
