@@ -108,7 +108,6 @@ main {
   border-radius: 18px;
   background: var(--header-bg);
   backdrop-filter: blur(22px) saturate(1.4);
-  -webkit-backdrop-filter: blur(22px) saturate(1.4);
   box-shadow:
     0 1px 0 rgba(255, 255, 255, 0.04) inset,
     0 14px 38px rgba(0, 0, 0, 0.22),
@@ -146,7 +145,6 @@ main {
 @media (max-width: 768px) {
   .site-header {
     backdrop-filter: blur(10px) saturate(1.6);
-    -webkit-backdrop-filter: blur(10px) saturate(1.6);
     top: 10px;
     min-height: 56px;
     padding: 6px 10px 6px 12px;
@@ -479,7 +477,6 @@ main {
   color: #22c55e !important;
   background: color-mix(in srgb, #22c55e 14%, transparent) !important;
   backdrop-filter: blur(4px) !important;
-  -webkit-backdrop-filter: blur(4px) !important;
   pointer-events: none;
   transition: color 200ms ease, background 200ms ease;
 }
@@ -2758,7 +2755,6 @@ main {
   border-top: 1px solid var(--hairline-strong);
   padding: 12px 20px;
   backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
   animation: consentFadeIn 0.5s ease;
 }
 
