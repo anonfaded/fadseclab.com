@@ -2236,8 +2236,8 @@ main {
   border-top: 1px solid var(--hairline);
 }
 
-.mission-donate-actions > button,
-.mission-donate-actions > a {
+.mission-donate-actions > button:not(:first-of-type),
+.mission-donate-actions > a:not(:first-of-type) {
   width: 100%;
   display: grid;
   grid-template-columns: auto 1fr auto;
@@ -2257,31 +2257,19 @@ main {
   box-sizing: border-box;
 }
 
-.mission-donate-actions > button:hover,
-.mission-donate-actions > a:hover,
-.mission-donate-actions > button:focus-visible,
-.mission-donate-actions > a:focus-visible {
+.mission-donate-actions > button:not(:first-of-type):hover,
+.mission-donate-actions > a:not(:first-of-type):hover,
+.mission-donate-actions > button:not(:first-of-type):focus-visible,
+.mission-donate-actions > a:not(:first-of-type):focus-visible {
   border-color: color-mix(in srgb, var(--accent-brand) 45%, var(--hairline));
   background: color-mix(in srgb, var(--accent-brand) 6%, var(--report-surface-2));
   box-shadow: 1px 2px 8px rgba(0, 0, 0, 0.18);
 }
 
-/* Primary Patreon button — accent fill, centered text */
+/* Primary Patreon button — brand border + bolder weight only; bg/color from button-variants */
 .mission-donate-actions > button:first-of-type {
-  background: var(--accent-brand);
-  color: #fff;
   border-color: var(--accent-brand);
   font-weight: 700;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-}
-
-.mission-donate-actions > button:first-of-type:hover {
-  background: color-mix(in srgb, var(--accent-brand) 88%, white);
-  border-color: color-mix(in srgb, var(--accent-brand) 88%, white);
-  box-shadow: 1px 3px 12px rgba(232, 51, 74, 0.35);
 }
 
 .mission-donate-actions > button:first-of-type svg {
@@ -2302,7 +2290,7 @@ main {
   font: inherit;
   font-size: 13px;
   cursor: pointer;
-  transition: border-color 200ms ease, background-color 200ms ease, box-shadow 200ms ease;
+  transition: border-color 200ms ease, background-color 200ms ease;
   text-align: left;
   box-sizing: border-box;
 }
@@ -2311,7 +2299,6 @@ main {
 .donate-link:focus-visible {
   border-color: color-mix(in srgb, var(--accent-brand) 45%, var(--hairline));
   background: color-mix(in srgb, var(--accent-brand) 6%, var(--report-surface-2));
-  box-shadow: 1px 2px 8px rgba(0, 0, 0, 0.18);
 }
 
 .donate-link-icon {
