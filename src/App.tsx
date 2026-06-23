@@ -444,6 +444,12 @@ const App: React.FC = () => {
     return () => { clearTimeout(descTimer); clearTimeout(ctasTimer); };
   }, [isLoading]);
 
+  // Disable browser scroll restoration so our manual scroll control works
+  useEffect(() => {
+    history.scrollRestoration = 'manual';
+    return () => { history.scrollRestoration = 'auto'; };
+  }, []);
+
   // Scroll-spy for nav active state + scroll-triggered header
   useEffect(() => {
     const onScroll = () => {
@@ -505,14 +511,15 @@ const App: React.FC = () => {
     closeMenu();
     scrollPosRef.current = window.scrollY;
     history.replaceState(null, '', `/${p}`);
-    window.scrollTo(0, 0);
+    window.scrollTo({ top: 0, behavior: 'auto' });
     setPage(p);
   };
 
   const goHome = () => {
+    const saved = scrollPosRef.current;
     history.replaceState(null, '', '/');
     setPage('home');
-    requestAnimationFrame(() => window.scrollTo(0, scrollPosRef.current));
+    requestAnimationFrame(() => window.scrollTo({ top: saved, behavior: 'auto' }));
   };
 
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
