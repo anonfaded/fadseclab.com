@@ -995,6 +995,10 @@ main {
   color: var(--accent-brand);
 }
 
+.trust-metric-suffix {
+  color: var(--accent-brand);
+}
+
 .trust-metric-label {
   margin-top: 8px;
   color: var(--text-soft);

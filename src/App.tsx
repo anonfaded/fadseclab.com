@@ -287,7 +287,7 @@ function AnimatedNumber({ value, suffix, start }: { value: number; suffix: strin
     return () => cancelAnimationFrame(frame);
   }, [value, start]);
 
-  return <>{display}{suffix}</>;
+  return <>{display}<span className="trust-metric-suffix">{suffix}</span></>;
 }
 
 function useInView<T extends HTMLElement>(threshold = 0.25) {
@@ -737,7 +737,7 @@ const App: React.FC = () => {
                 <TubelightReveal text="A privacy-first company with a global footprint." start={trustInView && !isLoading} />
               </h2>
               <p className="trust-body">
-                FadSec Lab products are used by individuals, journalists, security researchers, and small teams across every inhabited continent. They install our software because the source is public, the defaults hold up under audit, and no one is paying us to look the other way.
+                FadSec Lab products are used worldwide by individuals and teams who value privacy, transparency, and open-source software.
               </p>
               <div className="trust-metric-strip">
                 <article className="trust-metric" ref={trustMetricsRef1}>
@@ -745,21 +745,21 @@ const App: React.FC = () => {
                     <AnimatedNumber value={60} suffix="+" start={trustMetrics1 && !isLoading} />
                   </div>
                   <div className="trust-metric-label">Countries</div>
-                  <div className="trust-metric-provenance">with active installs across the open-source catalog</div>
+                  <div className="trust-metric-provenance">with active usage across FadSec Lab open-source software</div>
                 </article>
                 <article className="trust-metric" ref={trustMetricsRef2}>
                   <div className="trust-metric-num">
                     <AnimatedNumber value={150} suffix="K+" start={trustMetrics2 && !isLoading} />
                   </div>
-                  <div className="trust-metric-label">Users reached</div>
-                  <div className="trust-metric-provenance">across all FadSec Lab releases, Play Store and FOSS</div>
+                  <div className="trust-metric-label">Users</div>
+                  <div className="trust-metric-provenance">across FadSec Lab releases and distribution channels</div>
                 </article>
                 <article className="trust-metric" ref={trustMetricsRef3}>
                   <div className="trust-metric-num trust-metric-num--quiet">
                     <AnimatedNumber value={0} suffix="" start={trustMetrics3 && !isLoading} />
                   </div>
                   <div className="trust-metric-label">Hidden trackers</div>
-                  <div className="trust-metric-provenance">no third-party SDKs, no analytics, no ad identifiers</div>
+                  <div className="trust-metric-provenance">no third-party SDKs, analytics, or advertising identifiers</div>
                 </article>
               </div>
             </div>
@@ -859,7 +859,7 @@ const App: React.FC = () => {
               </div>
               <div className="world-map-foot">
                 <span className="world-map-foot-text">
-                  Each marker is a country with active users. Hover or focus to read the country name.
+                  Each marker is a country with active users. Hover to read the country name.
                 </span>
               </div>
             </div>
