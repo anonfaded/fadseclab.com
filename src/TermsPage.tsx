@@ -15,70 +15,115 @@ export default function TermsPage({ onBack }: Props) {
 
         <div className="page-header">
           <h1 className="page-title">Terms and Conditions</h1>
-          <p className="page-subtitle">Last updated: June 2026</p>
+          <p className="page-subtitle">Last updated: June 23, 2026</p>
         </div>
 
         <div className="page-body">
           <section>
-            <h2>Scope</h2>
+            <h2>1. Scope</h2>
             <p>
-              These terms govern the use of software and services provided by FadSec Lab. By
-              downloading, installing, or using any FadSec Lab product, you agree to these terms.
+              These Terms apply to all software, services, and development work provided by FadSec
+              Lab, including open-source projects, binaries, and custom application development
+              services.
+            </p>
+            <p>
+              By using, downloading, or commissioning any FadSec Lab software or service, you agree
+              to these Terms.
             </p>
           </section>
 
           <section>
-            <h2>Open Source Licensing</h2>
+            <h2>2. Open Source Licensing (GPLv3)</h2>
             <p>
-              Unless otherwise noted, FadSec Lab software is distributed under open-source licenses.
-              You are free to use, modify, and distribute the source code in accordance with the
-              terms of the applicable license. Binaries and builds are provided as-is, without
-              warranty of any kind.
-            </p>
-          </section>
-
-          <section>
-            <h2>Acceptable Use</h2>
-            <p>
-              FadSec Lab software must not be used in ways that violate applicable law or infringe on
-              the rights of others. We reserve the right to deny service to entities engaged in
-              activities we determine, in our sole discretion, to be harmful or unlawful.
-            </p>
-          </section>
-
-          <section>
-            <h2>Shariah Compliance</h2>
-            <p>
-              FadSec Lab operates in accordance with Shariah principles. We do not develop software
-              or provide services for applications that conflict with these principles, including but
-              not limited to:
+              Unless otherwise stated, FadSec Lab software is licensed under the{' '}
+              <strong>GNU General Public License v3.0 (GPLv3)</strong>.
             </p>
             <ul>
-              <li>Music streaming or distribution platforms</li>
-              <li>Insurance, lending, or financial services involving interest (riba)</li>
-              <li>Data harvesting, surveillance, or user tracking products</li>
-              <li>Gambling, adult content, or prohibited substances</li>
-              <li>Any application designed to deceive, defraud, or harm users</li>
+              <li>You are free to use, modify, and distribute the software in accordance with the GPLv3 license.</li>
+              <li>Source code is provided under its respective repository license terms.</li>
+              <li>Any redistributed or modified versions must comply with GPLv3 obligations, including source disclosure where applicable.</li>
+              <li>Third-party components remain subject to their own licenses.</li>
             </ul>
             <p>
-              This list is not exhaustive. If you are unsure whether your project aligns with our
-              principles, please reach out before engaging our services.
+              The GPLv3 license governs the software; these Terms govern service usage, development
+              services, and commercial engagement.
             </p>
           </section>
 
           <section>
-            <h2>Limitation of Liability</h2>
+            <h2>3. Custom Development Services</h2>
             <p>
-              FadSec Lab provides software and services on an "as is" basis. To the maximum extent
-              permitted by law, we disclaim all warranties, express or implied. In no event shall
-              FadSec Lab be liable for any damages arising from the use of our software or services.
+              FadSec Lab provides software development and engineering services upon request.
+            </p>
+            <ul>
+              <li>Project scope, pricing, and delivery terms are defined separately for each engagement.</li>
+              <li>Deliverables may include proprietary, open-source, or hybrid licensing depending on the agreement.</li>
+              <li>We reserve the right to refuse projects that conflict with our principles or technical standards.</li>
+            </ul>
+          </section>
+
+          <section>
+            <h2>4. Acceptable Use</h2>
+            <p>
+              You agree not to use FadSec Lab software or services for unlawful purposes or in ways
+              that infringe the rights of others.
+            </p>
+            <p>
+              We may refuse or terminate service engagements if we determine, in good faith, that a
+              project involves harmful, deceptive, or illegal activity.
             </p>
           </section>
 
           <section>
-            <h2>Contact</h2>
+            <h2>5. Ethical &amp; Shariah Compliance</h2>
             <p>
-              For questions about these terms, reach out to{' '}
+              FadSec Lab operates in accordance with Shariah-aligned ethical principles. We do not
+              knowingly build or support systems involved in:
+            </p>
+            <ul>
+              <li>Gambling or betting systems</li>
+              <li>Interest-based financial services (riba)</li>
+              <li>Surveillance, tracking, or user profiling systems</li>
+              <li>Adult content platforms</li>
+              <li>Deceptive, fraudulent, or harmful applications</li>
+              <li>Other systems that conflict with our ethical principles</li>
+            </ul>
+            <p>
+              This list is not complete and may be understood based on the basic principles of
+              preventing harm and acting ethically.
+            </p>
+          </section>
+
+          <section>
+            <h2>6. Disclaimer of Warranty</h2>
+            <p>
+              All software is provided &ldquo;as is&rdquo; without any warranty. To the fullest
+              extent allowed by law, FadSec Lab does not promise that the software will be fit for a
+              specific purpose or free from legal issues.
+            </p>
+          </section>
+
+          <section>
+            <h2>7. Limitation of Liability</h2>
+            <p>
+              FadSec Lab shall not be liable for any direct, indirect, incidental, or consequential
+              damages arising from the use of its software or services.
+            </p>
+          </section>
+
+          <section>
+            <h2>8. Changes to These Terms</h2>
+            <p>
+              We may update these Terms from time to time. The latest version will always be
+              available at this page, and continued use of our software or services constitutes
+              acceptance of the updated Terms.
+            </p>
+          </section>
+
+          <section>
+            <h2>9. Contact</h2>
+            <p>
+              For questions about these Terms:{' '}
               <a href="mailto:contact@fadseclab.com">contact@fadseclab.com</a>.
             </p>
           </section>
