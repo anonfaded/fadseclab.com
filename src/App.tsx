@@ -1146,6 +1146,12 @@ const App: React.FC = () => {
               <p className="mission-lede">
                 We are different by choice. We build in public, ship open source software, and maintain clear ethical boundaries. Privacy is not a feature on a checklist; it is the foundation upon which everything else is built. We believe every person has the right to use technology without being monitored, profiled, or exploited, and we build accordingly.
               </p>
+              <p className="mission-lede">
+                Our commitments to privacy and ethics are documented publicly:{' '}
+                <button type="button" className="consent-link" onClick={() => { closeMenu(); navigateToPage('privacy'); }}>Privacy Policy</button>
+                {' · '}
+                <button type="button" className="consent-link" onClick={() => { closeMenu(); navigateToPage('terms'); }}>Terms of Service</button>
+              </p>
             </div>
 
             <aside className="mission-donate" ref={missionDonateRef}>
@@ -1277,7 +1283,7 @@ const App: React.FC = () => {
           </div>
           <div className="footer-brand">
             <span>Privacy today, tomorrow, forever.</span>
-            <span className="footer-copyright">© 2024–2026 FadSec Lab</span>
+            <span className="footer-copyright">© 2024–2026 FadSec Lab <span className="footer-flag">🇵🇰</span></span>
           </div>
         </div>
       </footer>

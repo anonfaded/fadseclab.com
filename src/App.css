@@ -518,8 +518,7 @@ main {
   }
 
   .header-account-text,
-  .header-account > svg,
-  .header-account .header-account-beta {
+  .header-account > svg {
     display: none;
   }
   .header-account {
@@ -2964,6 +2963,10 @@ main {
   font-weight: 700;
   letter-spacing: 0.04em;
   text-transform: uppercase;
+}
+
+.footer-flag {
+  font-family: 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', sans-serif;
 }
 
 /* ====================================================
