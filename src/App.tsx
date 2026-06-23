@@ -1005,10 +1005,11 @@ const App: React.FC = () => {
               <p>
                 We work with startups, founders, and individual developers to ship full-stack mobile and desktop applications — from native Android and iOS to cross-platform solutions. Clean architecture, maintainable codebases, and AI-assisted workflows — your MVP delivered in 14 days, not months.
               </p>
-              <span className="eyebrow"><span className="eyebrow-sigil">//</span> What we offer</span>
             </div>
 
-            <div className="services-list">
+            <div className="services-right">
+              <span className="eyebrow"><span className="eyebrow-sigil">//</span> What we offer</span>
+              <div className="services-list">
               <article className="service-row">
                 <span className="service-row-icon"><FaAndroid /></span>
                 <div className="service-row-content">
@@ -1057,6 +1058,7 @@ const App: React.FC = () => {
                   <ArrowRight />
                 </Button>
               </div>
+            </div>
             </div>
           </div>
         </section>

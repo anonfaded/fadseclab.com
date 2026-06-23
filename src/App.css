@@ -1691,6 +1691,12 @@ main {
   padding: 8px 0;
 }
 
+.services-right {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
 .services-copy h2 {
   margin: 6px 0 0;
   font-family: var(--font-display);
