@@ -409,6 +409,7 @@ const App: React.FC = () => {
   const [activeSection, setActiveSection] = useState<string>('home');
   const [hasScrolled, setHasScrolled] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [heroPhase, setHeroPhase] = useState(0); // 0=loading, 1=headline, 2=desc, 3=ctas
   const [page, setPage] = useState<'home' | 'privacy' | 'terms'>(() => {
     const path = window.location.pathname;
     if (path === '/privacy') return 'privacy';
@@ -433,6 +434,15 @@ const App: React.FC = () => {
     document.documentElement.classList.toggle('dark', theme === 'dark');
     document.documentElement.classList.toggle('light', theme === 'light');
   }, [theme]);
+
+  // Hero entrance cascade: headline finishes → desc reveals → CTAs
+  useEffect(() => {
+    if (isLoading) return;
+    setHeroPhase(1); // headline starts
+    const descTimer = setTimeout(() => setHeroPhase(2), 1200); // headline visually settled
+    const ctasTimer = setTimeout(() => setHeroPhase(3), 2500); // desc tubelight done
+    return () => { clearTimeout(descTimer); clearTimeout(ctasTimer); };
+  }, [isLoading]);
 
   // Scroll-spy for nav active state + scroll-triggered header
   useEffect(() => {
@@ -669,7 +679,7 @@ const App: React.FC = () => {
       )}
 
       <main id="home">
-        <section className="hero-section">
+        <section className={cn('hero-section', `hero-phase-${heroPhase}`)}>
           <HeroSignalBackdrop />
           <div className="hero-copy">
             <Badge variant="outline" className="section-badge">
@@ -677,14 +687,16 @@ const App: React.FC = () => {
               Privacy-first FOSS software company
             </Badge>
             <h1 className="hero-headline">
-              <WordReveal text="Privacy today," start={!isLoading} delay={0.2} />
+              <WordReveal text="Privacy today," start={heroPhase >= 1} delay={0.2} />
               <br />
-              <WordReveal text="tomorrow," start={!isLoading} delay={0.42} />
+              <WordReveal text="tomorrow," start={heroPhase >= 1} delay={0.42} />
               {' '}
-              <WordReveal text="forever." start={!isLoading} delay={0.42} wordClassName="hero-headline-accent" />
+              <WordReveal text="forever." start={heroPhase >= 1} delay={0.42} wordClassName="hero-headline-accent" />
             </h1>
             <p className="hero-lede">
-              Anti-adversary, open-source software for Android, iOS, and desktop.<br /> Zero tracking, zero telemetry, production-grade engineering.
+              <TubelightReveal text="Anti-adversary, open-source software for Android, iOS, and desktop." start={heroPhase >= 2} />
+              <br />
+              <TubelightReveal text="Zero tracking, zero telemetry, production-grade engineering." start={heroPhase >= 2} />
             </p>
             <div className="hero-actions">
               <a href="#services" className={buttonVariants({ size: 'lg', className: 'hero-action' })} onClick={(e) => handleNavClick(e, '#services')}>

@@ -780,6 +780,7 @@ main {
 
 .tubelight-word {
   display: inline-block;
+  opacity: 0;
   will-change: opacity, filter;
 }
 
@@ -792,13 +793,31 @@ main {
   line-height: 1.6;
 }
 
-.hero-actions,
-.section-actions {
+/* Hero phases: hide elements until their cascade step */
+.hero-lede {
+  opacity: 0;
+  transition: opacity 350ms ease;
+}
+
+.hero-actions {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   gap: 8px;
   margin-top: 22px;
+  opacity: 0;
+  filter: blur(8px);
+  transition: opacity 500ms ease, filter 500ms ease;
+}
+
+.hero-phase-2 .hero-lede,
+.hero-phase-3 .hero-lede {
+  opacity: 1;
+}
+
+.hero-phase-3 .hero-actions {
+  opacity: 1;
+  filter: blur(0);
 }
 
 .hero-action {
