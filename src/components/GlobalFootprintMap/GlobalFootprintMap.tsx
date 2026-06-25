@@ -37,6 +37,7 @@ const mapMarkers: { name: string; coordinates: [number, number] }[] = [
   { name: 'Egypt', coordinates: [30.0, 26.0] },
   { name: 'Japan', coordinates: [138.3, 36.5] },
   { name: 'Singapore', coordinates: [103.8, 1.4] },
+  { name: 'Kazakhstan', coordinates: [66.0, 48.0] },
   { name: 'Peru', coordinates: [-75.0, -9.2] },
   { name: 'Slovakia', coordinates: [19.5, 48.7] },
   { name: 'South Africa', coordinates: [25.1, -29.0] },
@@ -65,7 +66,7 @@ const mapMarkers: { name: string; coordinates: [number, number] }[] = [
   { name: 'Costa Rica', coordinates: [-84.0, 9.9] },
 ];
 
-export default function ThreatMap() {
+export default function GlobalFootprintMap() {
   const [mapCenter, setMapCenter] = useState<[number, number]>([12, 6]);
   const [mapZoom, setMapZoom] = useState(1);
   const [activeCountry, setActiveCountry] = useState('');

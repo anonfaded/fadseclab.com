@@ -38,7 +38,7 @@ import MilitaryLoader from './components/MilitaryLoader/MilitaryLoader';
 import './App.css';
 
 const HeroShield = lazy(() => import('./components/HeroShield/HeroShield'));
-const ThreatMap = lazy(() => import('./components/ThreatMap/ThreatMap'));
+const GlobalFootprintMap = lazy(() => import('./components/GlobalFootprintMap/GlobalFootprintMap'));
 const PrivacyPage = lazy(() => import('./PrivacyPage'));
 const TermsPage = lazy(() => import('./TermsPage'));
 
@@ -706,7 +706,7 @@ const App: React.FC = () => {
                 <span className="world-map-meta">by country</span>
               </div>
               <Suspense fallback={<div className="world-map-frame" style={{ minHeight: 400 }} />}>
-                <ThreatMap />
+                <GlobalFootprintMap />
               </Suspense>
               <div className="world-map-foot">
                 <span className="world-map-foot-text">
