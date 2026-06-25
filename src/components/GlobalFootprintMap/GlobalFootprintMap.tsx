@@ -57,6 +57,7 @@ const mapMarkers: { name: string; coordinates: [number, number] }[] = [
   { name: 'Australia', coordinates: [133.8, -25.3] },
   { name: 'Romania', coordinates: [25.0, 45.9] },
   { name: 'Ghana', coordinates: [-1.0, 7.9] },
+  { name: 'Burundi', coordinates: [29.9, -3.4] },
   { name: 'Bolivia', coordinates: [-63.6, -16.3] },
   { name: 'Armenia', coordinates: [45.0, 40.0] },
   { name: 'Algeria', coordinates: [2.6, 28.0] },
