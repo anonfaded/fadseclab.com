@@ -15,6 +15,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import GiscusComments from '@/components/GiscusComments/GiscusComments';
+import { ShareSection } from '@/components/ShareSection/ShareSection';
 import { getAllPosts, getPostBySlug, formatBlogDate, timeAgo, type BlogPost } from '@/lib/blog';
 
 // ── Types ──────────────────────────────────────────────────────────────────
@@ -285,6 +286,7 @@ function BlogPostView({ post, onBack }: { post: BlogPost; onBack: () => void }) 
                 Featured
               </Badge>
             )}
+            <ShareSection title={post.title} slug={post.slug} compact />
           </div>
           <h1 className="blog-post-title">{post.title}</h1>
           <p className="blog-post-subtitle">{post.description}</p>
@@ -299,6 +301,8 @@ function BlogPostView({ post, onBack }: { post: BlogPost; onBack: () => void }) 
             {post.content}
           </Markdown>
         </div>
+
+        <ShareSection title={post.title} slug={post.slug} />
 
         <footer className="blog-post-footer">
           <div className="blog-post-footer-divider" />
