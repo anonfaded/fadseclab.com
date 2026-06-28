@@ -47,6 +47,8 @@ function buildBlogPageHtml(baseHtml: string, title: string, description: string,
 <meta property="og:type" content="${escapeHtml(type)}">
 <meta property="og:site_name" content="FadSec Lab">
 <meta property="og:image" content="${imageUrl}">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="${escapeHtml(title)}">
 <meta name="twitter:description" content="${escapeHtml(description)}">

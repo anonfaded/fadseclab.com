@@ -3985,12 +3985,16 @@ main {
 .blog-post-footer-divider {
   height: 1px;
   background: var(--hairline);
-  margin-bottom: 20px;
+  margin-bottom: 32px;
 }
 
 /* ── Blog comments section ── */
 .blog-comments {
   margin-top: 48px;
+}
+
+.blog-comments .blog-post-h2 {
+  margin-bottom: 24px;
 }
 
 /* ── Responsive blog ── */

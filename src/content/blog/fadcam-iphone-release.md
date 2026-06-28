@@ -1,8 +1,8 @@
 ---
-title: "FadCam Launches on iOS — 100 Promo Codes Giveaway"
+title: "FadCam for iOS — 100 Promo Codes Giveaway"
 badgeTitle: "🎁 FadCam iOS Giveaway — 100 Codes"
 date: "2026-06-26"
-description: "FadCam is now on iPhone. A free, open source video recorder for dashcam, bodycam, and dark-screen recording. Launching with a 100 promo code giveaway."
+description: "FadCam is now available on iOS — an open source video recorder for dashcam, bodycam, and privacy-first recording. Celebrating with 100 promo codes."
 slug: "fadcam-iphone-release"
 featured: true
 author: "FadSec Lab"
