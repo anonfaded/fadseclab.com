@@ -1,17 +1,27 @@
-import { ArrowLeft } from 'lucide-react';
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from '@/components/ui/breadcrumb';
 
-interface Props {
-  onBack: () => void;
-}
-
-export default function TermsPage({ onBack }: Props) {
+export default function TermsPage() {
   return (
     <div className="page-shell">
       <div className="page-content">
-        <button type="button" className="page-back" onClick={onBack}>
-          <ArrowLeft size={16} />
-          Back to home
-        </button>
+        <Breadcrumb>
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink href="/">Home</BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage>Terms and Conditions</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
 
         <div className="page-header">
           <h1 className="page-title">Terms and Conditions</h1>

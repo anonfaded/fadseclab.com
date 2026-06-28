@@ -13,7 +13,9 @@ import {
   Monitor,
   Moon,
   Palette,
+  Rss,
   ShieldCheck,
+  Smartphone,
   Sparkles,
   Sun,
   Terminal,
@@ -33,7 +35,9 @@ import {
 import { cn } from '@/lib/utils';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import Avatar from './components/Avatar/Avatar';
+import BlogBadge from './components/BlogBadge/BlogBadge';
 import MilitaryLoader from './components/MilitaryLoader/MilitaryLoader';
 import './App.css';
 
@@ -41,6 +45,7 @@ const HeroShield = lazy(() => import('./components/HeroShield/HeroShield'));
 const GlobalFootprintMap = lazy(() => import('./components/GlobalFootprintMap/GlobalFootprintMap'));
 const PrivacyPage = lazy(() => import('./PrivacyPage'));
 const TermsPage = lazy(() => import('./TermsPage'));
+const BlogPage = lazy(() => import('./pages/BlogPage'));
 
 import pilotPicImg from './assets/images/fadcam_sam_rutherford.jpg';
 
@@ -59,6 +64,11 @@ interface NavLink {
   id: string;
 }
 
+interface RouteLink {
+  href: string;
+  label: string;
+}
+
 const accountUrl = 'https://id.fadseclab.com';
 const fadCamUrl = 'https://fadcam.fadseclab.com';
 const githubOrgUrl = 'https://github.com/fadsec-lab';
@@ -70,8 +80,11 @@ const contactEmail = 'contact@fadseclab.com';
 const navLinks: NavLink[] = [
   { href: '#products', label: 'Products', id: 'products' },
   { href: '#services', label: 'Services', id: 'services' },
-  { href: '#open-source', label: 'Open source', id: 'open-source' },
   { href: '#mission', label: 'Mission', id: 'mission' },
+];
+
+const routeLinks: RouteLink[] = [
+  { href: '/blog', label: 'Blog' },
 ];
 
 const iconMap = {
@@ -84,6 +97,9 @@ const iconMap = {
   monitor: <Monitor size={12} />,
   android: <FaAndroid size={12} />,
   firefox: <FaFirefox size={12} />,
+  apple: <FaApple size={12} />,
+  mobile: <Smartphone size={12} />,
+  rss: <Rss size={14} />,
 };
 
 const footerGroups = [
@@ -91,12 +107,25 @@ const footerGroups = [
     title: 'Products',
     subsections: [
       {
-        label: 'Android',
-        icons: ['android' as const],
-        links: [
-          { label: 'FadCam', action: 'external' as const, url: fadCamUrl },
-          { label: 'Fadocx', action: 'external' as const, url: 'https://github.com/anonfaded/Fadocx' },
-          { label: 'FadeBoard', action: 'external' as const, url: 'https://github.com/anonfaded/fadeboard' },
+        label: 'Mobile',
+        icons: ['mobile' as const],
+        groups: [
+          {
+            label: 'Android',
+            icon: 'android' as const,
+            links: [
+              { label: 'FadCam', action: 'external' as const, url: fadCamUrl },
+              { label: 'Fadocx', action: 'external' as const, url: 'https://github.com/anonfaded/Fadocx' },
+              { label: 'FadeBoard', action: 'external' as const, url: 'https://github.com/anonfaded/fadeboard' },
+            ],
+          },
+          {
+            label: 'iOS',
+            icon: 'apple' as const,
+            links: [
+              { label: 'FadCam', action: 'external' as const, url: 'https://apps.apple.com/us/app/fadcam-dashcam-bodycam/id6778121848' },
+            ],
+          },
         ],
       },
       {
@@ -122,6 +151,7 @@ const footerGroups = [
   {
     title: 'Company',
     links: [
+      { label: 'Blog (RSS)', action: 'external' as const, url: '/rss.xml', icon: 'rss' as const },
       { label: 'Donation', action: 'external' as const, url: patreonUrl, icon: 'heart' as const },
       { label: 'Privacy Policy', action: 'privacy' as const, icon: 'lock' as const },
       { label: 'Terms of Service', action: 'terms' as const, icon: 'file' as const },
@@ -345,13 +375,8 @@ const App: React.FC = () => {
   const [hasScrolled, setHasScrolled] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState(true);
   const [heroPhase, setHeroPhase] = useState(0); // 0=loading, 1=headline, 2=desc, 3=ctas
-  const [page, setPage] = useState<'home' | 'privacy' | 'terms'>(() => {
-    const path = window.location.pathname;
-    if (path === '/privacy') return 'privacy';
-    if (path === '/terms') return 'terms';
-    return 'home';
-  });
-  const scrollPosRef = useRef(0);
+  const navigate = useNavigate();
+  const location = useLocation();
   const [consentAccepted, setConsentAccepted] = useState(() => {
     return localStorage.getItem('fadsec-consent') === 'accepted';
   });
@@ -450,29 +475,25 @@ const App: React.FC = () => {
 
   const closeMenu = () => setIsMenuOpen(false);
 
-  const navigateToPage = (p: 'privacy' | 'terms') => {
-    closeMenu();
-    scrollPosRef.current = window.scrollY;
-    history.replaceState(null, '', `/${p}`);
-    window.scrollTo({ top: 0, behavior: 'auto' });
-    setPage(p);
-  };
-
-  const goHome = () => {
-    const saved = scrollPosRef.current;
-    history.replaceState(null, '', '/');
-    setPage('home');
-    requestAnimationFrame(() => window.scrollTo({ top: saved, behavior: 'auto' }));
-  };
-
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
     if (!href.startsWith('#')) return;
     e.preventDefault();
-    history.replaceState(null, '', href);
-    const target = document.querySelector(href);
-    if (target) {
-      const top = target.getBoundingClientRect().top + window.scrollY - 80;
-      window.scrollTo({ top, behavior: 'smooth' });
+    // If not on home page, navigate there first then scroll
+    if (location.pathname !== '/') {
+      navigate('/');
+      setTimeout(() => {
+        const target = document.querySelector(href);
+        if (target) {
+          const top = target.getBoundingClientRect().top + window.scrollY - 80;
+          window.scrollTo({ top, behavior: 'smooth' });
+        }
+      }, 100);
+    } else {
+      const target = document.querySelector(href);
+      if (target) {
+        const top = target.getBoundingClientRect().top + window.scrollY - 80;
+        window.scrollTo({ top, behavior: 'smooth' });
+      }
     }
     closeMenu();
   };
@@ -485,21 +506,32 @@ const App: React.FC = () => {
     } else if (link.action === 'email') {
       window.open(`mailto:${contactEmail}`, '_self');
     } else if (link.action === 'terms') {
-      navigateToPage('terms');
+      navigate('/terms');
     } else if (link.action === 'privacy') {
-      navigateToPage('privacy');
+      navigate('/privacy');
     } else if (link.action === 'contact') {
       setActiveDialog('contact');
     } else if (link.action === 'anchor' && link.target) {
-      const el = document.querySelector(link.target);
-      if (el) {
-        const top = el.getBoundingClientRect().top + window.scrollY - 80;
-        window.scrollTo({ top, behavior: 'smooth' });
+      if (location.pathname !== '/') {
+        navigate('/');
+        setTimeout(() => {
+          const el = document.querySelector(link.target!);
+          if (el) {
+            const top = el.getBoundingClientRect().top + window.scrollY - 80;
+            window.scrollTo({ top, behavior: 'smooth' });
+          }
+        }, 100);
+      } else {
+        const el = document.querySelector(link.target);
+        if (el) {
+          const top = el.getBoundingClientRect().top + window.scrollY - 80;
+          window.scrollTo({ top, behavior: 'smooth' });
+        }
       }
     }
   };
 
-  return page === 'home' ? (
+  return (
     <div className="site-shell" ref={rootRef}>
       <header className="site-header" data-scrolled={hasScrolled ? 'true' : 'false'}>
         <a className="brand-lockup" href="#home" aria-label="FadSec Lab home" onClick={(e) => handleNavClick(e, '#home')}>
@@ -507,17 +539,36 @@ const App: React.FC = () => {
         </a>
 
         <nav className="site-nav" aria-label="Primary navigation">
-          {navLinks.map((link) => (
-            <a
-              key={link.href}
-              href={link.href}
-              className={cn('nav-link', activeSection === link.id && 'is-active')}
-              onClick={(e) => handleNavClick(e, link.href)}
-            >
-              <span className="nav-label">{link.label}</span>
-              <span className="nav-underline" aria-hidden="true" />
-            </a>
+          {[
+            ...navLinks.map((link) => ({ ...link, as: 'a' as const })),
+            ...routeLinks.map((link) => ({ ...link, as: 'button' as const })),
+          ].map((item, i, arr) => (
+            <React.Fragment key={item.href}>
+              {item.as === 'a' ? (
+                <a
+                  href={item.href}
+                  className={cn('nav-link', activeSection === item.id && 'is-active')}
+                  onClick={(e) => handleNavClick(e, item.href)}
+                >
+                  <span className="nav-label">{item.label}</span>
+                  <span className="nav-underline" aria-hidden="true" />
+                </a>
+              ) : (
+                <button
+                  type="button"
+                  className={cn('nav-link', location.pathname.startsWith(item.href) && 'is-active')}
+                  onClick={() => navigate(item.href)}
+                >
+                  <span className="nav-label">{item.label}</span>
+                  <span className="nav-underline" aria-hidden="true" />
+                </button>
+              )}
+              {i < arr.length - 1 && (
+                <span className="nav-sep" aria-hidden="true">·</span>
+              )}
+            </React.Fragment>
           ))}
+          <span className="nav-sep" aria-hidden="true">·</span>
           <button
             type="button"
             className="nav-link"
@@ -581,10 +632,22 @@ const App: React.FC = () => {
               className="nav-item"
               onClick={(e) => handleNavClick(e, link.href)}
             >
+                <span className="nav-sigil">//</span>
+                {link.label}
+                <ChevronRight />
+              </a>
+            ))}
+          {routeLinks.map((link) => (
+            <button
+              key={link.href}
+              type="button"
+              className="nav-item"
+              onClick={() => { closeMenu(); navigate(link.href); }}
+            >
               <span className="nav-sigil">//</span>
               {link.label}
               <ChevronRight />
-            </a>
+            </button>
           ))}
           <button
             type="button"
@@ -612,11 +675,11 @@ const App: React.FC = () => {
               <Badge variant="outline" className="header-account-beta">BETA</Badge>
             </button>
             <div className="mobile-menu-pages">
-              <button type="button" className="mobile-menu-page-link" onClick={() => { closeMenu(); navigateToPage('privacy'); }}>
+              <button type="button" className="mobile-menu-page-link" onClick={() => { closeMenu(); navigate('/privacy'); }}>
                 Privacy Policy
               </button>
               <span className="mobile-menu-page-dot">·</span>
-              <button type="button" className="mobile-menu-page-link" onClick={() => { closeMenu(); navigateToPage('terms'); }}>
+              <button type="button" className="mobile-menu-page-link" onClick={() => { closeMenu(); navigate('/terms'); }}>
                 Terms and Conditions
               </button>
             </div>
@@ -628,14 +691,12 @@ const App: React.FC = () => {
         <MilitaryLoader onComplete={() => setIsLoading(false)} />
       )}
 
+      {location.pathname === '/' ? (
       <main id="home">
         <section className={cn('hero-section', `hero-phase-${heroPhase}`)}>
           <HeroSignalBackdrop />
           <div className="hero-copy">
-            <Badge variant="outline" className="section-badge">
-              <ShieldCheck />
-              Privacy-first FOSS software company
-            </Badge>
+            <BlogBadge className="section-badge" />
             <h1 className="hero-headline">
               <WordReveal text="Privacy today," start={heroPhase >= 1} delay={0.2} />
               <br />
@@ -998,9 +1059,9 @@ const App: React.FC = () => {
               </p>
               <p className="mission-lede">
                 Our commitments to privacy and ethics are documented publicly:{' '}
-                <button type="button" className="consent-link" onClick={() => { closeMenu(); navigateToPage('privacy'); }}>Privacy Policy</button>
+                <button type="button" className="consent-link" onClick={() => { closeMenu(); navigate('/privacy'); }}>Privacy Policy</button>
                 {' · '}
-                <button type="button" className="consent-link" onClick={() => { closeMenu(); navigateToPage('terms'); }}>Terms of Service</button>
+                <button type="button" className="consent-link" onClick={() => { closeMenu(); navigate('/terms'); }}>Terms of Service</button>
               </p>
             </div>
 
@@ -1055,6 +1116,14 @@ const App: React.FC = () => {
         </div>
 
       </main>
+      ) : (
+      <Routes>
+        <Route path="/privacy" element={<Suspense fallback={null}><PrivacyPage /></Suspense>} />
+        <Route path="/terms" element={<Suspense fallback={null}><TermsPage /></Suspense>} />
+        <Route path="/blog" element={<Suspense fallback={null}><BlogPage /></Suspense>} />
+        <Route path="/blog/:slug" element={<Suspense fallback={null}><BlogPage /></Suspense>} />
+      </Routes>
+      )}
 
       <Dialog open={activeDialog === 'contact'} onOpenChange={(open) => { if (!open) setActiveDialog(null); }}>
         <DialogContent className="dialog-surface">
@@ -1091,7 +1160,7 @@ const App: React.FC = () => {
                   <h3>{group.title}</h3>
                   {'subsections' in group ? (
                     <div className="footer-subgrid">
-                      {(group as { subsections: { label: string; icons: readonly string[]; links: { label: string; action: string; url?: string }[] }[] }).subsections.map((sub) => (
+                      {(group as { subsections: { label: string; icons: readonly string[]; links?: { label: string; action: string; url?: string }[]; groups?: { label: string; icon?: string; links: { label: string; action: string; url?: string }[] }[] }[] }).subsections.map((sub) => (
                         <div key={sub.label} className="footer-subsection">
                           <h4 className="footer-subsection-title">
                             {sub.icons?.map(ic => (
@@ -1099,12 +1168,29 @@ const App: React.FC = () => {
                             ))}
                             {sub.label}
                           </h4>
-                          {sub.links.map(link => (
-                            <button key={link.label} type="button" onClick={() => handleFooterLink(link)} className="footer-link-btn">
-                              <span className="footer-link-label">{link.label}</span>
-                              <ExternalLink size={12} className="footer-ext-icon" />
-                            </button>
-                          ))}
+                          {sub.groups ? (
+                            sub.groups.map((grp) => (
+                              <div key={grp.label} className="footer-subsection-group">
+                                <h5 className="footer-subsection-subtitle">
+                                  {grp.icon && iconMap[grp.icon as keyof typeof iconMap]}
+                                  <span>{grp.label}</span>
+                                </h5>
+                                {grp.links.map(link => (
+                                  <button key={link.label} type="button" onClick={() => handleFooterLink(link)} className="footer-link-btn">
+                                    <span className="footer-link-label">{link.label}</span>
+                                    <ExternalLink size={12} className="footer-ext-icon" />
+                                  </button>
+                                ))}
+                              </div>
+                            ))
+                          ) : (
+                            sub.links?.map(link => (
+                              <button key={link.label} type="button" onClick={() => handleFooterLink(link)} className="footer-link-btn">
+                                <span className="footer-link-label">{link.label}</span>
+                                <ExternalLink size={12} className="footer-ext-icon" />
+                              </button>
+                            ))
+                          )}
                         </div>
                       ))}
                     </div>
@@ -1143,9 +1229,9 @@ const App: React.FC = () => {
           <div className="consent-banner-body">
             <span className="consent-banner-text">
               By continuing, you agree to our{' '}
-              <button type="button" className="consent-link" onClick={() => { closeMenu(); navigateToPage('privacy'); }}>Privacy Policy</button>
+              <button type="button" className="consent-link" onClick={() => { closeMenu(); navigate('/privacy'); }}>Privacy Policy</button>
               {' '}and{' '}
-              <button type="button" className="consent-link" onClick={() => { closeMenu(); navigateToPage('terms'); }}>Terms of Service</button>.
+              <button type="button" className="consent-link" onClick={() => { closeMenu(); navigate('/terms'); }}>Terms of Service</button>.
             </span>
             <button type="button" className="consent-accept" onClick={acceptConsent}>
               Accept
@@ -1157,14 +1243,10 @@ const App: React.FC = () => {
       {lightboxSrc && (
         <div className="lightbox-overlay" onClick={() => setLightboxSrc(null)}>
           <button type="button" className="lightbox-close" aria-label="Close">✕</button>
-          <img src={lightboxSrc} alt="" className="lightbox-img" onClick={(e) => e.stopPropagation()} />
+          <img src={lightboxSrc} alt="" className="lightbox-img" width="512" height="384" onClick={(e) => e.stopPropagation()} />
         </div>
       )}
     </div>
-  ) : page === 'privacy' ? (
-    <Suspense fallback={null}><PrivacyPage onBack={goHome} /></Suspense>
-  ) : (
-    <Suspense fallback={null}><TermsPage onBack={goHome} /></Suspense>
   );
 };
 
