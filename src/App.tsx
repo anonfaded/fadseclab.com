@@ -36,6 +36,7 @@ import { cn } from '@/lib/utils';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
+import { ScrollToTop } from '@/components/ScrollToTop/ScrollToTop';
 import Avatar from './components/Avatar/Avatar';
 import BlogBadge from './components/BlogBadge/BlogBadge';
 import MilitaryLoader from './components/MilitaryLoader/MilitaryLoader';
@@ -1118,13 +1119,16 @@ const App: React.FC = () => {
 
       </main>
       ) : (
-      <Routes>
-        <Route path="/privacy" element={<Suspense fallback={null}><PrivacyPage /></Suspense>} />
-        <Route path="/terms" element={<Suspense fallback={null}><TermsPage /></Suspense>} />
-        <Route path="/blog" element={<Suspense fallback={null}><BlogPage /></Suspense>} />
-        <Route path="/blog/:slug" element={<Suspense fallback={null}><BlogPage /></Suspense>} />
-        <Route path="*" element={<Suspense fallback={null}><NotFoundPage /></Suspense>} />
-      </Routes>
+      <>
+        <ScrollToTop />
+        <Routes>
+          <Route path="/privacy" element={<Suspense fallback={null}><PrivacyPage /></Suspense>} />
+          <Route path="/terms" element={<Suspense fallback={null}><TermsPage /></Suspense>} />
+          <Route path="/blog" element={<Suspense fallback={null}><BlogPage /></Suspense>} />
+          <Route path="/blog/:slug" element={<Suspense fallback={null}><BlogPage /></Suspense>} />
+          <Route path="*" element={<Suspense fallback={null}><NotFoundPage /></Suspense>} />
+        </Routes>
+      </>
       )}
 
       <Dialog open={activeDialog === 'contact'} onOpenChange={(open) => { if (!open) setActiveDialog(null); }}>
