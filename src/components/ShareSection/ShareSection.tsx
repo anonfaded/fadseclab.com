@@ -103,11 +103,23 @@ export function ShareSection({ title, slug, compact }: ShareSectionProps) {
     },
   ];
 
-  // ── Compact: icon-only row for meta area ──
+  // ── Compact: link + social row for meta area ──
   if (compact) {
     return (
       <div className="flex items-center gap-1.5" role="group" aria-label="Share this post">
         <span className="text-[11px] font-medium text-[var(--text-faint)] tracking-wide uppercase mr-0.5">Share</span>
+        <div className="flex items-center gap-1.5 px-2 py-1 rounded-md border border-border bg-[var(--report-bg)] max-w-[180px]">
+          <span className="text-[11px] text-[var(--text-faint)] font-mono truncate flex-1">
+            {fullUrl}
+          </span>
+          <button
+            onClick={copy}
+            className="shrink-0 cursor-pointer text-muted-foreground hover:text-[var(--accent-brand)] transition-colors"
+            aria-label={copied ? 'Copied' : 'Copy link'}
+          >
+            {copied ? <Check size={11} /> : <Copy size={11} />}
+          </button>
+        </div>
         {shareLinks.map((link) => (
           <a
             key={link.label}
@@ -142,7 +154,7 @@ export function ShareSection({ title, slug, compact }: ShareSectionProps) {
           </span>
           <button
             onClick={copy}
-            className="shrink-0 text-muted-foreground hover:text-[var(--accent-brand)] transition-colors"
+            className="shrink-0 cursor-pointer text-muted-foreground hover:text-[var(--accent-brand)] transition-colors"
             aria-label={copied ? 'Copied' : 'Copy link'}
           >
             {copied ? <Check size={14} /> : <Copy size={14} />}
