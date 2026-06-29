@@ -329,7 +329,7 @@ const App: React.FC = () => {
   };
 
   return (
-    <AppContext.Provider value={{ activeDialog, setActiveDialog, lightboxSrc, setLightboxSrc }}>
+      <AppContext.Provider value={{ activeDialog, setActiveDialog, lightboxSrc, setLightboxSrc, isLoading }}>
     <div className="site-shell" ref={rootRef}>
       <header className="site-header" data-scrolled={hasScrolled ? 'true' : 'false'}>
         <a className="brand-lockup" href="#home" aria-label="FadSec Lab home" onClick={(e) => handleNavClick(e, '#home')}>

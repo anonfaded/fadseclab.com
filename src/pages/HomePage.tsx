@@ -171,9 +171,9 @@ function WordReveal({ text, start, className, wordClassName, delay = 0 }: { text
 
 function HomePage() {
   const navigate = useNavigate();
-  const { setActiveDialog, setLightboxSrc, lightboxSrc } = useAppContext();
+  const { setActiveDialog, setLightboxSrc, lightboxSrc, isLoading } = useAppContext();
 
-  const [heroPhase, setHeroPhase] = useState(1);
+  const [heroPhase, setHeroPhase] = useState(0);
   const [, setActiveSection] = useState('home');
 
   const { ref: trustRef, inView: trustInView } = useInView<HTMLDivElement>(0);
@@ -187,12 +187,15 @@ function HomePage() {
   const { ref: missionRef, inView: missionInView } = useInView<HTMLDivElement>(0);
   const { ref: missionDonateRef, inView: missionDonateInView } = useInView<HTMLDivElement>(0);
 
-  // Hero entrance cascade
+  // Hero entrance cascade — deferred to next frame so it doesn't fire
+  // synchronously within the effect (avoids cascading render warning)
   useEffect(() => {
+    if (isLoading) return;
+    const frame = requestAnimationFrame(() => setHeroPhase(1));
     const descTimer = setTimeout(() => setHeroPhase(2), 1200);
     const ctasTimer = setTimeout(() => setHeroPhase(3), 2500);
-    return () => { clearTimeout(descTimer); clearTimeout(ctasTimer); };
-  }, []);
+    return () => { cancelAnimationFrame(frame); clearTimeout(descTimer); clearTimeout(ctasTimer); };
+  }, [isLoading]);
 
   // Scroll-spy for nav active state
   useEffect(() => {

@@ -5,6 +5,7 @@ export interface AppContextType {
   setActiveDialog: (v: string | null) => void;
   lightboxSrc: string | null;
   setLightboxSrc: (v: string | null) => void;
+  isLoading: boolean;
 }
 
 export const AppContext = createContext<AppContextType | null>(null);
