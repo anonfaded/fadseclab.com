@@ -10,18 +10,6 @@ main#home pre {
   margin: 0;
 }
 
-main#home h1,
-main#home h2,
-main#home h3 {
-  line-height: 1;
-  letter-spacing: -0.022em;
-}
-
-main#home p {
-  color: var(--text-soft);
-  line-height: 1.7;
-}
-
 /* ====================================================
    TOKENS
    ==================================================== */
