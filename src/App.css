@@ -738,6 +738,12 @@ main {
   background-size: 28px 28px;
 }
 
+[data-theme='light'] .hero-scene::before {
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 35%, rgba(0, 0, 0, 0.02) 0%, transparent 55%),
+    radial-gradient(ellipse 50% 50% at 50% 50%, transparent 40%, rgba(200, 200, 210, 0.25) 100%);
+}
+
 .hero-copy {
   position: relative;
   z-index: 5;
