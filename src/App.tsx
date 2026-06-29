@@ -46,6 +46,7 @@ const GlobalFootprintMap = lazy(() => import('./components/GlobalFootprintMap/Gl
 const PrivacyPage = lazy(() => import('./PrivacyPage'));
 const TermsPage = lazy(() => import('./TermsPage'));
 const BlogPage = lazy(() => import('./pages/BlogPage'));
+const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
 
 import pilotPicImg from './assets/images/fadcam_sam_rutherford.jpg';
 
@@ -1122,6 +1123,7 @@ const App: React.FC = () => {
         <Route path="/terms" element={<Suspense fallback={null}><TermsPage /></Suspense>} />
         <Route path="/blog" element={<Suspense fallback={null}><BlogPage /></Suspense>} />
         <Route path="/blog/:slug" element={<Suspense fallback={null}><BlogPage /></Suspense>} />
+        <Route path="*" element={<Suspense fallback={null}><NotFoundPage /></Suspense>} />
       </Routes>
       )}
 
