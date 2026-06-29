@@ -520,7 +520,6 @@ const App: React.FC = () => {
           <Avatar simplified={true} />
         </div>
         <div className="footer-panel">
-          <div className="footer-top">
             <div className="footer-grid">
               {footerGroups.map((group) => (
                 <div key={group.title}>
@@ -568,7 +567,8 @@ const App: React.FC = () => {
                           <img
                             src="https://img.shields.io/github/stars/fadsec-lab/.github?style=social&label=%E2%98%85%20Stars"
                             alt="GitHub stars"
-                            className="github-stars-img"
+                            width="100"
+                            height="28"
                           />
                         </a>
                       ) : (
@@ -583,7 +583,6 @@ const App: React.FC = () => {
                 </div>
               ))}
             </div>
-          </div>
           <div className="footer-wordmark-wrap" aria-hidden="true">
             <span className="footer-corner footer-corner--tl" />
             <span className="footer-corner footer-corner--tr" />

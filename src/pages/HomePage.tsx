@@ -173,7 +173,7 @@ function HomePage() {
   const navigate = useNavigate();
   const { setActiveDialog, setLightboxSrc, lightboxSrc } = useAppContext();
 
-  const [heroPhase, setHeroPhase] = useState(0);
+  const [heroPhase, setHeroPhase] = useState(1);
   const [, setActiveSection] = useState('home');
 
   const { ref: trustRef, inView: trustInView } = useInView<HTMLDivElement>(0);
@@ -189,7 +189,6 @@ function HomePage() {
 
   // Hero entrance cascade
   useEffect(() => {
-    setHeroPhase(1);
     const descTimer = setTimeout(() => setHeroPhase(2), 1200);
     const ctasTimer = setTimeout(() => setHeroPhase(3), 2500);
     return () => { clearTimeout(descTimer); clearTimeout(ctasTimer); };
