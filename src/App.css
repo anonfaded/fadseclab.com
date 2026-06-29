@@ -1,3 +1,27 @@
+/* ── Home page heading resets (scoped — don't move to index.css) ── */
+
+
+/* ── Home page heading resets (scoped — not global — so blog/privacy pages get normal margins) ── */
+main#home h1,
+main#home h2,
+main#home h3,
+main#home p,
+main#home pre {
+  margin: 0;
+}
+
+main#home h1,
+main#home h2,
+main#home h3 {
+  line-height: 1;
+  letter-spacing: -0.022em;
+}
+
+main#home p {
+  color: var(--text-soft);
+  line-height: 1.7;
+}
+
 /* ====================================================
    TOKENS
    ==================================================== */
@@ -3831,6 +3855,7 @@ main {
   display: flex;
   flex-direction: column;
   gap: 18px;
+  margin-bottom: 48px;
 }
 
 .blog-post-h2 {
@@ -3979,7 +4004,7 @@ main {
 
 /* ── Blog post footer ── */
 .blog-post-footer {
-  margin-top: 48px;
+  margin-top: 0;
 }
 
 .blog-post-footer-divider {

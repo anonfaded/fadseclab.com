@@ -126,16 +126,16 @@ export function ShareSection({ title, slug, compact }: ShareSectionProps) {
 
   // ── Full: share section for bottom of post ──
   return (
-    <div className="mt-12">
+    <div className="mb-12">
       {/* Divider */}
       <div className="h-px bg-[var(--hairline)] mb-5" />
 
-      <h3 className="text-sm font-semibold text-[var(--text)] mb-5">
+      <h3 className="text-sm font-semibold text-[var(--text)]">
         Share this post
       </h3>
 
       {/* Link + copy */}
-      <div className="flex items-center gap-2 mb-4">
+      <div className="flex items-center gap-2 mt-4 mb-4">
         <div className="flex-1 flex items-center gap-2 px-3 py-2 rounded-lg border border-border bg-[var(--report-bg)]">
           <span className="text-xs text-[var(--text-faint)] font-mono truncate flex-1">
             {fullUrl}

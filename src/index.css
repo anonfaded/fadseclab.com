@@ -146,8 +146,7 @@ body {
   text-rendering: optimizeLegibility;
 }
 
-h1, h2, h3, h4, h5, h6 {
-}
+
 
 /* Grain noise texture */
 body::before,
@@ -192,25 +191,7 @@ button {
   font: inherit;
 }
 
-h1,
-h2,
-h3,
-p,
-pre {
-  margin: 0;
-}
 
-h1,
-h2,
-h3 {
-  line-height: 1;
-  letter-spacing: -0.022em;
-}
-
-p {
-  color: var(--text-soft);
-  line-height: 1.7;
-}
 
 img {
   display: block;
