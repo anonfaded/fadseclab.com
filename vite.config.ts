@@ -197,6 +197,12 @@ ${rssItems}
 </rss>`;
         fs.writeFileSync(path.join(outDir, 'rss.xml'), rss);
         console.log('[generate-blog-html] ✓ rss.xml');
+
+        // ── 404.html for GitHub Pages ──
+        // GitHub Pages needs a physical 404.html at root to serve custom 404 pages.
+        // This is the SPA shell so React Router boots up and renders NotFoundPage via path="*".
+        fs.copyFileSync(path.join(outDir, 'index.html'), path.join(outDir, '404.html'));
+        console.log('[generate-blog-html] ✓ 404.html (SPA shell for GitHub Pages)');
       },
     },
   ],
