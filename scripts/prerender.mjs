@@ -10,7 +10,7 @@ const rootDir = resolve(__dirname, '..');
 
 // ── Discover all routes ─────────────────────────────────────────────────────
 
-const staticRoutes = ['/', '/privacy', '/terms', '/blog'];
+const staticRoutes = ['/', '/privacy', '/terms', '/blog', '/404'];
 
 const blogDir = resolve(rootDir, 'src/content/blog');
 const blogSlugs = [];
@@ -71,6 +71,8 @@ for (const route of routes) {
 
   const outputPath = route === '/'
     ? resolve(distDir, 'index.html')
+    : route === '/404'
+    ? resolve(distDir, '404.html')
     : resolve(distDir, route.slice(1), 'index.html');
 
   mkdirSync(dirname(outputPath), { recursive: true });
