@@ -27,9 +27,9 @@ export default function BlogBadge({ className }: BlogBadgeProps) {
   }
 
   return (
-    <button
-      type="button"
-      onClick={() => navigate(`/blog/${featured.slug}`)}
+    <a
+      href={`/blog/${featured.slug}`}
+      onClick={(e) => { e.preventDefault(); navigate(`/blog/${featured.slug}`); }}
       className={cn(
         'blog-badge',
         'group/badge inline-flex shrink-0 items-center gap-2 rounded-4xl border text-xs font-medium transition-all cursor-pointer',
@@ -43,6 +43,6 @@ export default function BlogBadge({ className }: BlogBadgeProps) {
       <span className="blog-badge-title">{featured.badgeTitle || featured.title}</span>
       <ArrowRight className="blog-badge-arrow" />
       <span className="blog-badge-new">New</span>
-    </button>
+    </a>
   );
 }

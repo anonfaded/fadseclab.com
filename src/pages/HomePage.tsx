@@ -596,9 +596,9 @@ function HomePage() {
               </p>
               <p className="mission-lede">
                 Our commitments to privacy and ethics are documented publicly:{' '}
-                <button type="button" className="consent-link" onClick={() => navigate('/privacy')}>Privacy Policy</button>
+                <a href="/privacy" className="consent-link" onClick={(e) => { e.preventDefault(); navigate('/privacy'); }}>Privacy Policy</a>
                 {' · '}
-                <button type="button" className="consent-link" onClick={() => navigate('/terms')}>Terms of Service</button>
+                <a href="/terms" className="consent-link" onClick={(e) => { e.preventDefault(); navigate('/terms'); }}>Terms of Service</a>
               </p>
             </div>
 

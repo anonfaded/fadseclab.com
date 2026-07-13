@@ -12,8 +12,8 @@ import {
   BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { buttonVariants } from '@/components/ui/button-variants';
 import GiscusComments from '@/components/GiscusComments/GiscusComments';
 import { ShareSection } from '@/components/ShareSection/ShareSection';
 import { getAllPosts, getPostBySlug, formatBlogDate, timeAgo, type BlogPost } from '@/lib/blog';
@@ -164,7 +164,7 @@ function createMarkdownComponents(onImageClick?: (src: string) => void) {
 
 function BlogPostCard({ post, onClick }: { post: BlogPost; onClick: () => void }) {
   return (
-    <article className="blog-card group cursor-pointer" onClick={onClick}>
+    <a href={`/blog/${post.slug}`} className="blog-card group cursor-pointer" onClick={(e) => { e.preventDefault(); onClick(); }}>
       {post.ogImage && (
         <div className="blog-card-thumb-wrap">
           <img
@@ -192,7 +192,7 @@ function BlogPostCard({ post, onClick }: { post: BlogPost; onClick: () => void }
           <span className="blog-card-arrow">→</span>
         </span>
       </div>
-    </article>
+    </a>
   );
 }
 
@@ -306,15 +306,14 @@ function BlogPostView({ post, onBack }: { post: BlogPost; onBack: () => void }) 
 
         <footer className="blog-post-footer">
           <div className="blog-post-footer-divider" />
-          <Button
-            type="button"
-            variant="outline"
-            size="lg"
-            onClick={onBack}
+          <a
+            href="/blog"
+            onClick={(e) => { e.preventDefault(); onBack(); }}
+            className={cn(buttonVariants({ variant: "outline", size: "lg" }))}
           >
             <ArrowLeft size={16} />
             Back to blog
-          </Button>
+          </a>
         </footer>
 
         <GiscusComments />
@@ -335,10 +334,10 @@ function BlogNotFound({ onBack }: { onBack: () => void }) {
   return (
     <div className="page-shell">
       <div className="page-content">
-        <button type="button" className="page-back" onClick={onBack}>
+        <a href="/blog" className="page-back" onClick={(e) => { e.preventDefault(); onBack(); }}>
           <ArrowLeft size={16} />
           Back to blog
-        </button>
+        </a>
         <div className="page-header">
           <h1 className="page-title">Post not found</h1>
         </div>

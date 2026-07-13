@@ -352,14 +352,14 @@ const App: React.FC = () => {
                   <span className="nav-underline" aria-hidden="true" />
                 </a>
               ) : (
-                <button
-                  type="button"
+                <a
+                  href={item.href}
                   className={cn('nav-link', location.pathname.startsWith(item.href) && 'is-active')}
-                  onClick={() => navigate(item.href)}
+                  onClick={(e) => { e.preventDefault(); navigate(item.href); }}
                 >
                   <span className="nav-label">{item.label}</span>
                   <span className="nav-underline" aria-hidden="true" />
-                </button>
+                </a>
               )}
               {i < arr.length - 1 && (
                 <span className="nav-sep" aria-hidden="true">·</span>
@@ -436,16 +436,16 @@ const App: React.FC = () => {
               </a>
             ))}
           {routeLinks.map((link) => (
-            <button
+            <a
               key={link.href}
-              type="button"
+              href={link.href}
               className="nav-item"
-              onClick={() => { closeMenu(); navigate(link.href); }}
+              onClick={(e) => { e.preventDefault(); closeMenu(); navigate(link.href); }}
             >
               <span className="nav-sigil">//</span>
               {link.label}
               <ChevronRight />
-            </button>
+            </a>
           ))}
           <button
             type="button"
@@ -473,13 +473,13 @@ const App: React.FC = () => {
               <Badge variant="outline" className="header-account-beta">BETA</Badge>
             </button>
             <div className="mobile-menu-pages">
-              <button type="button" className="mobile-menu-page-link" onClick={() => { closeMenu(); navigate('/privacy'); }}>
+              <a href="/privacy" className="mobile-menu-page-link" onClick={(e) => { e.preventDefault(); closeMenu(); navigate('/privacy'); }}>
                 Privacy Policy
-              </button>
+              </a>
               <span className="mobile-menu-page-dot">·</span>
-              <button type="button" className="mobile-menu-page-link" onClick={() => { closeMenu(); navigate('/terms'); }}>
+              <a href="/terms" className="mobile-menu-page-link" onClick={(e) => { e.preventDefault(); closeMenu(); navigate('/terms'); }}>
                 Terms and Conditions
-              </button>
+              </a>
             </div>
           </div>
         </div>
@@ -571,6 +571,11 @@ const App: React.FC = () => {
                             height="28"
                           />
                         </a>
+                      ) : footerLink.action === 'privacy' || footerLink.action === 'terms' ? (
+                        <a key={footerLink.label} href={footerLink.action === 'privacy' ? '/privacy' : '/terms'} className="footer-link-btn" onClick={(e) => { e.preventDefault(); handleFooterLink(footerLink); }}>
+                          {footerLink.icon && iconMap[footerLink.icon as keyof typeof iconMap]}
+                          <span className="footer-link-label">{footerLink.label}</span>
+                        </a>
                       ) : (
                         <button key={footerLink.label} type="button" onClick={() => handleFooterLink(footerLink)} className="footer-link-btn">
                           {footerLink.icon && iconMap[footerLink.icon as keyof typeof iconMap]}
@@ -605,9 +610,9 @@ const App: React.FC = () => {
           <div className="consent-banner-body">
             <span className="consent-banner-text">
               By continuing, you agree to our{' '}
-              <button type="button" className="consent-link" onClick={() => { closeMenu(); navigate('/privacy'); }}>Privacy Policy</button>
+              <a href="/privacy" className="consent-link" onClick={(e) => { e.preventDefault(); closeMenu(); navigate('/privacy'); }}>Privacy Policy</a>
               {' '}and{' '}
-              <button type="button" className="consent-link" onClick={() => { closeMenu(); navigate('/terms'); }}>Terms of Service</button>.
+              <a href="/terms" className="consent-link" onClick={(e) => { e.preventDefault(); closeMenu(); navigate('/terms'); }}>Terms of Service</a>.
             </span>
             <button type="button" className="consent-accept" onClick={acceptConsent}>
               Accept

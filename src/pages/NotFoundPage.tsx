@@ -9,6 +9,8 @@ import {
   BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
 import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
+import { buttonVariants } from '@/components/ui/button-variants';
 
 export default function NotFoundPage() {
   const navigate = useNavigate();
@@ -52,15 +54,14 @@ export default function NotFoundPage() {
             </p>
 
             <div className="flex items-center gap-2.5 mt-2">
-              <Button
-                type="button"
-                variant="default"
-                size="lg"
-                onClick={() => navigate('/')}
+              <a
+                href="/"
+                onClick={(e) => { e.preventDefault(); navigate('/'); }}
+                className={cn(buttonVariants({ variant: "default", size: "lg" }))}
               >
                 <ArrowLeft size={16} />
                 Back to home
-              </Button>
+              </a>
               <Button
                 type="button"
                 variant="ghost"
