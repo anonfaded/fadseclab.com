@@ -65,11 +65,19 @@ const mapMarkers: { name: string; coordinates: [number, number] }[] = [
   { name: 'Portugal', coordinates: [-8.0, 39.4] },
   { name: 'Thailand', coordinates: [100.5, 15.9] },
   { name: 'Costa Rica', coordinates: [-84.0, 9.9] },
+  { name: 'Kenya', coordinates: [38.0, 0.0] },
+  { name: 'Belgium', coordinates: [4.5, 50.5] },
+  { name: 'Venezuela', coordinates: [-66.0, 7.0] },
+  { name: 'Denmark', coordinates: [10.0, 56.0] },
+  { name: 'Guatemala', coordinates: [-90.0, 15.5] },
+  { name: 'Ukraine', coordinates: [31.0, 49.0] },
+  { name: "Côte d'Ivoire", coordinates: [-5.5, 7.5] },
 ];
 
 export default function GlobalFootprintMap() {
   const [mapCenter, setMapCenter] = useState<[number, number]>([12, 6]);
   const [mapZoom, setMapZoom] = useState(1);
+  const [displayZoom, setDisplayZoom] = useState(1);
   const [activeCountry, setActiveCountry] = useState('');
 
   return (
@@ -80,7 +88,11 @@ export default function GlobalFootprintMap() {
           zoom={mapZoom}
           minZoom={1}
           maxZoom={6}
+          onMove={({ zoom }) => {
+            setDisplayZoom(zoom);
+          }}
           onMoveEnd={({ coordinates, zoom }) => {
+            setDisplayZoom(zoom);
             setMapCenter(coordinates as [number, number]);
             setMapZoom(zoom);
           }}
@@ -102,7 +114,7 @@ export default function GlobalFootprintMap() {
           </Geographies>
           {mapMarkers.map(({ name, coordinates }) => (
             <Marker key={name} coordinates={coordinates}>
-              <g transform={`scale(${(1 / mapZoom).toFixed(4)})`}>
+              <g transform={`scale(${(1 / displayZoom).toFixed(4)})`}>
                 <circle
                   r={3.5}
                   fill="var(--accent-brand)"
@@ -125,7 +137,7 @@ export default function GlobalFootprintMap() {
             if (!active) return null;
             return (
               <Marker coordinates={active.coordinates}>
-                <g transform={`scale(${(1 / mapZoom).toFixed(4)})`}>
+                <g transform={`scale(${(1 / displayZoom).toFixed(4)})`}>
                   <foreignObject x={-44} y={-30} width={88} height={22} style={{ overflow: 'visible', pointerEvents: 'none' }}>
                     <span className="map-tooltip">{activeCountry}</span>
                   </foreignObject>

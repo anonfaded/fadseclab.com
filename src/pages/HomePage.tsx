@@ -277,7 +277,8 @@ function HomePage() {
               <div className="trust-metric-strip">
                 <article className="trust-metric" ref={trustMetricsRef1}>
                   <div className="trust-metric-num">
-                    <AnimatedNumber value={60} suffix="+" start={trustMetrics1} />
+                    {/* Actual: 71 countries — displayed as 70+ for cleaner UX */}
+                    <AnimatedNumber value={70} suffix="+" start={trustMetrics1} />
                   </div>
                   <div className="trust-metric-label">Countries</div>
                   <div className="trust-metric-provenance">with active usage across FadSec Lab open-source software</div>
